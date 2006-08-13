@@ -4,7 +4,7 @@
 AC_PREREQ(2.59)
 AC_INIT([sigterm], [0.0.1], [pat@icore.at])
 AC_CONFIG_SRCDIR([src/audio/AudioFile.cc])
-AC_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE
 
@@ -16,7 +16,8 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-PKG_CHECK_MODULES([SDL], [sdl >= 1.2.11])
+dnl PKG_CHECK_MODULES([SDL], [sdl >= 1.2.11])
+AM_PATH_SDL
 
 dnl PKG_CHECK_MODULES([OGG], [ogg >= 1.1.0])
 dnl PKG_CHECK_MODULES([VORBIS], [vorbis >= 1.1.0])
