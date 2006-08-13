@@ -30,7 +30,7 @@ bool AudioFile::getAudioChunk(quint8 *inBuffer, int len) {
 	    exit(EXIT_FAILURE);
 	}
 
-	mCVT.len = 4096*2;
+	mCVT.len = 4096*4;
 	mCVT.buf = (Uint8*)malloc(mCVT.len * mCVT.len_mult);
 
 	mBuiltCVT = true;
