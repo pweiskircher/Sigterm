@@ -1,27 +1,27 @@
-#include "AudioFile.h"
+#include "AudioDecoder.h"
 #include "AudioManager.h"
 
-AudioFile::AudioFile(AudioManager *inAudioManager) : mConverter(inAudioManager) {
+AudioDecoder::AudioDecoder(AudioManager *inAudioManager) : mConverter(inAudioManager) {
     mBuiltCVT = false;
     mAudioManager = inAudioManager;
 }
 
-AudioFile::~AudioFile() {
+AudioDecoder::~AudioDecoder() {
 }
 
-AudioFormat &AudioFile::audioFormat() {
+AudioFormat &AudioDecoder::audioFormat() {
     return mAudioFormat;
 }
 
-quint32 AudioFile::totalSize() {
+quint32 AudioDecoder::totalSize() {
     return mTotalSize;
 }
 
-quint32 AudioFile::currentPosition() {
+quint32 AudioDecoder::currentPosition() {
     return mCurrentPosition;
 }
 
-bool AudioFile::getAudioChunk(QByteArray &outArray) {
+bool AudioDecoder::getAudioChunk(QByteArray &outArray) {
     if (!mBuiltCVT) {
 	mConverter.setSourceFormat(&audioFormat());
 	mBuiltCVT = true;
@@ -39,6 +39,6 @@ bool AudioFile::getAudioChunk(QByteArray &outArray) {
     return true;
 }
 
-AudioManager *AudioFile::audioManager() {
+AudioManager *AudioDecoder::audioManager() {
     return mAudioManager;
 }

@@ -2,12 +2,20 @@
 #define _MAINWINDOW_H
 
 #include "ui_mainwindow.h"
+#include "AudioManager.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
     Q_OBJECT
 
     public:
 	MainWindow(QWidget *parent = 0);
+
+    private slots:
+	void on_addButton_clicked();
+	void on_actionQuit_activated();
+
+    private:
+	AudioManager mAudioManager;
 };
 
 #endif

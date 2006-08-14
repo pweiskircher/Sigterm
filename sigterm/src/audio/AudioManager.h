@@ -6,7 +6,7 @@
 
 #include <SDL.h>
 
-class AudioFile;
+class AudioDecoder;
 
 class AudioManager {
     public:
@@ -22,7 +22,7 @@ class AudioManager {
 	SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
 
 	// this needs to go away - just testing!
-	AudioFile *mAudioFile;
+	AudioDecoder *mAudioDecoder;
 
 	QMutex mAudioMutex;
 };

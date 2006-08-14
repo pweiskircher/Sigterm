@@ -1,13 +1,13 @@
 #ifndef _AUDIO_FILE_OGG_H
 #define _AUDIO_FILE_OGG_H
 
-#include "AudioFile.h"
+#include "AudioDecoder.h"
 #include <vorbis/vorbisfile.h>
 
-class AudioFileOgg : public AudioFile {
+class AudioDecoderOgg : public AudioDecoder {
     public:
-	AudioFileOgg(AudioManager *inAudioManager);
-	~AudioFileOgg();
+	AudioDecoderOgg(AudioManager *inAudioManager);
+	~AudioDecoderOgg();
 
 	bool open(const QString &inFilename);
 	bool close();

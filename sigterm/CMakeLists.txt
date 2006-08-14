@@ -13,11 +13,11 @@ INCLUDE_DIRECTORIES(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(src/audio/)
 
 SET(SIGTERM_SRCS
-src/audio/AudioFile.cc src/audio/AudioFile.h
+src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
 src/audio/AudioFormat.cc src/audio/AudioFormat.h
 src/audio/AudioManager.cc src/audio/AudioManager.h
 src/audio/AudioConverter.cc src/audio/AudioConverter.h
-src/audio/decoders/AudioFileOgg.cc src/audio/decoders/AudioFileOgg.h
+src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 )
@@ -32,6 +32,16 @@ src/main/MainWindow.h
 
 QT4_WRAP_CPP(SIGTERM_MOC_SRCS ${SIGTERM_MOC})
 QT4_WRAP_UI(SIGTERM_UI_H ${SIGTERM_UI})
+
+
+SET(MACOSX_BUNDLE_INFO_STRING	"Sigterm Music Player")
+# SET(MACOSX_BUNDLE_ICON_FILE
+SET(MACOSX_BUNDLE_GUI_IDENTIFIER "at.sigterm.sigterm")
+# SET(MACOSX_BUNDLE_LONG_VERSION_STRING 
+SET(MACOSX_BUNDLE_BUNDLE_NAME "sigterm")
+# SET(MACOSX_BUNDLE_SHORT_VERSION_STRING
+# SET(MACOSX_BUNDLE_BUNDLE_VERSION
+# SET(MACOSX_BUNDLE_COPYRIGHT
 
 ADD_EXECUTABLE(sigterm MACOSX_BUNDLE ${SIGTERM_SRCS} ${SIGTERM_UI_H} ${SIGTERM_MOC_SRCS})
 

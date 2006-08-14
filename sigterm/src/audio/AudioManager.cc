@@ -1,6 +1,6 @@
 #include "AudioManager.h"
 
-#include "decoders/AudioFileOgg.h"
+#include "decoders/AudioDecoderOgg.h"
 
 void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
     AudioManager *mgr = (AudioManager *)userdata;
@@ -11,8 +11,8 @@ AudioManager::AudioManager() {
 }
 
 void AudioManager::init() {
-    mAudioFile = new AudioFileOgg(this);
-    mAudioFile->open("/tmp/a.ogg");
+    mAudioDecoder = new AudioDecoderOgg(this);
+    mAudioDecoder->open("/tmp/a.ogg");
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 	qDebug("Could not initialize SDL audio.");
@@ -37,7 +37,7 @@ void AudioManager::init() {
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
     QByteArray test;
     test.resize(len);
-    if (mAudioFile->getAudioChunk(test)) {
+    if (mAudioDecoder->getAudioChunk(test)) {
 	memcpy(stream, test.data(), len);
     }
 }

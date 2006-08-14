@@ -1,14 +1,14 @@
-#include "AudioFileOgg.h"
+#include "AudioDecoderOgg.h"
 
-AudioFileOgg::AudioFileOgg(AudioManager *inAudioManager) : AudioFile(inAudioManager) {
+AudioDecoderOgg::AudioDecoderOgg(AudioManager *inAudioManager) : AudioDecoder(inAudioManager) {
     mOpened = false;
 }
 
-AudioFileOgg::~AudioFileOgg() {
+AudioDecoderOgg::~AudioDecoderOgg() {
 }
 
 
-bool AudioFileOgg::open(const QString &inFilename) {
+bool AudioDecoderOgg::open(const QString &inFilename) {
     FILE *f = fopen(qPrintable(inFilename), "r");
     if (!f) {
 	// TODO: error reporting
@@ -37,7 +37,7 @@ bool AudioFileOgg::open(const QString &inFilename) {
     return true;
 }
 
-bool AudioFileOgg::close() {
+bool AudioDecoderOgg::close() {
     if (mOpened) {
 	ov_clear(&mOggVorbisFile);
 	mOpened = false;
@@ -47,13 +47,13 @@ bool AudioFileOgg::close() {
 }
 
 
-bool AudioFileOgg::seekToTime(quint32 inMilliSeconds) {
+bool AudioDecoderOgg::seekToTime(quint32 inMilliSeconds) {
     if (ov_time_seek(&mOggVorbisFile, (double)(inMilliSeconds/1000.0)))
 	return true;
     return false;
 }
 
-bool AudioFileOgg::getDecodedChunk(QByteArray &inOutArray) {
+bool AudioDecoderOgg::getDecodedChunk(QByteArray &inOutArray) {
     quint32 bytesRead = 0;
     int currentSection;
     quint32 lenNeeded = inOutArray.size();

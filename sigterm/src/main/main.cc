@@ -1,3 +1,5 @@
+#define _SDL_main_h 1
+
 #include <QApplication>
 #include "MainWindow.h"
 

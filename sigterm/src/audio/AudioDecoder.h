@@ -12,10 +12,10 @@
 
 class AudioManager;
 
-class AudioFile {
+class AudioDecoder {
     public:
-	AudioFile(AudioManager *inAudioManager);
-	virtual ~AudioFile();
+	AudioDecoder(AudioManager *inAudioManager);
+	virtual ~AudioDecoder();
 
 	virtual bool open(const QString &inFilename) = 0;
 	virtual bool close() = 0;
