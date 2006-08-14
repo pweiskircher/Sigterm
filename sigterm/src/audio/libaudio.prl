@@ -1,6 +1,0 @@
-QMAKE_PRL_BUILD_DIR = /Users/pat/Source/Audio/sigterm/src/audio
-QMAKE_PRO_INPUT = audio.pro
-QMAKE_PRL_TARGET = libaudio.a
-QMAKE_PRL_CONFIG = lex yacc warn_on debug uic resources sdk qt warn_on app_bundle incremental global_init_link_order lib_version_first plugin_no_soname link_prl debug stl static create_prl staticlib static moc thread
-QMAKE_PRL_VERSION = 1.0.0
-QMAKE_PRL_LIBS = -F/usr/local/Trolltech/Qt-4.1.1/lib -L/usr/local/Trolltech/Qt-4.1.1/lib  -lSDL -L/usr/local/lib -logg -lvorbis -lvorbisfile -framework QtGui -F/Users/pat/Source/qt-mac-opensource-src-4.1.1/lib -L/Users/pat/Source/qt-mac-opensource-src-4.1.1/lib -framework Carbon -framework QuickTime -framework QtCore -lz -lm -framework ApplicationServices 
