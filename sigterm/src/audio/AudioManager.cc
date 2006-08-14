@@ -10,7 +10,7 @@ void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 AudioManager::AudioManager() {
 }
 
-void AudioManager::run() {
+void AudioManager::init() {
     mAudioFile = new AudioFileOgg(this);
     mAudioFile->open("/tmp/a.ogg");
 
@@ -32,12 +32,6 @@ void AudioManager::run() {
     }
 
     SDL_PauseAudio(0);
-
-    while (1) {
-	SDL_Delay(10);
-    }
-
-    SDL_Quit();
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {

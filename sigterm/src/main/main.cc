@@ -6,6 +6,6 @@
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
     AudioManager mgr;
-    mgr.start();
+    mgr.init();
     return app.exec();
 }

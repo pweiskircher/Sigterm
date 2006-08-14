@@ -3,17 +3,16 @@
 
 #include <QString>
 #include <QMutex>
-#include <QThread>
 
 #include <SDL.h>
 
 class AudioFile;
 
-class AudioManager : public QThread {
+class AudioManager {
     public:
 	AudioManager();
 
-	void run();
+	void init();
 
 	void fillBuffer(Uint8 *stream, int len);
 
