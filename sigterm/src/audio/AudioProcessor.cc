@@ -6,29 +6,67 @@
 
 AudioProcessor::AudioProcessor(AudioManager *inAudioManager) {
     mAudioManager = inAudioManager;
+    mPause = false;
+    mSkipTrack = false;
 }
 
 void AudioProcessor::run() {
     mMutex.lock();
     while (mAudioManager->audioProcessorWaitCondition()->wait(&mMutex)) {
-	PlayList *playList = mAudioManager->currentPlayList();
-	AudioFile *file = playList->currentFile();
-
-	AudioDecoder::DecodingStatus status;
-	QByteArray audioData;
-	audioData.resize(4096);
+	mMutex.unlock();
 	while (1) {
-	    status = file->decoder()->getAudioChunk(audioData);
-	    if (status == AudioDecoder::eError) {
-		qDebug("Error on decoding ...");
-		exit(EXIT_FAILURE);
-	    } else if (status == AudioDecoder::eEOF) {
-		qDebug("Finished decoding ...");
+	    mMutex.lock();
+	    if (mPause) {
+		mPause = false;
+		mMutex.unlock();
 		break;
 	    }
+	    mMutex.unlock();
 
-	    mAudioManager->audioBuffer()->add(audioData);
+	    PlayList *playList = mAudioManager->currentPlayList();
+	    AudioFile *file = playList->currentFile();
+
+	    processFile(playList, file);
 	}
+	mMutex.lock();
     }
-    mMutex.unlock();
+}
+
+void AudioProcessor::pause() {
+    QMutexLocker locker(&mMutex);
+    mPause = true;
+}
+
+void AudioProcessor::skipTrack() {
+    QMutexLocker locker(&mMutex);
+    mSkipTrack = true;
+}
+
+void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
+    AudioDecoder::DecodingStatus status;
+    QByteArray audioData;
+    audioData.resize(4096);
+
+    while (1) {
+	mMutex.lock();
+	if (mSkipTrack) {
+	    mSkipTrack = false;
+	    mAudioManager->audioBuffer()->clear();
+	    mMutex.unlock();
+	    return;
+	}
+	mMutex.unlock();
+
+	status = inFile->decoder()->getAudioChunk(audioData);
+	if (status == AudioDecoder::eError) {
+	    qDebug("Error on decoding ...");
+	    continue;
+	} else if (status == AudioDecoder::eEOF) {
+	    qDebug("Finished decoding ...");
+	    inPlayList->finished(inFile);
+	    break;
+	}
+
+	mAudioManager->audioBuffer()->add(audioData);
+    }
 }

@@ -2,12 +2,11 @@
 #include "AudioFile.h"
 
 AudioDecoderOgg::AudioDecoderOgg(AudioFile *inAudioFile, AudioManager *inAudioManager) : AudioDecoder(inAudioFile, inAudioManager) {
-    mOpened = false;
 }
 
 AudioDecoderOgg::~AudioDecoderOgg() {
-    if (mOpened)
-	ov_clear(&mOggVorbisFile);
+    if (opened())
+	close();
 }
 
 
@@ -24,7 +23,7 @@ bool AudioDecoderOgg::open() {
 	return false;
     }
 
-    mOpened = true;
+    setOpened(true);
 
     vorbis_info *info = ov_info(&mOggVorbisFile, -1);
     audioFormat().setBitRate((int)(info->bitrate_nominal / 1000.0));
@@ -41,9 +40,9 @@ bool AudioDecoderOgg::open() {
 }
 
 bool AudioDecoderOgg::close() {
-    if (mOpened) {
+    if (opened()) {
 	ov_clear(&mOggVorbisFile);
-	mOpened = false;
+	setOpened(false);
     }
 
     return true;

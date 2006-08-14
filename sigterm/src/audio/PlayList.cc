@@ -11,6 +11,9 @@ AudioFile *PlayList::currentFile() {
     return mAudioFileList.first();
 }
 
+void PlayList::finished(AudioFile *inAudioFile) {
+}
+
 int PlayList::rowCount(const QModelIndex &parent) const {
     return 0;
 }

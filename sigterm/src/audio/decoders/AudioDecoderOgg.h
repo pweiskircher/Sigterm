@@ -19,7 +19,6 @@ class AudioDecoderOgg : public AudioDecoder {
 	bool canDecode(const QString &inFilePath);
 
 	OggVorbis_File mOggVorbisFile;
-	bool mOpened;
 };
 
 #endif

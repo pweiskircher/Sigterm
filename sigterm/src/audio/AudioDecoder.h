@@ -22,6 +22,8 @@ class AudioDecoder {
 	virtual bool close() = 0;
 	virtual bool seekToTime(quint32 inMilliSeconds) = 0;
 
+	bool opened();
+
 	typedef enum {
 	    eSuccess,
 	    eEOF,
@@ -49,7 +51,11 @@ class AudioDecoder {
 	AudioConverter mConverter;
 	AudioFile *mAudioFile;
 
+	bool mOpened;
+
     protected:
+	bool setOpened(bool inValue);
+
 	quint32 mTotalSize;
 	quint32 mCurrentPosition;
 };

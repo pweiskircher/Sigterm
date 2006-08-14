@@ -5,6 +5,8 @@
 #include <QMutex>
 
 class AudioManager;
+class AudioFile;
+class PlayList;
 
 class AudioProcessor : public QThread {
     public:
@@ -12,9 +14,17 @@ class AudioProcessor : public QThread {
 
 	void run();
 
+	void pause();
+	void skipTrack();
+
     private:
 	QMutex mMutex;
 	AudioManager *mAudioManager;
+
+	void processFile(PlayList *inPlayList, AudioFile *inFile);
+
+	bool mPause;
+	bool mSkipTrack;
 };
 
 #endif

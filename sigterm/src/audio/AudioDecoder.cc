@@ -5,9 +5,14 @@ AudioDecoder::AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager)
     mBuiltCVT = false;
     mAudioManager = inAudioManager;
     mAudioFile = inAudioFile;
+    mOpened = false;
 }
 
 AudioDecoder::~AudioDecoder() {
+}
+
+bool AudioDecoder::opened() {
+    return mOpened;
 }
 
 AudioFormat &AudioDecoder::audioFormat() {
@@ -23,6 +28,11 @@ quint32 AudioDecoder::currentPosition() {
 }
 
 AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(QByteArray &outArray) {
+    if (!opened()) {
+	if (!open())
+	    return eError;
+    }
+
     if (!mBuiltCVT) {
 	mConverter.setSourceFormat(&audioFormat());
 	mBuiltCVT = true;
@@ -32,7 +42,11 @@ AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(QByteArray &outArray) {
     if (status == eError) {
 	qDebug("Couldn't get decoded audio chunk!");
 	return eError;
+    } else if (status == eEOF) {
+	close();
+	return eEOF;
     }
+
     if (!mConverter.convert(outArray)) {
 	qDebug("Could not convert audio!");
 	return eError;
@@ -49,3 +63,6 @@ AudioFile *AudioDecoder::audioFile() {
     return mAudioFile;
 }
 
+bool AudioDecoder::setOpened(bool inValue) {
+    mOpened = inValue;
+}

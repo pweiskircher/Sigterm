@@ -10,6 +10,7 @@ class AudioBuffer {
 
 	bool add(QByteArray &inArray);
 	bool get(QByteArray &outArray);
+	void clear();
 
     private:
 	QMutex mMutex;

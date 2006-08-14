@@ -1,6 +1,8 @@
 #include "AudioBuffer.h"
 #include <unistd.h>
 
+// synchronize using a QSemaphore!
+
 AudioBuffer::AudioBuffer() {
     mBuffer.resize(1024*128);
     mBufferLength = 0;
@@ -56,3 +58,8 @@ bool AudioBuffer::get(QByteArray &outArray) {
     mMutex.unlock();
 }
 
+void AudioBuffer::clear() {
+    QMutexLocker locker(&mMutex);
+
+    mBufferLength = 0;
+}
