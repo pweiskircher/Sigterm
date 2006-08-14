@@ -18,9 +18,12 @@ bool AudioConverter::setSourceFormat(AudioFormat *inFormat) {
 }
 
 bool AudioConverter::convert(QByteArray &inOutDataArray) {
-    // we should .. be a bit .. smarter about that.
-    mCVT.len = inOutDataArray.size()*4;
+    // no conversion needed!
+    if (mCVT.needed == 0)
+	return true;
 
+    // we should .. be a bit .. smarter about that.
+    mCVT.len = inOutDataArray.size();
     inOutDataArray.resize(mCVT.len * mCVT.len_mult);
     mCVT.buf = (Uint8*)inOutDataArray.data();
 
