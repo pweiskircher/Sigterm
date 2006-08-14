@@ -89,6 +89,8 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 		return;
 	    }
 	    mMutex.unlock();
+
+	    usleep(100);
 	}
 	mAudioManager->audioBuffer()->add(audioData);
     }
