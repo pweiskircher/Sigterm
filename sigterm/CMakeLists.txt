@@ -1,9 +1,10 @@
 PROJECT(sigterm)
 
 INCLUDE(UsePkgConfig)
+INCLUDE(FindQt4)
 
-FIND_PACKAGE(Qt4)
-FIND_PACKAGE(SDL)
+FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(SDL REQUIRED)
 
 PKGCONFIG(vorbisfile VORBISFILE_INCLUDE_DIR VORBISFILE_LINK_DIR VORBISFILE_LINK_FLAGS VORBISFILE_CFLAGS)
 
@@ -14,9 +15,13 @@ INCLUDE_DIRECTORIES(src/audio/)
 
 SET(SIGTERM_SRCS
 src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
+src/audio/AudioFile.cc src/audio/AudioFile.h
 src/audio/AudioFormat.cc src/audio/AudioFormat.h
 src/audio/AudioManager.cc src/audio/AudioManager.h
 src/audio/AudioConverter.cc src/audio/AudioConverter.h
+src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
+src/audio/AudioProcessor.cc src/audio/AudioProcessor.h
+src/audio/PlayList.cc src/audio/PlayList.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h

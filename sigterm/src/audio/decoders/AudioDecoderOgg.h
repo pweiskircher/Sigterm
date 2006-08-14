@@ -6,16 +6,17 @@
 
 class AudioDecoderOgg : public AudioDecoder {
     public:
-	AudioDecoderOgg(AudioManager *inAudioManager);
+	AudioDecoderOgg(AudioFile *inAudioFile, AudioManager *inAudioManager);
 	~AudioDecoderOgg();
 
-	bool open(const QString &inFilename);
+	bool open();
 	bool close();
 
 	bool seekToTime(quint32 inMilliSeconds);
 
     private:
-	bool getDecodedChunk(QByteArray &inOutArray);
+	AudioDecoder::DecodingStatus getDecodedChunk(QByteArray &inOutArray);
+	bool canDecode(const QString &inFilePath);
 
 	OggVorbis_File mOggVorbisFile;
 	bool mOpened;

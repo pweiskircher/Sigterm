@@ -1,18 +1,19 @@
 #include "AudioManager.h"
-
-#include "decoders/AudioDecoderOgg.h"
+#include "AudioFile.h"
+#include "PlayList.h"
 
 void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
     AudioManager *mgr = (AudioManager *)userdata;
     mgr->fillBuffer(stream, len);
 }
 
-AudioManager::AudioManager() {
+AudioManager::AudioManager() : mAudioProcessor(this) {
+    mAudioProcessor.start();
 }
 
 void AudioManager::init() {
-    mAudioDecoder = new AudioDecoderOgg(this);
-    mAudioDecoder->open("/tmp/a.ogg");
+    mCurrentPlayList = new PlayList();
+    mCurrentPlayList->add(new AudioFile("/tmp/a.ogg", this));
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 	qDebug("Could not initialize SDL audio.");
@@ -31,13 +32,30 @@ void AudioManager::init() {
 	exit(EXIT_FAILURE);
     }
 
-    SDL_PauseAudio(0);
+    setPause(false);
+}
+
+AudioBuffer *AudioManager::audioBuffer() {
+    return &mAudioBuffer;
+}
+
+QWaitCondition *AudioManager::audioProcessorWaitCondition() {
+    return &mAudioProcessorWaitCondition;
+}
+
+PlayList *AudioManager::currentPlayList() {
+    return mCurrentPlayList;
+}
+
+void AudioManager::setPause(bool inPause) {
+    SDL_PauseAudio(inPause);
+    mAudioProcessorWaitCondition.wakeAll();
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
     QByteArray test;
     test.resize(len);
-    if (mAudioDecoder->getAudioChunk(test)) {
+    if (audioBuffer()->get(test)) {
 	memcpy(stream, test.data(), len);
     }
 }
@@ -45,3 +63,4 @@ void AudioManager::fillBuffer(Uint8 *stream, int len) {
 SDL_AudioSpec *AudioManager::hardwareSpec() {
     return &mHardwareAudioSpec;
 }
+
