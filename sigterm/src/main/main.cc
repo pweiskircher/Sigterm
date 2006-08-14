@@ -1,11 +1,9 @@
 #include <QApplication>
-
-#define _SDL_main_h
-#include "AudioManager.h"
+#include "MainWindow.h"
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
-    AudioManager mgr;
-    mgr.init();
+    MainWindow m;
+    m.show();
     return app.exec();
 }
