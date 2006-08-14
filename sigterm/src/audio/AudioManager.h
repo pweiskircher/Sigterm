@@ -1,6 +1,7 @@
 #ifndef _AUDIO_MANAGER_H
 #define _AUDIO_MANAGER_H
 
+#include <QObject>
 #include <QString>
 #include <QMutex>
 #include <QWaitCondition>
@@ -13,12 +14,15 @@
 class AudioDecoder;
 class PlayList;
 
-class AudioManager {
+class AudioManager : public QObject {
+    Q_OBJECT
+
     public:
 	AudioManager();
 
 	void init();
 	void setPause(bool inPause);
+	void togglePause();
 
 	void fillBuffer(Uint8 *stream, int len);
 
@@ -28,6 +32,12 @@ class AudioManager {
 	QWaitCondition *audioProcessorWaitCondition();
 
 	PlayList *currentPlayList();
+
+    signals:
+	void audioPaused(bool inPaused);
+
+    private slots:
+	void audioProcessorPaused();
 
     private:
 	SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
@@ -39,6 +49,8 @@ class AudioManager {
 
 	AudioBuffer mAudioBuffer;
 	PlayList *mCurrentPlayList;
+
+	bool mPaused;
 };
 
 #endif

@@ -12,6 +12,9 @@ class AudioBuffer {
 	bool get(QByteArray &outArray);
 	void clear();
 
+	bool needSpace(quint32 inSpace);
+	bool needData(quint32 inData);
+
     private:
 	QMutex mMutex;
 	QByteArray mBuffer;

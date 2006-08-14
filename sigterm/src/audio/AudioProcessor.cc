@@ -18,6 +18,7 @@ void AudioProcessor::run() {
 	    mMutex.lock();
 	    if (mPause) {
 		mPause = false;
+		emit paused();
 		mMutex.unlock();
 		break;
 	    }
@@ -25,6 +26,10 @@ void AudioProcessor::run() {
 
 	    PlayList *playList = mAudioManager->currentPlayList();
 	    AudioFile *file = playList->currentFile();
+	    if (!file) {
+		emit paused();
+		break;
+	    }
 
 	    processFile(playList, file);
 	}
@@ -47,11 +52,15 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
     QByteArray audioData;
     audioData.resize(4096);
 
+    emit startedPlaying(inFile);
     while (1) {
 	mMutex.lock();
 	if (mSkipTrack) {
 	    mSkipTrack = false;
 	    mAudioManager->audioBuffer()->clear();
+	    mMutex.unlock();
+	    return;
+	} else if (mPause) {
 	    mMutex.unlock();
 	    return;
 	}
@@ -67,6 +76,20 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    break;
 	}
 
+	while (mAudioManager->audioBuffer()->needSpace(audioData.size()) == false) {
+	    mMutex.lock();
+	    if (mSkipTrack) {
+		mSkipTrack = false;
+		mAudioManager->audioBuffer()->clear();
+		mMutex.unlock();
+		return;
+	    } else if (mPause) {
+		qDebug("got pause!");
+		mMutex.unlock();
+		return;
+	    }
+	    mMutex.unlock();
+	}
 	mAudioManager->audioBuffer()->add(audioData);
     }
 }

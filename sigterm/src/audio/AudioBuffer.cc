@@ -9,36 +9,29 @@ AudioBuffer::AudioBuffer() {
 }
 
 bool AudioBuffer::add(QByteArray &inArray) {
-    mMutex.lock();
-
     int i = 0;
-    while (mBufferLength + inArray.size() > mBuffer.size()) {
-	mMutex.unlock();
+    while (needSpace(inArray.size()) == false) {
 	usleep(100);
 
 	// timeout ...
-	if (i++ == 20000) {
+	if (i++ == 2000) {
 	    qDebug("Buffer full.");
 	    return false;
 	}
-
-	mMutex.lock();
     }
 
+    mMutex.lock();
     memcpy(mBuffer.data() + mBufferLength, inArray.data(), inArray.size());
     mBufferLength += inArray.size();
     mMutex.unlock();
 }
 
 bool AudioBuffer::get(QByteArray &outArray) {
-    mMutex.lock();
-
     int i=0;
-    if (mBufferLength < outArray.size()) {
+    if (needData(outArray.size()) == false) {
 	qWarning("Buffer empty .. waiting ..");
 
-	while ((((mBuffer.size()/100)*mBufferLength) < 30) || mBufferLength < outArray.size()) {
-	    mMutex.unlock();
+	while (needData(outArray.size()) == false) {
 	    usleep(100);
 
 	    // timeout ...
@@ -46,15 +39,13 @@ bool AudioBuffer::get(QByteArray &outArray) {
 		qDebug("Buffer empty.");
 		return false;
 	    }
-
-	    mMutex.lock();
 	}
     }
 
+    mMutex.lock();
     outArray = mBuffer.left(outArray.size());
     memmove(mBuffer.data(), mBuffer.data() + outArray.size(), mBufferLength - outArray.size());
     mBufferLength -= outArray.size();
-
     mMutex.unlock();
 }
 
@@ -63,3 +54,18 @@ void AudioBuffer::clear() {
 
     mBufferLength = 0;
 }
+
+bool AudioBuffer::needSpace(quint32 inSpace) {
+    QMutexLocker locker(&mMutex);
+    if (mBufferLength + inSpace > mBuffer.size())
+	return false;
+    return true;
+}
+
+bool AudioBuffer::needData(quint32 inData) {
+    QMutexLocker locker(&mMutex);
+    if (mBufferLength < inData)
+	return false;
+    return true;
+}
+

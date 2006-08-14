@@ -8,11 +8,14 @@ void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 }
 
 AudioManager::AudioManager() : mAudioProcessor(this) {
+    connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
+
     mAudioProcessor.start();
+    mPaused = false;
+    mCurrentPlayList = new PlayList();
 }
 
 void AudioManager::init() {
-    mCurrentPlayList = new PlayList();
     mCurrentPlayList->add(new AudioFile("/tmp/a.ogg", this));
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
@@ -47,9 +50,28 @@ PlayList *AudioManager::currentPlayList() {
     return mCurrentPlayList;
 }
 
+void AudioManager::audioProcessorPaused() {
+    SDL_PauseAudio(true);
+    mPaused = true;
+
+    emit audioPaused(true);
+}
+
 void AudioManager::setPause(bool inPause) {
+    mPaused = inPause;
+
     SDL_PauseAudio(inPause);
-    mAudioProcessorWaitCondition.wakeAll();
+
+    if (inPause == false)
+	mAudioProcessorWaitCondition.wakeAll();
+    else
+	mAudioProcessor.pause();
+
+    emit audioPaused(mPaused);
+}
+
+void AudioManager::togglePause() {
+    setPause(!mPaused);
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {

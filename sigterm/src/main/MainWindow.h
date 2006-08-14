@@ -11,7 +11,10 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 	MainWindow(QWidget *parent = 0);
 
     private slots:
+	void audioPaused(bool inPaused);
+
 	void on_addButton_clicked();
+        void on_playButton_clicked();
 	void on_actionQuit_activated();
 
     private:

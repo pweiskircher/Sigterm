@@ -9,6 +9,8 @@ class AudioFile;
 class PlayList;
 
 class AudioProcessor : public QThread {
+    Q_OBJECT
+
     public:
 	AudioProcessor(AudioManager *inAudioManager);
 
@@ -16,6 +18,10 @@ class AudioProcessor : public QThread {
 
 	void pause();
 	void skipTrack();
+
+    signals:
+	void startedPlaying(AudioFile *inFile);
+	void paused();
 
     private:
 	QMutex mMutex;

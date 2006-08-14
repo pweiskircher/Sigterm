@@ -19,6 +19,7 @@ class PlayList : public QAbstractListModel {
 
     private:
 	QList<AudioFile *> mAudioFileList;
+	int mCurrentAudioFileIndex;
 };
 
 #endif

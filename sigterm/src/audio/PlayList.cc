@@ -1,6 +1,7 @@
 #include "PlayList.h"
 
 PlayList::PlayList() {
+    mCurrentAudioFileIndex = 0;
 }
 
 void PlayList::add(AudioFile *inAudioFile) {
@@ -8,10 +9,17 @@ void PlayList::add(AudioFile *inAudioFile) {
 }
 
 AudioFile *PlayList::currentFile() {
-    return mAudioFileList.first();
+    if (mAudioFileList.size() == 0)
+	return NULL;
+
+    if (mCurrentAudioFileIndex >= mAudioFileList.size())
+	mCurrentAudioFileIndex = 0;
+
+    return mAudioFileList[mCurrentAudioFileIndex];
 }
 
 void PlayList::finished(AudioFile *inAudioFile) {
+    mCurrentAudioFileIndex++;
 }
 
 int PlayList::rowCount(const QModelIndex &parent) const {

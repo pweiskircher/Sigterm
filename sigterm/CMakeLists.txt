@@ -33,6 +33,8 @@ src/main/mainwindow.ui
 
 SET(SIGTERM_MOC
 src/main/MainWindow.h
+src/audio/AudioProcessor.h
+src/audio/AudioManager.h
 )
 
 QT4_WRAP_CPP(SIGTERM_MOC_SRCS ${SIGTERM_MOC})
