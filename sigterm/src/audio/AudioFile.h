@@ -3,8 +3,10 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <QByteArray>
 
 #include "AudioFormat.h"
+#include "AudioConverter.h"
 
 #include <SDL.h>
 
@@ -17,11 +19,9 @@ class AudioFile {
 
 	virtual bool open(const QString &inFilename) = 0;
 	virtual bool close() = 0;
-
 	virtual bool seekToTime(quint32 inMilliSeconds) = 0;
-	virtual bool getDecodedChunk(char *inOutBuffer, quint32 &inOutLen) = 0;
 
-	bool getAudioChunk(quint8 *inBuffer, int len);
+	bool getAudioChunk(QByteArray &outArray);
 
 	AudioFormat &audioFormat();
 
@@ -31,10 +31,13 @@ class AudioFile {
 	AudioManager *audioManager();
 
     private:
+	virtual bool getDecodedChunk(QByteArray &inOutArray) = 0;
+
 	AudioFormat mAudioFormat;
 	SDL_AudioCVT mCVT;
 	bool mBuiltCVT;
 	AudioManager *mAudioManager;
+	AudioConverter mConverter;
 
     protected:
 	quint32 mTotalSize;

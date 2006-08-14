@@ -13,9 +13,10 @@ class AudioFileOgg : public AudioFile {
 	bool close();
 
 	bool seekToTime(quint32 inMilliSeconds);
-	bool getDecodedChunk(char *inOutBuffer, quint32 &inOutLen);
 
     private:
+	bool getDecodedChunk(QByteArray &inOutArray);
+
 	OggVorbis_File mOggVorbisFile;
 	bool mOpened;
 };

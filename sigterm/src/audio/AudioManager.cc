@@ -41,24 +41,10 @@ void AudioManager::run() {
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
-#if 0
-    if (!mBuiltCVT) {
-	if (SDL_BuildAudioCVT(&mCVT, mAudioFile->audioFormat().sdlFormat(), mAudioFile->audioFormat().channels(),
-		              mAudioFile->audioFormat()->frequency(), mHardwareAudioSpec.format, mHardwareAudioSpec.channels,
-			      mHardwareAudioSpec.freq) != 0) {
-	    qDebug("Error building AudioCVT");
-	    exit(EXIT_FAILURE);
-	}
-
-	mCVT.len = 4096;
-	mCVT.buf = malloc(mCVT.len * mCVT.len_mult);
-    }
-#endif
-
-    if (mAudioFile->currentPosition() < mAudioFile->totalSize()) {
-	mAudioFile->getAudioChunk(stream, len);
-    } else {
-	exit(1);
+    QByteArray test;
+    test.resize(len);
+    if (mAudioFile->getAudioChunk(test)) {
+	memcpy(stream, test.data(), len);
     }
 }
 

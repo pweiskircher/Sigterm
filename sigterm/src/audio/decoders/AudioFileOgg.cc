@@ -53,25 +53,24 @@ bool AudioFileOgg::seekToTime(quint32 inMilliSeconds) {
     return false;
 }
 
-bool AudioFileOgg::getDecodedChunk(char *inOutBuffer, quint32 &inOutLen) {
+bool AudioFileOgg::getDecodedChunk(QByteArray &inOutArray) {
     quint32 bytesRead = 0;
     int currentSection;
+    quint32 lenNeeded = inOutArray.size();
 
     do {
-	int r = ov_read(&mOggVorbisFile, inOutBuffer + bytesRead, inOutLen - bytesRead, 0, audioFormat().bitsPerSample()/8, 1,
+	int r = ov_read(&mOggVorbisFile, inOutArray.data() + bytesRead, lenNeeded - bytesRead, 0, audioFormat().bitsPerSample()/8, 1,
 		        &currentSection);
 	if (r < 0) {
-	    inOutLen = 0;
 	    return false;
 	} else if (r == 0) {
-	    inOutLen = bytesRead;
+	    inOutArray.resize(bytesRead);
 	    return true;
 	} else {
 	    bytesRead += r;
 	}
-    } while (bytesRead < inOutLen);
+    } while (bytesRead < lenNeeded);
 
-    inOutLen = bytesRead;
     return true;
 }
 

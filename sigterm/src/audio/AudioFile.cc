@@ -1,7 +1,7 @@
 #include "AudioFile.h"
 #include "AudioManager.h"
 
-AudioFile::AudioFile(AudioManager *inAudioManager) {
+AudioFile::AudioFile(AudioManager *inAudioManager) : mConverter(inAudioManager) {
     mBuiltCVT = false;
     mAudioManager = inAudioManager;
 }
@@ -21,25 +21,21 @@ quint32 AudioFile::currentPosition() {
     return mCurrentPosition;
 }
 
-bool AudioFile::getAudioChunk(quint8 *inBuffer, int len) {
+bool AudioFile::getAudioChunk(QByteArray &outArray) {
     if (!mBuiltCVT) {
-	if (SDL_BuildAudioCVT(&mCVT, audioFormat().sdlFormat(), audioFormat().channels(), audioFormat().frequency(),
-		                     audioManager()->hardwareSpec()->format, audioManager()->hardwareSpec()->channels,
-				     audioManager()->hardwareSpec()->freq) < 0) {
-	    qDebug("Error building AudioCVT");
-	    exit(EXIT_FAILURE);
-	}
-
-	mCVT.len = 4096*4;
-	mCVT.buf = (Uint8*)malloc(mCVT.len * mCVT.len_mult);
-
+	mConverter.setSourceFormat(&audioFormat());
 	mBuiltCVT = true;
     }
 
-    quint32 decodedLen = len;
-    getDecodedChunk((char *)mCVT.buf, decodedLen);
-    SDL_ConvertAudio(&mCVT);
-    memcpy(inBuffer, mCVT.buf, len);
+    if (!getDecodedChunk(outArray)) {
+	qDebug("Couldn't get decoded audio chunk!");
+	return false;
+    }
+    if (!mConverter.convert(outArray)) {
+	qDebug("Could not convert audio!");
+	return false;
+    }
+
     return true;
 }
 

@@ -16,6 +16,7 @@ SET(SIGTERM_SRCS
 src/audio/AudioFile.cc src/audio/AudioFile.h
 src/audio/AudioFormat.cc src/audio/AudioFormat.h
 src/audio/AudioManager.cc src/audio/AudioManager.h
+src/audio/AudioConverter.cc src/audio/AudioConverter.h
 src/audio/decoders/AudioFileOgg.cc src/audio/decoders/AudioFileOgg.h
 src/main/main.cc
 )
