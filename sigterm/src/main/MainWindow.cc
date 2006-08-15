@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupUi(this);
 
     connect(&mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));
+    connect(qApp, SIGNAL(lastWindowClosed()), SLOT(on_actionQuit_activated()));
     mAudioManager.init();
 
     playlist->setModel(mAudioManager.currentPlayList());
