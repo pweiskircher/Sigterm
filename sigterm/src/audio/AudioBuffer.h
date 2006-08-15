@@ -3,8 +3,7 @@
 
 #include <QByteArray>
 #include <QMutex>
-
-class QWaitCondition;
+#include <QWaitCondition>
 
 class AudioBuffer {
     public:
@@ -20,6 +19,10 @@ class AudioBuffer {
 	void wakeOnBufferGet(QWaitCondition *inCondition);
 
     private:
+	void uglyHackSleep(int inMilliSeconds);
+	QWaitCondition mUglyHackWaitCondition;
+	QMutex mUglyHackMutex;
+
 	QMutex mMutex;
 	QByteArray mBuffer;
 	quint32 mBufferLength;
