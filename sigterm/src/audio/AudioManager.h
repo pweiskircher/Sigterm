@@ -23,6 +23,9 @@ class AudioManager : public QObject {
 	void init();
 	void setPause(bool inPause);
 	void togglePause();
+	void skipTrack();
+
+	bool paused();
 
 	void fillBuffer(Uint8 *stream, int len);
 

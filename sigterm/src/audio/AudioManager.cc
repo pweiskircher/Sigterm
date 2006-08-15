@@ -11,13 +11,11 @@ AudioManager::AudioManager() : mAudioProcessor(this) {
     connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
 
     mAudioProcessor.start();
-    mPaused = false;
+    mPaused = true;
     mCurrentPlayList = new PlayList();
 }
 
 void AudioManager::init() {
-    mCurrentPlayList->add(new AudioFile("/tmp/a.ogg", this));
-
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 	qDebug("Could not initialize SDL audio.");
 	exit(EXIT_FAILURE);
@@ -34,8 +32,6 @@ void AudioManager::init() {
 	qDebug("Could not open the audio device.");
 	exit(EXIT_FAILURE);
     }
-
-    setPause(false);
 }
 
 AudioBuffer *AudioManager::audioBuffer() {
@@ -62,15 +58,25 @@ void AudioManager::setPause(bool inPause) {
 
     SDL_PauseAudio(inPause);
 
-    mAudioProcessorWaitCondition.wakeAll();
     if (inPause == true)
 	mAudioProcessor.pause();
+
+    mAudioProcessorWaitCondition.wakeAll();
 
     emit audioPaused(mPaused);
 }
 
 void AudioManager::togglePause() {
     setPause(!mPaused);
+}
+
+void AudioManager::skipTrack() {
+    mAudioProcessor.skipTrack();
+    mAudioProcessorWaitCondition.wakeAll();
+}
+
+bool AudioManager::paused() {
+    return mPaused;
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {

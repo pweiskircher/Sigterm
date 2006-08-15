@@ -84,6 +84,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    if (mSkipTrack) {
 		mSkipTrack = false;
 		mAudioManager->audioBuffer()->clear();
+		inFile->decoder()->close();
 		mMutex.unlock();
 		return;
 	    } else if (mPause) {

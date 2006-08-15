@@ -12,6 +12,8 @@ class PlayList : public QAbstractListModel {
 	void add(AudioFile *inAudioFile);
 	AudioFile *currentFile();
 
+	void setNextTrack(int inIndex);
+
 	void finished(AudioFile *inAudioFile);
 
 	int rowCount(const QModelIndex &parent) const;

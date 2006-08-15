@@ -1,4 +1,5 @@
 #include "PlayList.h"
+#include "AudioFile.h"
 
 PlayList::PlayList() {
     mCurrentAudioFileIndex = 0;
@@ -18,14 +19,25 @@ AudioFile *PlayList::currentFile() {
     return mAudioFileList[mCurrentAudioFileIndex];
 }
 
+void PlayList::setNextTrack(int inIndex) {
+    mCurrentAudioFileIndex = inIndex;
+}
+
 void PlayList::finished(AudioFile *inAudioFile) {
     mCurrentAudioFileIndex++;
 }
 
 int PlayList::rowCount(const QModelIndex &parent) const {
-    return 0;
+    return mAudioFileList.size();
 }
 
 QVariant PlayList::data(const QModelIndex &index, int role) const {
+    if (index.isValid() == false)
+	return QVariant();
+
+    if (role == Qt::DisplayRole) {
+	return mAudioFileList[index.row()]->filePath();
+    }
+
     return QVariant();
 }
