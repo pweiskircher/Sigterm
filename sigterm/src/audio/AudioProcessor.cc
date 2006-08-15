@@ -57,7 +57,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	mMutex.lock();
 	if (mSkipTrack) {
 	    mSkipTrack = false;
-	    mAudioManager->audioBuffer()->clear();
+	    mAudioManager->audioStorage()->clear();
 	    mMutex.unlock();
 	    return;
 	} else if (mPause) {
@@ -76,14 +76,14 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    break;
 	}
 
-	while (mAudioManager->audioBuffer()->needSpace(audioData.size()) == false) {
+	while (mAudioManager->audioStorage()->needSpace(audioData.size()) == false) {
 	    mMutex.lock();
-	    mAudioManager->audioBuffer()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
+	    mAudioManager->audioStorage()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
 	    mAudioManager->audioProcessorWaitCondition()->wait(&mMutex);
 
 	    if (mSkipTrack) {
 		mSkipTrack = false;
-		mAudioManager->audioBuffer()->clear();
+		mAudioManager->audioStorage()->clear();
 		inFile->decoder()->close();
 		mMutex.unlock();
 		return;
@@ -93,6 +93,6 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    }
 	    mMutex.unlock();
 	}
-	mAudioManager->audioBuffer()->add(audioData);
+	mAudioManager->audioStorage()->add(audioData);
     }
 }

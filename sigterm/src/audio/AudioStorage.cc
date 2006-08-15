@@ -1,4 +1,4 @@
-#include "AudioBuffer.h"
+#include "AudioStorage.h"
 #include <QWaitCondition>
 #include <QThread>
 
@@ -13,13 +13,13 @@ static void usleep(int usecs) {
 
 // synchronize using a QSemaphore!
 
-AudioBuffer::AudioBuffer() {
+AudioStorage::AudioStorage() {
     mBuffer.resize(1024*128);
     mBufferLength = 0;
     mBufferGetCondition = NULL;
 }
 
-bool AudioBuffer::add(QByteArray &inArray) {
+bool AudioStorage::add(QByteArray &inArray) {
     int i = 0;
     while (needSpace(inArray.size()) == false) {
 	usleep(100);
@@ -37,7 +37,7 @@ bool AudioBuffer::add(QByteArray &inArray) {
     mMutex.unlock();
 }
 
-bool AudioBuffer::get(QByteArray &outArray) {
+bool AudioStorage::get(QByteArray &outArray) {
     int i=0;
     if (needData(outArray.size()) == false) {
 	qWarning("Buffer empty .. waiting ..");
@@ -65,27 +65,27 @@ bool AudioBuffer::get(QByteArray &outArray) {
     mMutex.unlock();
 }
 
-void AudioBuffer::clear() {
+void AudioStorage::clear() {
     QMutexLocker locker(&mMutex);
 
     mBufferLength = 0;
 }
 
-bool AudioBuffer::needSpace(quint32 inSpace) {
+bool AudioStorage::needSpace(quint32 inSpace) {
     QMutexLocker locker(&mMutex);
     if (mBufferLength + inSpace > mBuffer.size())
 	return false;
     return true;
 }
 
-bool AudioBuffer::needData(quint32 inData) {
+bool AudioStorage::needData(quint32 inData) {
     QMutexLocker locker(&mMutex);
     if (mBufferLength < inData)
 	return false;
     return true;
 }
 
-void AudioBuffer::wakeOnBufferGet(QWaitCondition *inCondition) {
+void AudioStorage::wakeOnBufferGet(QWaitCondition *inCondition) {
     QMutexLocker locker(&mMutex);
     mBufferGetCondition = inCondition;
 }

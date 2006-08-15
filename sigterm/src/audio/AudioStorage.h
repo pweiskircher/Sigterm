@@ -1,13 +1,13 @@
-#ifndef _AUDIO_BUFFER_H
-#define _AUDIO_BUFFER_H
+#ifndef _AUDIO_STORAGE_H
+#define _AUDIO_STORAGE_H
 
 #include <QByteArray>
 #include <QMutex>
 #include <QWaitCondition>
 
-class AudioBuffer {
+class AudioStorage {
     public:
-	AudioBuffer();
+	AudioStorage();
 
 	bool add(QByteArray &inArray);
 	bool get(QByteArray &outArray);

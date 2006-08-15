@@ -34,8 +34,8 @@ void AudioManager::init() {
     }
 }
 
-AudioBuffer *AudioManager::audioBuffer() {
-    return &mAudioBuffer;
+AudioStorage *AudioManager::audioStorage() {
+    return &mAudioStorage;
 }
 
 QWaitCondition *AudioManager::audioProcessorWaitCondition() {
@@ -82,7 +82,7 @@ bool AudioManager::paused() {
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
     QByteArray test;
     test.resize(len);
-    if (audioBuffer()->get(test)) {
+    if (audioStorage()->get(test)) {
 	memcpy(stream, test.data(), len);
     }
 }

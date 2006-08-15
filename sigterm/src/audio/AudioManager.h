@@ -8,7 +8,7 @@
 
 #include <SDL.h>
 
-#include "AudioBuffer.h"
+#include "AudioStorage.h"
 #include "AudioProcessor.h"
 
 class AudioDecoder;
@@ -31,7 +31,7 @@ class AudioManager : public QObject {
 
 	SDL_AudioSpec *hardwareSpec();
 
-	AudioBuffer *audioBuffer();
+	AudioStorage *audioStorage();
 	QWaitCondition *audioProcessorWaitCondition();
 
 	PlayList *currentPlayList();
@@ -50,7 +50,7 @@ class AudioManager : public QObject {
 	QWaitCondition mAudioProcessorWaitCondition;
 	AudioProcessor mAudioProcessor;
 
-	AudioBuffer mAudioBuffer;
+	AudioStorage mAudioStorage;
 	PlayList *mCurrentPlayList;
 
 	bool mPaused;
