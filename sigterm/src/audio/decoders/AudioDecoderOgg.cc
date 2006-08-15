@@ -1,6 +1,18 @@
 #include "AudioDecoderOgg.h"
 #include "AudioFile.h"
 
+static int _fseek64_wrap(FILE *f,ogg_int64_t off,int whence){
+    if(f==NULL)return(-1);
+    return fseek(f,off,whence);
+}
+
+ov_callbacks callbacks = {
+    (size_t (*)(void *, size_t, size_t, void *))  fread,
+    (int (*)(void *, ogg_int64_t, int))           _fseek64_wrap,
+    (int (*)(void *))                             fclose,
+    (long (*)(void *))                            ftell
+};
+
 AudioDecoderOgg::AudioDecoderOgg(AudioFile *inAudioFile, AudioManager *inAudioManager) : AudioDecoder(inAudioFile, inAudioManager) {
 }
 
@@ -17,7 +29,7 @@ bool AudioDecoderOgg::open() {
 	return false;
     }
 
-    if (ov_open(f, &mOggVorbisFile, NULL, 0)) {
+    if (ov_open_callbacks(f, &mOggVorbisFile, NULL, 0, callbacks)) {
 	fclose(f);
 	// TODO: error reporting
 	return false;
