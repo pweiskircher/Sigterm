@@ -5,11 +5,13 @@
 #include <QMutex>
 #include <QWaitCondition>
 
+class AudioBuffer;
+
 class AudioStorage {
     public:
 	AudioStorage();
 
-	bool add(QByteArray &inArray);
+	bool add(AudioBuffer *inAudioBuffer);
 	bool get(QByteArray &outArray);
 	void clear();
 

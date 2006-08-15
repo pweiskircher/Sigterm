@@ -15,7 +15,7 @@ class AudioDecoderOgg : public AudioDecoder {
 	bool seekToTime(quint32 inMilliSeconds);
 
     private:
-	AudioDecoder::DecodingStatus getDecodedChunk(QByteArray &inOutArray);
+	AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
 	bool canDecode(const QString &inFilePath);
 
 	OggVorbis_File mOggVorbisFile;

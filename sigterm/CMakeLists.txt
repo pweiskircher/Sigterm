@@ -22,6 +22,7 @@ src/audio/AudioConverter.cc src/audio/AudioConverter.h
 src/audio/AudioStorage.cc src/audio/AudioStorage.h
 src/audio/AudioProcessor.cc src/audio/AudioProcessor.h
 src/audio/PlayList.cc src/audio/PlayList.h
+src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h

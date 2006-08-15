@@ -1,5 +1,6 @@
 #include "AudioDecoderOgg.h"
 #include "AudioFile.h"
+#include "AudioBuffer.h"
 
 static int _fseek64_wrap(FILE *f,ogg_int64_t off,int whence){
     if(f==NULL)return(-1);
@@ -67,25 +68,38 @@ bool AudioDecoderOgg::seekToTime(quint32 inMilliSeconds) {
     return false;
 }
 
-AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(QByteArray &inOutArray) {
+AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(AudioBuffer *inOutAudioBuffer) {
+    if (inOutAudioBuffer->state() != AudioBuffer::eEmpty) {
+	qDebug("AudioDecoderOgg: AudioBuffer in wrong state!");
+	return eError;
+    }
+
+    if (!inOutAudioBuffer->prepareForDecoding()) {
+	qDebug("AudioBuffer::prepareForDecoding() failed.");
+	return eError;
+    }
+
     quint32 bytesRead = 0;
     int currentSection;
-    quint32 lenNeeded = inOutArray.size();
+    quint32 lenNeeded = inOutAudioBuffer->requestedLength();
+    AudioDecoder::DecodingStatus status = eSuccess;
 
     do {
-	int r = ov_read(&mOggVorbisFile, inOutArray.data() + bytesRead, lenNeeded - bytesRead, 0, audioFormat().bitsPerSample()/8, 1,
-		        &currentSection);
+	int r = ov_read(&mOggVorbisFile, inOutAudioBuffer->byteBuffer().data() + bytesRead,
+		        lenNeeded - bytesRead, 0, audioFormat().bitsPerSample()/8, 1, &currentSection);
 	if (r < 0) {
-	    return eError;
+	    status = eError;
+	    break;
 	} else if (r == 0) {
-	    inOutArray.resize(bytesRead);
-	    return eEOF;
+	    status = eEOF;
+	    break;
 	} else {
 	    bytesRead += r;
 	}
     } while (bytesRead < lenNeeded);
 
-    return eSuccess;
+    inOutAudioBuffer->setDecodedChunkLength(bytesRead);
+    return status;
 }
 
 bool AudioDecoderOgg::canDecode(const QString &inFilePath) {

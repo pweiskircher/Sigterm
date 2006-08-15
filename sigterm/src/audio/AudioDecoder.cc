@@ -1,5 +1,6 @@
 #include "AudioDecoder.h"
 #include "AudioManager.h"
+#include "AudioBuffer.h"
 
 AudioDecoder::AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager) : mConverter(inAudioManager) {
     mBuiltCVT = false;
@@ -27,7 +28,7 @@ quint32 AudioDecoder::currentPosition() {
     return mCurrentPosition;
 }
 
-AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(QByteArray &outArray) {
+AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(AudioBuffer *inOutAudioBuffer) {
     if (!opened()) {
 	if (!open())
 	    return eError;
@@ -38,17 +39,28 @@ AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(QByteArray &outArray) {
 	mBuiltCVT = true;
     }
 
-    DecodingStatus status = getDecodedChunk(outArray);
+    DecodingStatus status = getDecodedChunk(inOutAudioBuffer);
     if (status == eError) {
 	qDebug("Couldn't get decoded audio chunk!");
 	return eError;
     } else if (status == eEOF) {
 	close();
-	return eEOF;
     }
 
-    if (!mConverter.convert(outArray)) {
+    // sanity check
+    if (inOutAudioBuffer->state() != AudioBuffer::eGotDecodedChunk) {
+	qDebug("AudioBuffer state wrong.");
+	return eError;
+    }
+
+    if (!mConverter.convert(inOutAudioBuffer)) {
 	qDebug("Could not convert audio!");
+	return eError;
+    }
+
+    // sanity check
+    if (inOutAudioBuffer->state() != AudioBuffer::eGotConvertedChunk) {
+	qDebug("AudioBuffer state wrong.");
 	return eError;
     }
 

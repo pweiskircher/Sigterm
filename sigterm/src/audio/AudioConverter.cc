@@ -1,6 +1,7 @@
 #include "AudioConverter.h"
 #include "AudioManager.h"
 #include "AudioFormat.h"
+#include "AudioBuffer.h"
 
 AudioConverter::AudioConverter(AudioManager *inAudioManager) {
     mAudioManager = inAudioManager;
@@ -17,20 +18,24 @@ bool AudioConverter::setSourceFormat(AudioFormat *inFormat) {
     return true;
 }
 
-bool AudioConverter::convert(QByteArray &inOutDataArray) {
+bool AudioConverter::convert(AudioBuffer *inOutAudioBuffer) {
     // no conversion needed!
-    if (mCVT.needed == 0)
+    if (mCVT.needed == 0) {
+	inOutAudioBuffer->setConvertedChunkLength(inOutAudioBuffer->decodedChunkLength());
 	return true;
+    }
 
-    // we should .. be a bit .. smarter about that.
-    mCVT.len = inOutDataArray.size();
-    inOutDataArray.resize(mCVT.len * mCVT.len_mult);
-    mCVT.buf = (Uint8*)inOutDataArray.data();
+    if (!inOutAudioBuffer->prepareForConversion(&mCVT)) {
+	qDebug("Error on AudioBuffer::prepareForConversion");
+	return false;
+    }
 
     if (SDL_ConvertAudio(&mCVT)) {
 	qDebug("Error converting audio ...");
 	return false;
     }
+
+    inOutAudioBuffer->setConvertedChunkLength(mCVT.len * mCVT.len_ratio);
 
     return true;
 }

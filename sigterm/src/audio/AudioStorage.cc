@@ -1,4 +1,5 @@
 #include "AudioStorage.h"
+#include "AudioBuffer.h"
 #include <QWaitCondition>
 #include <QThread>
 
@@ -19,9 +20,9 @@ AudioStorage::AudioStorage() {
     mBufferGetCondition = NULL;
 }
 
-bool AudioStorage::add(QByteArray &inArray) {
+bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
     int i = 0;
-    while (needSpace(inArray.size()) == false) {
+    while (needSpace(inAudioBuffer->convertedChunkLength()) == false) {
 	usleep(100);
 
 	// timeout ...
@@ -32,8 +33,10 @@ bool AudioStorage::add(QByteArray &inArray) {
     }
 
     mMutex.lock();
-    memcpy(mBuffer.data() + mBufferLength, inArray.data(), inArray.size());
-    mBufferLength += inArray.size();
+    quint32 len;
+    QByteArray *buffer = inAudioBuffer->convertedChunkBuffer(len);
+    memcpy(mBuffer.data() + mBufferLength, buffer->data(), len);
+    mBufferLength += len;
     mMutex.unlock();
 }
 

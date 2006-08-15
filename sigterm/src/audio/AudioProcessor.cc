@@ -3,6 +3,7 @@
 #include "AudioFile.h"
 #include "AudioDecoder.h"
 #include "PlayList.h"
+#include "AudioBuffer.h"
 
 AudioProcessor::AudioProcessor(AudioManager *inAudioManager) {
     mAudioManager = inAudioManager;
@@ -49,8 +50,7 @@ void AudioProcessor::skipTrack() {
 
 void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
     AudioDecoder::DecodingStatus status;
-    QByteArray audioData;
-    audioData.resize(4096);
+    AudioBuffer buffer(4096);
 
     emit startedPlaying(inFile);
     while (1) {
@@ -66,17 +66,27 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	}
 	mMutex.unlock();
 
-	status = inFile->decoder()->getAudioChunk(audioData);
+	status = inFile->decoder()->getAudioChunk(&buffer);
 	if (status == AudioDecoder::eError) {
 	    qDebug("Error on decoding ...");
+	    buffer.reset();
 	    continue;
 	} else if (status == AudioDecoder::eEOF) {
 	    qDebug("Finished decoding ...");
 	    inPlayList->finished(inFile);
+	    buffer.reset();
 	    break;
 	}
 
-	while (mAudioManager->audioStorage()->needSpace(audioData.size()) == false) {
+	quint32 convertedLen;
+	QByteArray *convertedChunk = buffer.convertedChunkBuffer(convertedLen);
+	if (!convertedChunk) {
+	    qDebug("no converted chunk buffer :(");
+	    buffer.reset();
+	    continue;
+	}
+
+	while (mAudioManager->audioStorage()->needSpace(convertedLen) == false) {
 	    mMutex.lock();
 	    mAudioManager->audioStorage()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
 	    mAudioManager->audioProcessorWaitCondition()->wait(&mMutex);
@@ -93,6 +103,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    }
 	    mMutex.unlock();
 	}
-	mAudioManager->audioStorage()->add(audioData);
+	mAudioManager->audioStorage()->add(&buffer);
+	buffer.reset();
     }
 }

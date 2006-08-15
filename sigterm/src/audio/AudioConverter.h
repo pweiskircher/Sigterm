@@ -7,13 +7,14 @@
 
 class AudioFormat;
 class AudioManager;
+class AudioBuffer;
 
 class AudioConverter {
     public:
 	AudioConverter(AudioManager *inAudioManager);
 
 	bool setSourceFormat(AudioFormat *inFormat);
-	bool convert(QByteArray &inOutDataArray);
+	bool convert(AudioBuffer *inOutAudioBuffer);
 
     private:
 	AudioManager *mAudioManager;

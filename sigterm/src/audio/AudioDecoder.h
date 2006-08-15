@@ -12,6 +12,7 @@
 
 class AudioManager;
 class AudioFile;
+class AudioBuffer;
 
 class AudioDecoder {
     public:
@@ -29,7 +30,7 @@ class AudioDecoder {
 	    eEOF,
 	    eError
 	} DecodingStatus;
-	DecodingStatus getAudioChunk(QByteArray &outArray);
+	DecodingStatus getAudioChunk(AudioBuffer *inOutAudioBuffer);
 
 	AudioFormat &audioFormat();
 
@@ -40,7 +41,7 @@ class AudioDecoder {
 	AudioFile *audioFile();
 
     private:
-	virtual DecodingStatus getDecodedChunk(QByteArray &inOutArray) = 0;
+	virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
 
 	virtual bool canDecode(const QString &inFilePath) = 0;
 
