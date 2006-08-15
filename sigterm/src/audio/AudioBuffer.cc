@@ -2,6 +2,15 @@
 #include <QWaitCondition>
 #include <QThread>
 
+#ifdef WIN32
+#include <windows.h>
+static void usleep(int usecs) {
+    Sleep((usecs/1000) + 1);
+}
+#else
+#include <unistd.h>
+#endif
+
 // synchronize using a QSemaphore!
 
 AudioBuffer::AudioBuffer() {
@@ -13,10 +22,10 @@ AudioBuffer::AudioBuffer() {
 bool AudioBuffer::add(QByteArray &inArray) {
     int i = 0;
     while (needSpace(inArray.size()) == false) {
-	uglyHackSleep(10);
+	usleep(100);
 
 	// timeout ...
-	if (i++ == 200) {
+	if (i++ == 2000) {
 	    qDebug("Buffer full.");
 	    return false;
 	}
@@ -34,10 +43,10 @@ bool AudioBuffer::get(QByteArray &outArray) {
 	qWarning("Buffer empty .. waiting ..");
 
 	while (needData(outArray.size()) == false) {
-	    uglyHackSleep(10);
+	    usleep(100);
 
 	    // timeout ...
-	    if (i++ == 200) {
+	    if (i++ == 2000) {
 		qDebug("Buffer empty.");
 		return false;
 	    }
@@ -79,11 +88,5 @@ bool AudioBuffer::needData(quint32 inData) {
 void AudioBuffer::wakeOnBufferGet(QWaitCondition *inCondition) {
     QMutexLocker locker(&mMutex);
     mBufferGetCondition = inCondition;
-}
-
-void AudioBuffer::uglyHackSleep(int inMilliSeconds) {
-    mUglyHackMutex.lock();
-    mUglyHackWaitCondition.wait(&mUglyHackMutex, inMilliSeconds);
-    mUglyHackMutex.unlock();
 }
 
