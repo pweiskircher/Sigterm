@@ -30,6 +30,7 @@ void MainWindow::on_addButton_clicked() {
 }
 
 void MainWindow::on_actionQuit_activated() {
+    mAudioManager.quit();
     qApp->quit();
 }
 

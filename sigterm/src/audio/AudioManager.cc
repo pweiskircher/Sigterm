@@ -75,6 +75,14 @@ void AudioManager::skipTrack() {
     mAudioProcessorWaitCondition.wakeAll();
 }
 
+void AudioManager::quit() {
+    if (!paused())
+	setPause(true);
+    mAudioProcessor.quit();
+    mAudioProcessorWaitCondition.wakeAll();
+    mAudioProcessor.wait();
+}
+
 bool AudioManager::paused() {
     return mPaused;
 }

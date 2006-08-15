@@ -9,6 +9,7 @@ AudioProcessor::AudioProcessor(AudioManager *inAudioManager) {
     mAudioManager = inAudioManager;
     mPause = false;
     mSkipTrack = false;
+    mQuit = false;
 }
 
 void AudioProcessor::run() {
@@ -17,6 +18,10 @@ void AudioProcessor::run() {
 	mMutex.unlock();
 	while (1) {
 	    mMutex.lock();
+	    if (mQuit) {
+		mMutex.unlock();
+		return;
+	    }
 	    if (mPause) {
 		mPause = false;
 		emit paused();
@@ -46,6 +51,11 @@ void AudioProcessor::pause() {
 void AudioProcessor::skipTrack() {
     QMutexLocker locker(&mMutex);
     mSkipTrack = true;
+}
+
+void AudioProcessor::quit() {
+    QMutexLocker locker(&mMutex);
+    mQuit = true;
 }
 
 void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {

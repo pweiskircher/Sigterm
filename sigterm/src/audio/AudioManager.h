@@ -24,6 +24,7 @@ class AudioManager : public QObject {
 	void setPause(bool inPause);
 	void togglePause();
 	void skipTrack();
+	void quit();
 
 	bool paused();
 

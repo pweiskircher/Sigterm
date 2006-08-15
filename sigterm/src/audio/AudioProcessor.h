@@ -18,6 +18,7 @@ class AudioProcessor : public QThread {
 
 	void pause();
 	void skipTrack();
+	void quit();
 
     signals:
 	void startedPlaying(AudioFile *inFile);
@@ -31,6 +32,7 @@ class AudioProcessor : public QThread {
 
 	bool mPause;
 	bool mSkipTrack;
+	bool mQuit;
 };
 
 #endif
