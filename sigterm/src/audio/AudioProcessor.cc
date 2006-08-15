@@ -52,8 +52,9 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
     AudioDecoder::DecodingStatus status;
     AudioBuffer buffer(4096);
 
+    bool done = false;
     emit startedPlaying(inFile);
-    while (1) {
+    while (!done) {
 	mMutex.lock();
 	if (mSkipTrack) {
 	    mSkipTrack = false;
@@ -74,8 +75,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	} else if (status == AudioDecoder::eEOF) {
 	    qDebug("Finished decoding ...");
 	    inPlayList->finished(inFile);
-	    buffer.reset();
-	    break;
+	    done = true;
 	}
 
 	quint32 convertedLen;

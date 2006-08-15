@@ -37,6 +37,7 @@ bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
     QByteArray *buffer = inAudioBuffer->convertedChunkBuffer(len);
     memcpy(mBuffer.data() + mBufferLength, buffer->data(), len);
     mBufferLength += len;
+    //qDebug("storage: added %d bytes", len);
     mMutex.unlock();
 }
 

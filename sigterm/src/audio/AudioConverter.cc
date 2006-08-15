@@ -35,6 +35,7 @@ bool AudioConverter::convert(AudioBuffer *inOutAudioBuffer) {
 	return false;
     }
 
+    //qDebug("converter: converted to %d (%d * %f) bytes", (int)(mCVT.len * mCVT.len_ratio), mCVT.len, mCVT.len_ratio);
     inOutAudioBuffer->setConvertedChunkLength(mCVT.len * mCVT.len_ratio);
 
     return true;

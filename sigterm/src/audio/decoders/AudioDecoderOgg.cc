@@ -99,6 +99,7 @@ AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(AudioBuffer *inOut
     } while (bytesRead < lenNeeded);
 
     inOutAudioBuffer->setDecodedChunkLength(bytesRead);
+    //qDebug("decoder: read %d bytes", bytesRead);
     return status;
 }
 
