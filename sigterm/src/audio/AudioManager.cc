@@ -62,9 +62,8 @@ void AudioManager::setPause(bool inPause) {
 
     SDL_PauseAudio(inPause);
 
-    if (inPause == false)
-	mAudioProcessorWaitCondition.wakeAll();
-    else
+    mAudioProcessorWaitCondition.wakeAll();
+    if (inPause == true)
 	mAudioProcessor.pause();
 
     emit audioPaused(mPaused);

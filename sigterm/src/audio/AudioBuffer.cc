@@ -1,11 +1,13 @@
 #include "AudioBuffer.h"
 #include <unistd.h>
+#include <QWaitCondition>
 
 // synchronize using a QSemaphore!
 
 AudioBuffer::AudioBuffer() {
     mBuffer.resize(1024*128);
     mBufferLength = 0;
+    mBufferGetCondition = NULL;
 }
 
 bool AudioBuffer::add(QByteArray &inArray) {
@@ -46,6 +48,11 @@ bool AudioBuffer::get(QByteArray &outArray) {
     outArray = mBuffer.left(outArray.size());
     memmove(mBuffer.data(), mBuffer.data() + outArray.size(), mBufferLength - outArray.size());
     mBufferLength -= outArray.size();
+
+    if (mBufferGetCondition) {
+	mBufferGetCondition->wakeAll();
+	mBufferGetCondition = NULL;
+    }
     mMutex.unlock();
 }
 
@@ -67,5 +74,10 @@ bool AudioBuffer::needData(quint32 inData) {
     if (mBufferLength < inData)
 	return false;
     return true;
+}
+
+void AudioBuffer::wakeOnBufferGet(QWaitCondition *inCondition) {
+    QMutexLocker locker(&mMutex);
+    mBufferGetCondition = inCondition;
 }
 

@@ -4,6 +4,8 @@
 #include <QByteArray>
 #include <QMutex>
 
+class QWaitCondition;
+
 class AudioBuffer {
     public:
 	AudioBuffer();
@@ -15,10 +17,14 @@ class AudioBuffer {
 	bool needSpace(quint32 inSpace);
 	bool needData(quint32 inData);
 
+	void wakeOnBufferGet(QWaitCondition *inCondition);
+
     private:
 	QMutex mMutex;
 	QByteArray mBuffer;
 	quint32 mBufferLength;
+
+	QWaitCondition *mBufferGetCondition;
 };
 
 #endif

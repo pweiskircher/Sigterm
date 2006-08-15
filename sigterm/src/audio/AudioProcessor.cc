@@ -78,19 +78,19 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 
 	while (mAudioManager->audioBuffer()->needSpace(audioData.size()) == false) {
 	    mMutex.lock();
+	    mAudioManager->audioBuffer()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
+	    mAudioManager->audioProcessorWaitCondition()->wait(&mMutex);
+
 	    if (mSkipTrack) {
 		mSkipTrack = false;
 		mAudioManager->audioBuffer()->clear();
 		mMutex.unlock();
 		return;
 	    } else if (mPause) {
-		qDebug("got pause!");
 		mMutex.unlock();
 		return;
 	    }
 	    mMutex.unlock();
-
-	    usleep(100);
 	}
 	mAudioManager->audioBuffer()->add(audioData);
     }
