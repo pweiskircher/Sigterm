@@ -23,7 +23,7 @@ AudioDecoderOgg::~AudioDecoderOgg() {
 
 
 bool AudioDecoderOgg::open() {
-    FILE *f = fopen(qPrintable(audioFile()->filePath()), "r");
+    FILE *f = fopen(qPrintable(audioFile()->filePath()), "rb");
     if (!f) {
 	// TODO: error reporting
 	return false;
