@@ -54,7 +54,7 @@ class AudioDecoder {
 	bool mOpened;
 
     protected:
-	bool setOpened(bool inValue);
+	void setOpened(bool inValue);
 
 	quint32 mTotalSize;
 	quint32 mCurrentPosition;

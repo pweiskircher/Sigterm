@@ -63,6 +63,6 @@ AudioFile *AudioDecoder::audioFile() {
     return mAudioFile;
 }
 
-bool AudioDecoder::setOpened(bool inValue) {
+void AudioDecoder::setOpened(bool inValue) {
     mOpened = inValue;
 }
