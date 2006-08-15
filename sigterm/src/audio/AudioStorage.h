@@ -12,8 +12,11 @@ class AudioStorage {
 	AudioStorage();
 
 	bool add(AudioBuffer *inAudioBuffer);
+	bool add(QByteArray &inArray, quint32 inLen);
 	bool get(QByteArray &outArray);
 	void clear();
+
+	quint32 bufferLength();
 
 	bool needSpace(quint32 inSpace);
 	bool needData(quint32 inData);

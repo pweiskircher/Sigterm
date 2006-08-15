@@ -19,6 +19,9 @@ class AudioDecoder {
 	AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
 	virtual ~AudioDecoder();
 
+	virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager) = 0;
+	virtual bool canDecode(const QString &inFilePath) = 0;
+
 	virtual bool open() = 0;
 	virtual bool close() = 0;
 	virtual bool seekToTime(quint32 inMilliSeconds) = 0;
@@ -26,9 +29,8 @@ class AudioDecoder {
 	bool opened();
 
 	typedef enum {
-	    eSuccess,
-	    eEOF,
-	    eError
+	    eContinue,
+	    eStop
 	} DecodingStatus;
 	DecodingStatus getAudioChunk(AudioBuffer *inOutAudioBuffer);
 
@@ -42,8 +44,6 @@ class AudioDecoder {
 
     private:
 	virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
-
-	virtual bool canDecode(const QString &inFilePath) = 0;
 
 	AudioFormat mAudioFormat;
 	SDL_AudioCVT mCVT;

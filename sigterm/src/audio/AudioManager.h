@@ -37,6 +37,8 @@ class AudioManager : public QObject {
 
 	PlayList *currentPlayList();
 
+	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
+
     signals:
 	void audioPaused(bool inPaused);
 
@@ -55,6 +57,8 @@ class AudioManager : public QObject {
 	PlayList *mCurrentPlayList;
 
 	bool mPaused;
+
+	QList<AudioDecoder *> mAudioDecoderList;
 };
 
 #endif

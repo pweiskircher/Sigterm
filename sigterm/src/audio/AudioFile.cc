@@ -1,10 +1,9 @@
 #include "AudioFile.h"
-
-#include "decoders/AudioDecoderOgg.h"
+#include "AudioManager.h"
 
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) {
     mFilePath = inFilePath;
-    mDecoder = new AudioDecoderOgg(this, inAudioManager);
+    mDecoder = inAudioManager->createAudioDecoder(this);
 }
 
 QString &AudioFile::filePath() {

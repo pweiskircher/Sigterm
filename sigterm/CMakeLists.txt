@@ -17,8 +17,8 @@ FIND_PACKAGE(SDL REQUIRED)
 
 PKGCONFIG(vorbisfile VORBISFILE_INCLUDE_DIR VORBISFILE_LINK_DIR VORBISFILE_LINK_FLAGS VORBISFILE_CFLAGS)
 
-FIND_LIBRARY(FLAC_LIBRARY FLAC++ /usr/lib /usr/local/lib /opt/local/lib)
-FIND_PATH(FLAC_INCLUDE_DIR FLAC++/decoder.h /usr/include /usr/local/include /opt/local/include)
+FIND_LIBRARY(FLAC_LIBRARY flac /usr/lib /usr/local/lib /opt/local/lib)
+FIND_PATH(FLAC_INCLUDE_DIR FLAC/file_decoder.h /usr/include /usr/local/include /opt/local/include)
 
 INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${FLAC_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIR})
@@ -36,6 +36,7 @@ src/audio/AudioProcessor.cc src/audio/AudioProcessor.h
 src/audio/PlayList.cc src/audio/PlayList.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
+src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 )

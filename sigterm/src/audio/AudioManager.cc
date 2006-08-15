@@ -2,6 +2,9 @@
 #include "AudioFile.h"
 #include "PlayList.h"
 
+#include "decoders/AudioDecoderOgg.h"
+#include "decoders/AudioDecoderFlac.h"
+
 void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
     AudioManager *mgr = (AudioManager *)userdata;
     mgr->fillBuffer(stream, len);
@@ -13,6 +16,9 @@ AudioManager::AudioManager() : mAudioProcessor(this) {
     mAudioProcessor.start();
     mPaused = true;
     mCurrentPlayList = new PlayList();
+
+    mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
+    mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
 }
 
 void AudioManager::init() {
@@ -44,6 +50,17 @@ QWaitCondition *AudioManager::audioProcessorWaitCondition() {
 
 PlayList *AudioManager::currentPlayList() {
     return mCurrentPlayList;
+}
+
+AudioDecoder *AudioManager::createAudioDecoder(AudioFile *inAudioFile) {
+    QListIterator<AudioDecoder *> it(mAudioDecoderList);
+    while (it.hasNext()) {
+	AudioDecoder *d = it.next();
+	if (d->canDecode(inAudioFile->filePath()))
+	    return d->createAudioDecoder(inAudioFile, this);
+    }
+
+    return NULL;
 }
 
 void AudioManager::audioProcessorPaused() {

@@ -31,7 +31,7 @@ quint32 AudioDecoder::currentPosition() {
 AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(AudioBuffer *inOutAudioBuffer) {
     if (!opened()) {
 	if (!open())
-	    return eError;
+	    return eStop;
     }
 
     if (!mBuiltCVT) {
@@ -39,29 +39,27 @@ AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(AudioBuffer *inOutAudio
 	mBuiltCVT = true;
     }
 
-    DecodingStatus status = getDecodedChunk(inOutAudioBuffer);
-    if (status == eError) {
-	qDebug("Couldn't get decoded audio chunk!");
-	return eError;
-    } else if (status == eEOF) {
+    AudioDecoder::DecodingStatus status;
+    status = getDecodedChunk(inOutAudioBuffer);
+    if (status == eStop) {
 	close();
     }
 
-    // sanity check
     if (inOutAudioBuffer->state() != AudioBuffer::eGotDecodedChunk) {
-	qDebug("AudioBuffer state wrong.");
-	return eError;
+	return status;
     }
 
     if (!mConverter.convert(inOutAudioBuffer)) {
 	qDebug("Could not convert audio!");
-	return eError;
+	close();
+	return eStop;
     }
 
     // sanity check
     if (inOutAudioBuffer->state() != AudioBuffer::eGotConvertedChunk) {
 	qDebug("AudioBuffer state wrong.");
-	return eError;
+	close();
+	return eStop;
     }
 
     return status;

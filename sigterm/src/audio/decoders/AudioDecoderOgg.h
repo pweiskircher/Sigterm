@@ -9,6 +9,9 @@ class AudioDecoderOgg : public AudioDecoder {
 	AudioDecoderOgg(AudioFile *inAudioFile, AudioManager *inAudioManager);
 	~AudioDecoderOgg();
 
+	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
+	bool canDecode(const QString &inFilePath);
+
 	bool open();
 	bool close();
 
@@ -16,7 +19,6 @@ class AudioDecoderOgg : public AudioDecoder {
 
     private:
 	AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
-	bool canDecode(const QString &inFilePath);
 
 	OggVorbis_File mOggVorbisFile;
 };

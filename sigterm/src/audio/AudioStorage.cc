@@ -21,8 +21,14 @@ AudioStorage::AudioStorage() {
 }
 
 bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
+    quint32 len;
+    QByteArray *buffer = inAudioBuffer->convertedChunkBuffer(len);
+    return add(*buffer, len);
+}
+
+bool AudioStorage::add(QByteArray &inArray, quint32 inLen) {
     int i = 0;
-    while (needSpace(inAudioBuffer->convertedChunkLength()) == false) {
+    while (needSpace(inLen) == false) {
 	usleep(100);
 
 	// timeout ...
@@ -33,13 +39,12 @@ bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
     }
 
     mMutex.lock();
-    quint32 len;
-    QByteArray *buffer = inAudioBuffer->convertedChunkBuffer(len);
-    memcpy(mBuffer.data() + mBufferLength, buffer->data(), len);
-    mBufferLength += len;
+    memcpy(mBuffer.data() + mBufferLength, inArray.data(), inLen);
+    mBufferLength += inLen;
     //qDebug("storage: added %d bytes", len);
     mMutex.unlock();
     return true;
+
 }
 
 bool AudioStorage::get(QByteArray &outArray) {
@@ -75,6 +80,10 @@ void AudioStorage::clear() {
     QMutexLocker locker(&mMutex);
 
     mBufferLength = 0;
+}
+
+quint32 AudioStorage::bufferLength() {
+    return mBufferLength;
 }
 
 bool AudioStorage::needSpace(quint32 inSpace) {

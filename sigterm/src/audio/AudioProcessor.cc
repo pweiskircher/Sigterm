@@ -77,13 +77,17 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	}
 	mMutex.unlock();
 
-	status = inFile->decoder()->getAudioChunk(&buffer);
-	if (status == AudioDecoder::eError) {
-	    qDebug("Error on decoding ...");
-	    buffer.reset();
+	buffer.reset();
+	if (!inFile->decoder()) {
+	    qDebug("Skipping track ...");
+	    inPlayList->finished(inFile);
+	    done = true;
 	    continue;
-	} else if (status == AudioDecoder::eEOF) {
-	    qDebug("Finished decoding ...");
+	}
+
+	status = inFile->decoder()->getAudioChunk(&buffer);
+	if (status == AudioDecoder::eStop) {
+	    qDebug("Skipping track ...");
 	    inPlayList->finished(inFile);
 	    done = true;
 	}
@@ -92,7 +96,6 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	QByteArray *convertedChunk = buffer.convertedChunkBuffer(convertedLen);
 	if (!convertedChunk) {
 	    qDebug("no converted chunk buffer :(");
-	    buffer.reset();
 	    continue;
 	}
 
@@ -114,6 +117,5 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	    mMutex.unlock();
 	}
 	mAudioManager->audioStorage()->add(&buffer);
-	buffer.reset();
     }
 }
