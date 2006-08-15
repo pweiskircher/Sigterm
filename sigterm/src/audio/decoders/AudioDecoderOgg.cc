@@ -109,7 +109,7 @@ bool AudioDecoderOgg::canDecode(const QString &inFilePath) {
     FILE *f = fopen(qPrintable(inFilePath), "r");
     if (f) {
 	OggVorbis_File vf;
-	if (ov_test(f, &vf, NULL, 0) == 0)
+	if (ov_test_callbacks(f, &vf, NULL, 0, callbacks) == 0)
 	    result = true;
 	ov_clear(&vf);
     }

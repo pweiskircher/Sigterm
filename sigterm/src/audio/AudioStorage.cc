@@ -39,6 +39,7 @@ bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
     mBufferLength += len;
     //qDebug("storage: added %d bytes", len);
     mMutex.unlock();
+    return true;
 }
 
 bool AudioStorage::get(QByteArray &outArray) {
@@ -67,6 +68,7 @@ bool AudioStorage::get(QByteArray &outArray) {
 	mBufferGetCondition = NULL;
     }
     mMutex.unlock();
+    return true;
 }
 
 void AudioStorage::clear() {
@@ -77,7 +79,7 @@ void AudioStorage::clear() {
 
 bool AudioStorage::needSpace(quint32 inSpace) {
     QMutexLocker locker(&mMutex);
-    if (mBufferLength + inSpace > mBuffer.size())
+    if (mBufferLength + inSpace > (quint32)mBuffer.size())
 	return false;
     return true;
 }
