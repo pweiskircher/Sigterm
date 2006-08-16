@@ -105,6 +105,12 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
+bool PlayQueue::hasChildren(const QModelIndex &parent) const {
+    if (parent.isValid() == false)
+	return true;
+    return false;
+}
+
 void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
     int index = mAudioFileList.indexOf(inAudioFile);
     if (index != -1)

@@ -27,6 +27,7 @@ class PlayQueue : public QAbstractTableModel {
 	int columnCount(const QModelIndex &parent ) const;
 	int rowCount(const QModelIndex &parent) const;
 	QVariant data(const QModelIndex &index, int role) const;
+	bool hasChildren(const QModelIndex &parent) const;
 
     private slots:
 	void audioFileStartedPlaying(AudioFile *inAudioFile);
