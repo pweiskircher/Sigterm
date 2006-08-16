@@ -37,6 +37,8 @@ bool AudioDecoderOgg::openFile() {
 	return false;
     }
 
+    readVorbisInfo(&mOggVorbisFile);
+
     return true;
 }
 
@@ -45,7 +47,7 @@ bool AudioDecoderOgg::closeFile() {
 	ov_clear(&mOggVorbisFile);
     }
 
-    return readVorbisInfo(&mOggVorbisFile);
+    return true;
 }
 
 
