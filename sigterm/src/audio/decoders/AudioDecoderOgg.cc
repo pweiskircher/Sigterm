@@ -37,17 +37,6 @@ bool AudioDecoderOgg::openFile() {
 	return false;
     }
 
-    vorbis_info *info = ov_info(&mOggVorbisFile, -1);
-    audioFormat().setBitRate((int)(info->bitrate_nominal / 1000.0));
-    audioFormat().setChannels(info->channels);
-    audioFormat().setBitsPerSample(info->channels * 8);
-    audioFormat().setFrequency(info->rate);
-    audioFormat().setIsBigEndian(false);
-    audioFormat().setIsUnsigned(false);
-
-    mTotalSize = ov_pcm_total(&mOggVorbisFile, -1) * audioFormat().channels() * audioFormat().bitsPerSample()/8;
-    mCurrentPosition = 0;
-
     return true;
 }
 
@@ -56,7 +45,7 @@ bool AudioDecoderOgg::closeFile() {
 	ov_clear(&mOggVorbisFile);
     }
 
-    return true;
+    return readVorbisInfo(&mOggVorbisFile);
 }
 
 
@@ -104,14 +93,48 @@ AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(AudioBuffer *inOut
 bool AudioDecoderOgg::canDecode(const QString &inFilePath) {
     bool result = false;
 
-    FILE *f = fopen(qPrintable(inFilePath), "r");
+    FILE *f = fopen(qPrintable(inFilePath), "rb");
     if (f) {
 	OggVorbis_File vf;
-	if (ov_test_callbacks(f, &vf, NULL, 0, callbacks) == 0)
+	if (ov_test_callbacks(f, &vf, NULL, 0, callbacks) == 0) {
 	    result = true;
-	ov_clear(&vf);
+	    ov_clear(&vf);
+	} else {
+	    fclose(f);
+	}
     }
 
     return result;
 }
 
+bool AudioDecoderOgg::readInfo() {
+    bool result = false;
+    FILE *f = fopen(qPrintable(audioFile()->filePath()), "rb");
+    if (f) {
+	OggVorbis_File vf;
+	if (ov_open_callbacks(f, &vf, NULL, 0, callbacks) == 0) {
+	    result = readVorbisInfo(&vf);
+	    ov_clear(&vf);
+	} else {
+	    fclose(f);
+	}
+    }
+
+    return result;
+}
+
+bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
+    vorbis_info *info = ov_info(inFile, -1);
+    if (!info)
+	return false;
+
+    audioFormat().setBitRate((int)(info->bitrate_nominal / 1000.0));
+    audioFormat().setChannels(info->channels);
+    audioFormat().setBitsPerSample(info->channels * 8);
+    audioFormat().setFrequency(info->rate);
+    audioFormat().setIsBigEndian(false);
+    audioFormat().setIsUnsigned(false);
+
+    audioFile()->setTotalSamples(ov_pcm_total(inFile, -1));
+    return true;
+}

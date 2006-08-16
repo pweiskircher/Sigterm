@@ -12,10 +12,11 @@ class AudioDecoderFlac : public AudioDecoder {
 	AudioDecoderFlac(AudioFile *inAudioFile, AudioManager *inAudioManager);
 	~AudioDecoderFlac();
 
-	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
-	bool canDecode(const QString &inFilePath);
+	virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
+	virtual bool canDecode(const QString &inFilePath);
+	virtual bool seekToTime(quint32 inMilliSeconds);
+	virtual bool readInfo();
 
-	bool seekToTime(quint32 inMilliSeconds);
 	void handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]);
 	void setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si);
 

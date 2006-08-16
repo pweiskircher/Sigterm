@@ -37,7 +37,9 @@ void AudioProcessor::run() {
 		break;
 	    }
 
+	    file->setIsPlaying(true);
 	    processFile(playList, file);
+	    file->setIsPlaying(false);
 	}
 	mMutex.lock();
     }

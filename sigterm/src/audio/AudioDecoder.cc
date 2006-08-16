@@ -46,14 +46,6 @@ AudioFormat &AudioDecoder::audioFormat() {
     return mAudioFormat;
 }
 
-quint32 AudioDecoder::totalSize() {
-    return mTotalSize;
-}
-
-quint32 AudioDecoder::currentPosition() {
-    return mCurrentPosition;
-}
-
 AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(AudioBuffer *inOutAudioBuffer) {
     if (!opened()) {
 	if (!open())

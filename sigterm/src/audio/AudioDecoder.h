@@ -22,6 +22,8 @@ class AudioDecoder {
 	virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager) = 0;
 	virtual bool canDecode(const QString &inFilePath) = 0;
 
+	virtual bool readInfo() = 0;
+
 	bool open();
 	bool close();
 	virtual bool seekToTime(quint32 inMilliSeconds) = 0;
@@ -35,9 +37,6 @@ class AudioDecoder {
 	DecodingStatus getAudioChunk(AudioBuffer *inOutAudioBuffer);
 
 	AudioFormat &audioFormat();
-
-	quint32 totalSize();
-	quint32 currentPosition();
 
 	AudioManager *audioManager();
 	AudioFile *audioFile();
@@ -57,10 +56,6 @@ class AudioDecoder {
 	AudioFile *mAudioFile;
 
 	bool mOpened;
-
-    protected:
-	quint32 mTotalSize;
-	quint32 mCurrentPosition;
 };
 
 #endif

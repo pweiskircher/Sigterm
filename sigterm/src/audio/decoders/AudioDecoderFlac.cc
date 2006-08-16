@@ -90,6 +90,35 @@ bool AudioDecoderFlac::seekToTime(quint32 inMilliSeconds) {
     return false;
 }
 
+bool AudioDecoderFlac::readInfo() {
+    FLAC__FileDecoder *decoder;
+    decoder = FLAC__file_decoder_new();
+    FLAC__file_decoder_set_client_data(decoder, this);
+    FLAC__file_decoder_set_write_callback(decoder, write_callback);
+    FLAC__file_decoder_set_metadata_callback(decoder, metadata_callback);
+    FLAC__file_decoder_set_error_callback(decoder, error_callback);
+
+    if (!FLAC__file_decoder_set_filename(decoder, qPrintable(audioFile()->filePath()))) {
+	qDebug("Couldn't set filename on flac decoder.");
+	return false;
+    }
+
+    if (FLAC__file_decoder_init(decoder) != FLAC__FILE_DECODER_OK) {
+	qDebug("Couldn't initialize flac decoder context.");
+	return false;
+    }
+
+    if (!FLAC__file_decoder_process_until_end_of_metadata(decoder)) {
+	qDebug("Couldn't process flac file to end of meta data.");
+	return false;
+    }
+
+    FLAC__file_decoder_finish(decoder);
+    FLAC__file_decoder_delete(decoder);
+
+    return true;
+}
+
 AudioDecoder::DecodingStatus AudioDecoderFlac::getDecodedChunk(AudioBuffer *inOutAudioBuffer) {
     if (inOutAudioBuffer->state() != AudioBuffer::eEmpty) {
 	qDebug("AudioDecoderFlac: AudioBuffer in wrong state!");
@@ -180,7 +209,7 @@ void AudioDecoderFlac::setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si)
     audioFormat().setChannels(si->channels);
     audioFormat().setBitsPerSample(si->bits_per_sample);
     audioFormat().setFrequency(si->sample_rate);
-    mTotalSize = si->total_samples * si->channels * (si->bits_per_sample/8);
+    audioFile()->setTotalSamples(si->total_samples);
 }
 
 void AudioDecoderFlac::setCanDecode(bool inValue) {

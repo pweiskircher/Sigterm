@@ -32,7 +32,14 @@
        <number>6</number>
       </property>
       <item>
-       <widget class="QListView" name="playlist" />
+       <widget class="QTreeView" name="playList" >
+        <property name="alternatingRowColors" >
+         <bool>true</bool>
+        </property>
+        <property name="indentation" >
+         <number>0</number>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" >
