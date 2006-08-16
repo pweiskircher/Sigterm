@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 	void on_addButton_clicked();
         void on_playButton_clicked();
 	void on_actionQuit_activated();
-	void on_playList_doubleClicked(const QModelIndex &index);
+	void on_playQueue_doubleClicked(const QModelIndex &index);
 
     private:
 	AudioManager mAudioManager;

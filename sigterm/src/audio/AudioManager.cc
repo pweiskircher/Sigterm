@@ -1,6 +1,6 @@
 #include "AudioManager.h"
 #include "AudioFile.h"
-#include "PlayList.h"
+#include "PlayQueue.h"
 
 #include "decoders/AudioDecoderOgg.h"
 #include "decoders/AudioDecoderFlac.h"
@@ -15,7 +15,6 @@ AudioManager::AudioManager() : mAudioProcessor(this) {
 
     mAudioProcessor.start();
     mPaused = true;
-    mCurrentPlayList = new PlayList();
 
     mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
     mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
@@ -48,8 +47,8 @@ QWaitCondition *AudioManager::audioProcessorWaitCondition() {
     return &mAudioProcessorWaitCondition;
 }
 
-PlayList *AudioManager::currentPlayList() {
-    return mCurrentPlayList;
+PlayQueue *AudioManager::playQueue() {
+    return &mPlayQueue;
 }
 
 AudioDecoder *AudioManager::createAudioDecoder(AudioFile *inAudioFile) {

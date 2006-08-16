@@ -10,9 +10,9 @@
 
 #include "AudioStorage.h"
 #include "AudioProcessor.h"
+#include "PlayQueue.h"
 
 class AudioDecoder;
-class PlayList;
 
 class AudioManager : public QObject {
     Q_OBJECT
@@ -35,7 +35,7 @@ class AudioManager : public QObject {
 	AudioStorage *audioStorage();
 	QWaitCondition *audioProcessorWaitCondition();
 
-	PlayList *currentPlayList();
+	PlayQueue *playQueue();
 
 	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
 
@@ -54,7 +54,7 @@ class AudioManager : public QObject {
 	AudioProcessor mAudioProcessor;
 
 	AudioStorage mAudioStorage;
-	PlayList *mCurrentPlayList;
+	PlayQueue mPlayQueue;
 
 	bool mPaused;
 

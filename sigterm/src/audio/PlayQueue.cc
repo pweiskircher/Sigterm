@@ -1,19 +1,19 @@
-#include "PlayList.h"
+#include "PlayQueue.h"
 #include "AudioFile.h"
 
 #include <QFileInfo>
 #include <QPixmap>
 #include <QIcon>
 
-PlayList::PlayList() {
+PlayQueue::PlayQueue() {
     mCurrentAudioFileIndex = 0;
 }
 
-void PlayList::add(AudioFile *inAudioFile) {
+void PlayQueue::add(AudioFile *inAudioFile) {
     mAudioFileList.append(inAudioFile);
 }
 
-AudioFile *PlayList::currentFile() {
+AudioFile *PlayQueue::currentFile() {
     if (mAudioFileList.size() == 0)
 	return NULL;
 
@@ -23,15 +23,15 @@ AudioFile *PlayList::currentFile() {
     return mAudioFileList[mCurrentAudioFileIndex];
 }
 
-void PlayList::setNextTrack(int inIndex) {
+void PlayQueue::setNextTrack(int inIndex) {
     mCurrentAudioFileIndex = inIndex;
 }
 
-void PlayList::finished(AudioFile *inAudioFile) {
+void PlayQueue::finished(AudioFile *inAudioFile) {
     mCurrentAudioFileIndex++;
 }
 
-QVariant PlayList::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant PlayQueue::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole) {
 	switch (section) {
 	    case eIsPlaying:
@@ -46,15 +46,15 @@ QVariant PlayList::headerData(int section, Qt::Orientation orientation, int role
     return QVariant();
 }
 
-int PlayList::columnCount(const QModelIndex &parent) const {
+int PlayQueue::columnCount(const QModelIndex &parent) const {
     return 3;
 }
 
-int PlayList::rowCount(const QModelIndex &parent) const {
+int PlayQueue::rowCount(const QModelIndex &parent) const {
     return mAudioFileList.size();
 }
 
-QVariant PlayList::data(const QModelIndex &index, int role) const {
+QVariant PlayQueue::data(const QModelIndex &index, int role) const {
     if (index.isValid() == false)
 	return QVariant();
 

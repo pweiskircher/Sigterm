@@ -5,9 +5,9 @@
 
 class AudioFile;
 
-class PlayList : public QAbstractTableModel {
+class PlayQueue : public QAbstractTableModel {
     public:
-	PlayList();
+	PlayQueue();
 
 	enum {
 	    eIsPlaying = 0,

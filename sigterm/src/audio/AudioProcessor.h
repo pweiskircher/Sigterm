@@ -6,7 +6,7 @@
 
 class AudioManager;
 class AudioFile;
-class PlayList;
+class PlayQueue;
 
 class AudioProcessor : public QThread {
     Q_OBJECT
@@ -28,7 +28,7 @@ class AudioProcessor : public QThread {
 	QMutex mMutex;
 	AudioManager *mAudioManager;
 
-	void processFile(PlayList *inPlayList, AudioFile *inFile);
+	void processFile(PlayQueue *inPlayQueue, AudioFile *inFile);
 
 	bool mPause;
 	bool mSkipTrack;

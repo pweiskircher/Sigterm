@@ -2,7 +2,7 @@
 #include "AudioManager.h"
 #include "AudioFile.h"
 #include "AudioDecoder.h"
-#include "PlayList.h"
+#include "PlayQueue.h"
 #include "AudioBuffer.h"
 
 AudioProcessor::AudioProcessor(AudioManager *inAudioManager) {
@@ -30,15 +30,15 @@ void AudioProcessor::run() {
 	    }
 	    mMutex.unlock();
 
-	    PlayList *playList = mAudioManager->currentPlayList();
-	    AudioFile *file = playList->currentFile();
+	    PlayQueue *playQueue = mAudioManager->playQueue();
+	    AudioFile *file = playQueue->currentFile();
 	    if (!file) {
 		emit paused();
 		break;
 	    }
 
 	    file->setIsPlaying(true);
-	    processFile(playList, file);
+	    processFile(playQueue, file);
 	    file->setIsPlaying(false);
 	}
 	mMutex.lock();
@@ -60,7 +60,7 @@ void AudioProcessor::quit() {
     mQuit = true;
 }
 
-void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
+void AudioProcessor::processFile(PlayQueue *inPlayQueue, AudioFile *inFile) {
     AudioDecoder::DecodingStatus status;
     AudioBuffer buffer(4096);
 
@@ -82,7 +82,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	buffer.reset();
 	if (!inFile->decoder()) {
 	    qDebug("Skipping track ...");
-	    inPlayList->finished(inFile);
+	    inPlayQueue->finished(inFile);
 	    done = true;
 	    continue;
 	}
@@ -90,7 +90,7 @@ void AudioProcessor::processFile(PlayList *inPlayList, AudioFile *inFile) {
 	status = inFile->decoder()->getAudioChunk(&buffer);
 	if (status == AudioDecoder::eStop) {
 	    qDebug("Skipping track ...");
-	    inPlayList->finished(inFile);
+	    inPlayQueue->finished(inFile);
 	    done = true;
 	}
 
