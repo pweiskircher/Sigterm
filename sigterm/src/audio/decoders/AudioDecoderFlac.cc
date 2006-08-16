@@ -106,6 +106,11 @@ AudioDecoder::DecodingStatus AudioDecoderFlac::getDecodedChunk(AudioBuffer *inOu
 
     AudioDecoder::DecodingStatus status = eContinue;
     while (mStorage.needData(inOutAudioBuffer->requestedLength()) == false) {
+	if (FLAC__file_decoder_get_state(mDecoder) == FLAC__FILE_DECODER_END_OF_FILE) {
+	    status = eStop;
+	    break;
+	}
+
 	if (!FLAC__file_decoder_process_single(mDecoder)) {
 	    // no idea how we could recover from that error. just stop.
 	    status = eStop;
