@@ -2,6 +2,8 @@
 #include "AudioFile.h"
 #include "AudioBuffer.h"
 
+#include <QSysInfo>
+
 static ::FLAC__StreamDecoderWriteStatus write_callback(const FLAC__FileDecoder *decoder, const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *userdata) {
     AudioDecoderFlac *mAudioDecoderFlac = (AudioDecoderFlac *)userdata;
     mAudioDecoderFlac->handleDecodedFlacFrame(frame, buffer);
@@ -63,7 +65,12 @@ bool AudioDecoderFlac::open() {
     }
 
     audioFormat().setBitRate(0);
-    audioFormat().setIsBigEndian(true);
+
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian)
+	audioFormat().setIsBigEndian(true);
+    else
+	audioFormat().setIsBigEndian(false);
+
     audioFormat().setIsUnsigned(false);
 
     setOpened(true);
