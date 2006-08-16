@@ -2,8 +2,6 @@
 #include "AudioFile.h"
 #include "AudioBuffer.h"
 
-#include <FLAC++/all.h>
-
 static ::FLAC__StreamDecoderWriteStatus write_callback(const FLAC__FileDecoder *decoder, const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *userdata) {
     AudioDecoderFlac *mAudioDecoderFlac = (AudioDecoderFlac *)userdata;
     mAudioDecoderFlac->handleDecodedFlacFrame(frame, buffer);
