@@ -3,11 +3,28 @@
 #include "AudioDecoder.h"
 
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) {
+    mAudioManager = inAudioManager;
     mFilePath = inFilePath;
     mDecoder = inAudioManager->createAudioDecoder(this);
     mDecoder->readInfo();
     mIsPlaying = false;
+
+    mAudioManager->audioLibrary()->addAudioFile(this);
 }
+
+AudioFile::~AudioFile() {
+    mAudioManager->audioLibrary()->removeAudioFile(this);
+    mAudioManager->playQueue()->removeAudioFile(this);
+}
+
+void AudioFile::addToQueue() {
+    mAudioManager->playQueue()->addAudioFile(this);
+}
+
+void AudioFile::removeFromQueue() {
+    mAudioManager->playQueue()->removeAudioFile(this);
+}
+
 
 QString &AudioFile::filePath() {
     return mFilePath;
@@ -49,5 +66,11 @@ bool AudioFile::isPlaying() {
 
 void AudioFile::setIsPlaying(bool inValue) {
     mIsPlaying = inValue;
+
+    if (mIsPlaying == true) {
+	emit startedPlaying(this);
+    } else {
+	emit stoppedPlaying(this);
+    }
 }
 

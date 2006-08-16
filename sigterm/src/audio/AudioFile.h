@@ -2,13 +2,20 @@
 #define _AUDIO_FILE_H
 
 #include <QString>
+#include <QObject>
 
 class AudioDecoder;
 class AudioManager;
 
-class AudioFile {
+class AudioFile : public QObject {
+    Q_OBJECT
+
     public:
 	AudioFile(const QString &inFilePath, AudioManager *inAudioManager);
+	~AudioFile();
+
+	void addToQueue();
+	void removeFromQueue();
 
 	QString &filePath();
 	AudioDecoder *decoder();
@@ -26,6 +33,10 @@ class AudioFile {
 	bool isPlaying();
 	void setIsPlaying(bool inValue);
 
+    signals:
+	void startedPlaying(AudioFile *inAudioFile);
+	void stoppedPlaying(AudioFile *inAudioFile);
+
     private:
 	QString mFilePath;
 	AudioDecoder *mDecoder;
@@ -34,6 +45,8 @@ class AudioFile {
 	quint32 mPlayedSamples;
 
 	bool mIsPlaying;
+
+	AudioManager *mAudioManager;
 };
 
 #endif

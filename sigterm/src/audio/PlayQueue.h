@@ -6,6 +6,8 @@
 class AudioFile;
 
 class PlayQueue : public QAbstractTableModel {
+    Q_OBJECT
+
     public:
 	PlayQueue();
 
@@ -15,7 +17,6 @@ class PlayQueue : public QAbstractTableModel {
 	    eTotalTime
 	};
 
-	void add(AudioFile *inAudioFile);
 	AudioFile *currentFile();
 
 	void setNextTrack(int inIndex);
@@ -27,7 +28,15 @@ class PlayQueue : public QAbstractTableModel {
 	int rowCount(const QModelIndex &parent) const;
 	QVariant data(const QModelIndex &index, int role) const;
 
+    private slots:
+	void audioFileStartedPlaying(AudioFile *inAudioFile);
+        void audioFileStoppedPlaying(AudioFile *inAudioFile);
+
     private:
+	friend class AudioFile;
+	void addAudioFile(AudioFile *inAudioFile);
+	void removeAudioFile(AudioFile *inAudioFile);
+
 	QList<AudioFile *> mAudioFileList;
 	int mCurrentAudioFileIndex;
 };

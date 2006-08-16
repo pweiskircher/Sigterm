@@ -9,8 +9,22 @@ PlayQueue::PlayQueue() {
     mCurrentAudioFileIndex = 0;
 }
 
-void PlayQueue::add(AudioFile *inAudioFile) {
+void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
+    beginInsertRows(QModelIndex(), mAudioFileList.size(), mAudioFileList.size());
     mAudioFileList.append(inAudioFile);
+    endInsertRows();
+
+    connect(inAudioFile, SIGNAL(startedPlaying(AudioFile *)), SLOT(audioFileStartedPlaying(AudioFile *)));
+    connect(inAudioFile, SIGNAL(stoppedPlaying(AudioFile *)), SLOT(audioFileStoppedPlaying(AudioFile *)));
+}
+
+void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
+    int index = mAudioFileList.indexOf(inAudioFile);
+    if (index != -1) {
+	beginRemoveRows(QModelIndex(), index, index);
+	mAudioFileList.removeAt(index);
+	endRemoveRows();
+    }
 }
 
 AudioFile *PlayQueue::currentFile() {
@@ -90,3 +104,16 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
 
     return QVariant();
 }
+
+void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
+    int index = mAudioFileList.indexOf(inAudioFile);
+    if (index != -1)
+	emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+}
+
+void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
+    int index = mAudioFileList.indexOf(inAudioFile);
+    if (index != -1)
+	emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+}
+

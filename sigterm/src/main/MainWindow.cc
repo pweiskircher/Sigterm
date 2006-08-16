@@ -30,10 +30,10 @@ void MainWindow::audioPaused(bool inPause) {
 }
 
 void MainWindow::on_addButton_clicked() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac);;(*.ogg)");
+    QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg)");
     for (int i=0; i<files.size(); i++) {
-	mAudioManager.playQueue()->add(new AudioFile(files[i], &mAudioManager));
-	playQueue->reset();
+	AudioFile *af = new AudioFile(files[i], &mAudioManager);
+	af->addToQueue();
     }
 }
 

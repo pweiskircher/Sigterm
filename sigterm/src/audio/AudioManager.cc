@@ -10,7 +10,7 @@ void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
     mgr->fillBuffer(stream, len);
 }
 
-AudioManager::AudioManager() : mAudioProcessor(this) {
+AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
     connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
 
     mAudioProcessor.start();
@@ -41,6 +41,10 @@ void AudioManager::init() {
 
 AudioStorage *AudioManager::audioStorage() {
     return &mAudioStorage;
+}
+
+AudioLibrary *AudioManager::audioLibrary() {
+    return &mAudioLibrary;
 }
 
 QWaitCondition *AudioManager::audioProcessorWaitCondition() {

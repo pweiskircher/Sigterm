@@ -33,6 +33,7 @@ src/audio/AudioManager.cc src/audio/AudioManager.h
 src/audio/AudioConverter.cc src/audio/AudioConverter.h
 src/audio/AudioStorage.cc src/audio/AudioStorage.h
 src/audio/AudioProcessor.cc src/audio/AudioProcessor.h
+src/audio/AudioLibrary.cc src/audio/AudioLibrary.h
 src/audio/PlayQueue.cc src/audio/PlayQueue.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
@@ -49,6 +50,8 @@ SET(SIGTERM_MOC
 src/main/MainWindow.h
 src/audio/AudioProcessor.h
 src/audio/AudioManager.h
+src/audio/AudioFile.h
+src/audio/PlayQueue.h
 )
 
 QT4_WRAP_CPP(SIGTERM_MOC_SRCS ${SIGTERM_MOC})

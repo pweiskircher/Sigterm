@@ -9,6 +9,7 @@
 #include <SDL.h>
 
 #include "AudioStorage.h"
+#include "AudioLibrary.h"
 #include "AudioProcessor.h"
 #include "PlayQueue.h"
 
@@ -25,16 +26,13 @@ class AudioManager : public QObject {
 	void togglePause();
 	void skipTrack();
 	void quit();
-
 	bool paused();
-
 	void fillBuffer(Uint8 *stream, int len);
 
 	SDL_AudioSpec *hardwareSpec();
-
 	AudioStorage *audioStorage();
+	AudioLibrary *audioLibrary();
 	QWaitCondition *audioProcessorWaitCondition();
-
 	PlayQueue *playQueue();
 
 	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
@@ -46,18 +44,16 @@ class AudioManager : public QObject {
 	void audioProcessorPaused();
 
     private:
+	AudioProcessor mAudioProcessor;
+	AudioStorage mAudioStorage;
+	AudioLibrary mAudioLibrary;
+
 	SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
 
 	QMutex mAudioMutex;
-
 	QWaitCondition mAudioProcessorWaitCondition;
-	AudioProcessor mAudioProcessor;
-
-	AudioStorage mAudioStorage;
 	PlayQueue mPlayQueue;
-
 	bool mPaused;
-
 	QList<AudioDecoder *> mAudioDecoderList;
 };
 
