@@ -10,6 +10,32 @@ AudioDecoder::AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager)
 }
 
 AudioDecoder::~AudioDecoder() {
+    if (opened())
+	close();
+}
+
+bool AudioDecoder::open() {
+    if (opened()) {
+	qDebug("File already opened.");
+	return false;
+    }
+
+    bool r = openFile();
+    if (r)
+	setOpened(true);
+    return r;
+}
+
+bool AudioDecoder::close() {
+    if (!opened()) {
+	qDebug("File not open.");
+	return false;
+    }
+
+    bool r = closeFile();
+    if (r)
+	setOpened(false);
+    return r;
 }
 
 bool AudioDecoder::opened() {

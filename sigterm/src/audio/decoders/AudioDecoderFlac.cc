@@ -40,7 +40,7 @@ AudioDecoder *AudioDecoderFlac::createAudioDecoder(AudioFile *inAudioFile, Audio
     return new AudioDecoderFlac(inAudioFile, inAudioManager);
 }
 
-bool AudioDecoderFlac::open() {
+bool AudioDecoderFlac::openFile() {
     qDebug("AudioDecoderFlac::open(%s)", qPrintable(audioFile()->filePath()));
 
     mDecoder = FLAC__file_decoder_new();
@@ -73,15 +73,12 @@ bool AudioDecoderFlac::open() {
 
     audioFormat().setIsUnsigned(false);
 
-    setOpened(true);
-
     return true;
 }
 
-bool AudioDecoderFlac::close() {
+bool AudioDecoderFlac::closeFile() {
     qDebug("AudioDecoderFlac::close(%s)", qPrintable(audioFile()->filePath()));
 
-    setOpened(false);
     FLAC__file_decoder_finish(mDecoder);
     FLAC__file_decoder_delete(mDecoder);
     mDecoder = NULL;

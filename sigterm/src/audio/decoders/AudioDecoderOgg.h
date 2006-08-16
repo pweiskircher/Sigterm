@@ -12,13 +12,12 @@ class AudioDecoderOgg : public AudioDecoder {
 	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
 	bool canDecode(const QString &inFilePath);
 
-	bool open();
-	bool close();
-
 	bool seekToTime(quint32 inMilliSeconds);
 
     private:
-	AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
+	virtual bool openFile();
+	virtual bool closeFile();
+	virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
 
 	OggVorbis_File mOggVorbisFile;
 };

@@ -18,15 +18,13 @@ AudioDecoderOgg::AudioDecoderOgg(AudioFile *inAudioFile, AudioManager *inAudioMa
 }
 
 AudioDecoderOgg::~AudioDecoderOgg() {
-    if (opened())
-	close();
 }
 
 AudioDecoder *AudioDecoderOgg::createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager) {
     return new AudioDecoderOgg(inAudioFile, inAudioManager);
 }
 
-bool AudioDecoderOgg::open() {
+bool AudioDecoderOgg::openFile() {
     FILE *f = fopen(qPrintable(audioFile()->filePath()), "rb");
     if (!f) {
 	// TODO: error reporting
@@ -38,8 +36,6 @@ bool AudioDecoderOgg::open() {
 	// TODO: error reporting
 	return false;
     }
-
-    setOpened(true);
 
     vorbis_info *info = ov_info(&mOggVorbisFile, -1);
     audioFormat().setBitRate((int)(info->bitrate_nominal / 1000.0));
@@ -55,10 +51,9 @@ bool AudioDecoderOgg::open() {
     return true;
 }
 
-bool AudioDecoderOgg::close() {
+bool AudioDecoderOgg::closeFile() {
     if (opened()) {
 	ov_clear(&mOggVorbisFile);
-	setOpened(false);
     }
 
     return true;
