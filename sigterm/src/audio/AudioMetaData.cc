@@ -16,17 +16,17 @@ void AudioMetaData::parseVorbisComments(QStringList &inList) {
 	QStringListIterator it(inList);
 	while (it.hasNext()) {
 		QString comment = it.next();
-		if (comment.startsWith("ARTIST=")) {
+		if (comment.toUpper().startsWith("ARTIST=")) {
 			setArtist(comment.mid(comment.indexOf("=")+1));
-		} else if (comment.startsWith("TITLE=")) {
+		} else if (comment.toUpper().startsWith("TITLE=")) {
 			setTitle(comment.mid(comment.indexOf("=")+1));
-		} else if (comment.startsWith("ALBUM=")) {
+		} else if (comment.toUpper().startsWith("ALBUM=")) {
 			setAlbum(comment.mid(comment.indexOf("=")+1));
-		} else if (comment.startsWith("DATE=")) {
+		} else if (comment.toUpper().startsWith("DATE=")) {
 			setDate(comment.mid(comment.indexOf("=")+1));
-		} else if (comment.startsWith("TRACKNUMBER=")) {
+		} else if (comment.toUpper().startsWith("TRACKNUMBER=")) {
 			setTrackNumber(comment.mid(comment.indexOf("=")+1).toInt());
-		} else if (comment.startsWith("TOTALTRACKS=")) {
+		} else if (comment.toUpper().startsWith("TOTALTRACKS=")) {
 			setTotalTracks(comment.mid(comment.indexOf("=")+1).toInt());
 		}
 	}

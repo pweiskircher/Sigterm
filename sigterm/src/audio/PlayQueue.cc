@@ -117,6 +117,8 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 			case eTrackNumber:
 				if (role == Qt::DisplayRole) {
 					return mAudioFileList[index.row()]->metaData()->trackNumber();
+				} else if (role == Qt::TextAlignmentRole) {
+					return Qt::AlignCenter;
 				}
 				break;
 
