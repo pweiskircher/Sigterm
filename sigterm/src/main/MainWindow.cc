@@ -29,7 +29,21 @@ void MainWindow::audioPaused(bool inPause) {
     }
 }
 
+
+void MainWindow::on_nextButton_clicked() {
+    mAudioManager.nextTrack();
+}
+
+void MainWindow::on_playButton_clicked() {
+    mAudioManager.togglePause();
+}
+
+void MainWindow::on_prevButton_clicked() {
+    mAudioManager.prevTrack();
+}
+
 void MainWindow::on_addButton_clicked() {
+    // TODO: save last directory
     QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg)");
     for (int i=0; i<files.size(); i++) {
 	AudioFile *af = new AudioFile(files[i], &mAudioManager);
@@ -37,14 +51,17 @@ void MainWindow::on_addButton_clicked() {
     }
 }
 
+void MainWindow::on_deleteButton_clicked() {
+    QModelIndexList l = playQueue->selectionModel()->selectedIndexes();
+    mAudioManager.playQueue()->removeTracks(l);
+}
+
+
 void MainWindow::on_actionQuit_activated() {
     mAudioManager.quit();
     qApp->quit();
 }
 
-void MainWindow::on_playButton_clicked() {
-    mAudioManager.togglePause();
-}
 
 void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {
     mAudioManager.playQueue()->setNextTrack(index.row());

@@ -8,15 +8,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
-    <height>382</height>
+    <width>619</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <layout class="QHBoxLayout" >
+   <layout class="QVBoxLayout" >
     <property name="margin" >
      <number>9</number>
     </property>
@@ -24,7 +24,7 @@
      <number>6</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" >
+     <layout class="QHBoxLayout" >
       <property name="margin" >
        <number>0</number>
       </property>
@@ -32,53 +32,83 @@
        <number>6</number>
       </property>
       <item>
-       <widget class="QTreeView" name="playQueue" >
-        <property name="alternatingRowColors" >
-         <bool>true</bool>
-        </property>
-        <property name="indentation" >
-         <number>0</number>
+       <widget class="QPushButton" name="prevButton" >
+        <property name="text" >
+         <string>Prev</string>
         </property>
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
+       <widget class="QPushButton" name="playButton" >
+        <property name="text" >
+         <string>Play</string>
         </property>
-        <property name="spacing" >
-         <number>6</number>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="nextButton" >
+        <property name="text" >
+         <string>Next</string>
         </property>
-        <item>
-         <widget class="QPushButton" name="addButton" >
-          <property name="text" >
-           <string>Add</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" >
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="playButton" >
-          <property name="text" >
-           <string>Play</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addButton" >
+        <property name="text" >
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteButton" >
+        <property name="text" >
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QTreeView" name="playQueue" >
+      <property name="alternatingRowColors" >
+       <bool>true</bool>
+      </property>
+      <property name="selectionMode" >
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="indentation" >
+       <number>0</number>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -87,7 +117,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>510</width>
+     <width>619</width>
      <height>30</height>
     </rect>
    </property>
@@ -111,8 +141,8 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>360</y>
-     <width>510</width>
+     <y>298</y>
+     <width>619</width>
      <height>22</height>
     </rect>
    </property>

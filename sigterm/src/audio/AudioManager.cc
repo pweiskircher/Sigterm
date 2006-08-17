@@ -115,6 +115,17 @@ void AudioManager::fillBuffer(Uint8 *stream, int len) {
     }
 }
 
+void AudioManager::nextTrack() {
+    mPlayQueue.nextTrack();
+    skipTrack();
+}
+
+void AudioManager::prevTrack() {
+    mPlayQueue.prevTrack();
+    skipTrack();
+}
+
+
 SDL_AudioSpec *AudioManager::hardwareSpec() {
     return &mHardwareAudioSpec;
 }

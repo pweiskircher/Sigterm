@@ -138,5 +138,6 @@ bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
     audioFormat().setIsUnsigned(false);
 
     audioFile()->setTotalSamples(ov_pcm_total(inFile, -1));
+
     return true;
 }

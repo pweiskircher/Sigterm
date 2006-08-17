@@ -29,6 +29,9 @@ class AudioManager : public QObject {
 	bool paused();
 	void fillBuffer(Uint8 *stream, int len);
 
+	void nextTrack();
+	void prevTrack();
+
 	SDL_AudioSpec *hardwareSpec();
 	AudioStorage *audioStorage();
 	AudioLibrary *audioLibrary();

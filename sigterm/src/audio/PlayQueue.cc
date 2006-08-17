@@ -34,6 +34,9 @@ AudioFile *PlayQueue::currentFile() {
     if (mCurrentAudioFileIndex >= mAudioFileList.size())
 	mCurrentAudioFileIndex = 0;
 
+    if (mCurrentAudioFileIndex < 0)
+	mCurrentAudioFileIndex = mAudioFileList.size()-1;
+
     return mAudioFileList[mCurrentAudioFileIndex];
 }
 
@@ -65,7 +68,9 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 }
 
 int PlayQueue::rowCount(const QModelIndex &parent) const {
-    return mAudioFileList.size();
+    if (!parent.isValid())
+	return mAudioFileList.size();
+    return 0;
 }
 
 QVariant PlayQueue::data(const QModelIndex &index, int role) const {
@@ -111,6 +116,15 @@ bool PlayQueue::hasChildren(const QModelIndex &parent) const {
     return false;
 }
 
+void PlayQueue::nextTrack() {
+    mCurrentAudioFileIndex++;
+}
+
+void PlayQueue::prevTrack() {
+    mCurrentAudioFileIndex--;
+}
+
+
 void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
     int index = mAudioFileList.indexOf(inAudioFile);
     if (index != -1)
@@ -121,5 +135,26 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
     int index = mAudioFileList.indexOf(inAudioFile);
     if (index != -1)
 	emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+}
+
+void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
+    QModelIndex index;
+    QListIterator<QModelIndex> it(inIndexes);
+
+    QList<AudioFile *> list;
+
+    while (it.hasNext()) {
+	index = it.next();
+	if (index.column() != 0) continue;
+
+	list.append(mAudioFileList[index.row()]);
+    }
+
+    QListIterator<AudioFile *> afit(list);
+    while (afit.hasNext()) {
+	AudioFile *af = afit.next();
+	// TODO: we should delete the item if its not in our library
+	af->removeFromQueue();
+    }
 }
 

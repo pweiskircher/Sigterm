@@ -29,6 +29,11 @@ class PlayQueue : public QAbstractTableModel {
 	QVariant data(const QModelIndex &index, int role) const;
 	bool hasChildren(const QModelIndex &parent) const;
 
+	void nextTrack();
+	void prevTrack();
+
+	void removeTracks(QModelIndexList &inIndexes);
+
     private slots:
 	void audioFileStartedPlaying(AudioFile *inAudioFile);
         void audioFileStoppedPlaying(AudioFile *inAudioFile);
