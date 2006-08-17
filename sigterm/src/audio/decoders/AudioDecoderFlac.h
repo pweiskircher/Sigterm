@@ -19,6 +19,7 @@ class AudioDecoderFlac : public AudioDecoder {
 
 	void handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]);
 	void setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si);
+	void setVorbisComments(const FLAC__StreamMetadata_VorbisComment *vc);
 
 	void setCanDecode(bool inValue);
 

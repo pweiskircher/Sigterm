@@ -2,7 +2,7 @@
 #include "AudioManager.h"
 #include "AudioDecoder.h"
 
-AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) {
+AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : mMetaData(this) {
     mAudioManager = inAudioManager;
     mFilePath = inFilePath;
     mDecoder = inAudioManager->createAudioDecoder(this);
@@ -32,6 +32,10 @@ QString &AudioFile::filePath() {
 
 AudioDecoder *AudioFile::decoder() {
     return mDecoder;
+}
+
+AudioMetaData *AudioFile::metaData() {
+    return &mMetaData;
 }
 
 quint32 AudioFile::timeTotal() {

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QObject>
 
+#include "AudioMetaData.h"
+
 class AudioDecoder;
 class AudioManager;
 
@@ -19,6 +21,7 @@ class AudioFile : public QObject {
 
 	QString &filePath();
 	AudioDecoder *decoder();
+	AudioMetaData *metaData();
 
 	quint32 timeTotal();
 	quint32 timePlayed();
@@ -40,6 +43,7 @@ class AudioFile : public QObject {
     private:
 	QString mFilePath;
 	AudioDecoder *mDecoder;
+	AudioMetaData mMetaData;
 
 	quint32 mTotalSamples;
 	quint32 mPlayedSamples;

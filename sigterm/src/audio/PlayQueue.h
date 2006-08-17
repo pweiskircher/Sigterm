@@ -11,11 +11,15 @@ class PlayQueue : public QAbstractTableModel {
     public:
 	PlayQueue();
 
-	enum {
+	typedef enum {
 	    eIsPlaying = 0,
+	    eTrackNumber,
+	    eArtist,
+	    eAlbum,
 	    eTitle,
-	    eTotalTime
-	};
+	    eTotalTime,
+	    eLastElement
+	} Columns;
 
 	AudioFile *currentFile();
 

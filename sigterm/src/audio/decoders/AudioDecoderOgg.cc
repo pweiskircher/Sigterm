@@ -139,5 +139,12 @@ bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
 
     audioFile()->setTotalSamples(ov_pcm_total(inFile, -1));
 
+    vorbis_comment *comment = ov_comment(inFile, -1);
+    QStringList list;
+    for (int i=0; i < comment->comments; i++) {
+	list += comment->user_comments[i];
+    }
+    audioFile()->metaData()->parseVorbisComments(list);
+
     return true;
 }

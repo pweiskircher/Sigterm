@@ -36,6 +36,7 @@ src/audio/AudioProcessor.cc src/audio/AudioProcessor.h
 src/audio/AudioLibrary.cc src/audio/AudioLibrary.h
 src/audio/PlayQueue.cc src/audio/PlayQueue.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
+src/audio/AudioMetaData.cc src/audio/AudioMetaData.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
 src/main/main.cc

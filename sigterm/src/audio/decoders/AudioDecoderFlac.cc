@@ -15,6 +15,9 @@ static void metadata_callback(const FLAC__FileDecoder *decoder, const ::FLAC__St
     if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
 	const FLAC__StreamMetadata_StreamInfo *si = &metadata->data.stream_info;
 	mAudioDecoderFlac->setAudioFormat(si);
+    } else if (metadata->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+	const FLAC__StreamMetadata_VorbisComment *vc = &metadata->data.vorbis_comment;
+	mAudioDecoderFlac->setVorbisComments(vc);
     }
 }
 
@@ -210,6 +213,15 @@ void AudioDecoderFlac::setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si)
     audioFormat().setBitsPerSample(si->bits_per_sample);
     audioFormat().setFrequency(si->sample_rate);
     audioFile()->setTotalSamples(si->total_samples);
+}
+
+void AudioDecoderFlac::setVorbisComments(const FLAC__StreamMetadata_VorbisComment *vc) {
+    QStringList list;
+    for (unsigned int i=0; i < vc->num_comments; i++) {
+	list += (const char *)vc->comments[i].entry;
+    }
+
+    audioFile()->metaData()->parseVorbisComments(list);
 }
 
 void AudioDecoderFlac::setCanDecode(bool inValue) {

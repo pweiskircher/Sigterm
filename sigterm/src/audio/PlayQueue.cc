@@ -50,13 +50,22 @@ void PlayQueue::finished(AudioFile *inAudioFile) {
 
 QVariant PlayQueue::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole) {
-	switch (section) {
+	switch ((Columns)section) {
 	    case eIsPlaying:
 		return "";
 	    case eTitle:
 		return "Title";
 	    case eTotalTime:
 		return "Total Time";
+	    case eTrackNumber:
+		return "#";
+	    case eArtist:
+		return "Artist";
+	    case eAlbum:
+		return "Album";
+
+	    case eLastElement:
+		break;
 	}
     }
 
@@ -64,7 +73,7 @@ QVariant PlayQueue::headerData(int section, Qt::Orientation orientation, int rol
 }
 
 int PlayQueue::columnCount(const QModelIndex &parent) const {
-    return 3;
+    return eLastElement;
 }
 
 int PlayQueue::rowCount(const QModelIndex &parent) const {
@@ -77,7 +86,7 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
     if (index.isValid() == false)
 	return QVariant();
 
-    switch (index.column()) {
+    switch ((Columns)index.column()) {
 	case eIsPlaying:
 	    if (role == Qt::DecorationRole) {
 		if (mAudioFileList[index.row()]->isPlaying()) {
@@ -90,8 +99,7 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
 
 	case eTitle:
 	    if (role == Qt::DisplayRole) {
-		QFileInfo info(mAudioFileList[index.row()]->filePath());
-		return info.baseName();
+		return mAudioFileList[index.row()]->metaData()->title();
 	    }
 	    break;
 
@@ -104,6 +112,27 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
 	    } else if (role == Qt::TextAlignmentRole) {
 		return Qt::AlignCenter;
 	    }
+	    break;
+
+	case eTrackNumber:
+	    if (role == Qt::DisplayRole) {
+		return mAudioFileList[index.row()]->metaData()->trackNumber();
+	    }
+	    break;
+
+	case eArtist:
+	    if (role == Qt::DisplayRole) {
+		return mAudioFileList[index.row()]->metaData()->artist();
+	    }
+	    break;
+
+	case eAlbum:
+	    if (role == Qt::DisplayRole) {
+		return mAudioFileList[index.row()]->metaData()->album();
+	    }
+	    break;
+
+	case eLastElement:
 	    break;
     }
 

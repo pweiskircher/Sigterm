@@ -14,10 +14,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     mAudioManager.init();
 
     playQueue->setModel(mAudioManager.playQueue());
-    playQueue->header()->resizeSection(0, 20);
-    playQueue->header()->resizeSection(1, 500);
-    playQueue->header()->setResizeMode(1, QHeaderView::Stretch);
-    playQueue->header()->resizeSection(2, 50);
+
+    playQueue->header()->resizeSection(PlayQueue::eIsPlaying, 20);
+    playQueue->header()->resizeSection(PlayQueue::eTrackNumber, 25);
+    playQueue->header()->resizeSection(PlayQueue::eArtist, 100);
+    playQueue->header()->resizeSection(PlayQueue::eAlbum, 100);
+    playQueue->header()->resizeSection(PlayQueue::eTitle, 150);
+    playQueue->header()->setResizeMode(PlayQueue::eTitle, QHeaderView::Stretch);
+    playQueue->header()->resizeSection(PlayQueue::eTotalTime, 20);
+
     playQueue->header()->setStretchLastSection(false);
 }
 
