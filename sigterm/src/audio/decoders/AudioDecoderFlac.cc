@@ -51,6 +51,7 @@ bool AudioDecoderFlac::openFile() {
 	FLAC__file_decoder_set_write_callback(mDecoder, write_callback);
 	FLAC__file_decoder_set_metadata_callback(mDecoder, metadata_callback);
 	FLAC__file_decoder_set_error_callback(mDecoder, error_callback);
+	FLAC__file_decoder_set_metadata_respond(mDecoder, FLAC__METADATA_TYPE_VORBIS_COMMENT);
 
 	if (!FLAC__file_decoder_set_filename(mDecoder, qPrintable(audioFile()->filePath()))) {
 		qDebug("Couldn't set filename on flac decoder.");
@@ -100,6 +101,7 @@ bool AudioDecoderFlac::readInfo() {
 	FLAC__file_decoder_set_write_callback(decoder, write_callback);
 	FLAC__file_decoder_set_metadata_callback(decoder, metadata_callback);
 	FLAC__file_decoder_set_error_callback(decoder, error_callback);
+	FLAC__file_decoder_set_metadata_respond(decoder, FLAC__METADATA_TYPE_VORBIS_COMMENT);
 
 	if (!FLAC__file_decoder_set_filename(decoder, qPrintable(audioFile()->filePath()))) {
 		qDebug("Couldn't set filename on flac decoder.");
