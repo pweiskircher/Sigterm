@@ -56,7 +56,7 @@ QVariant PlayQueue::headerData(int section, Qt::Orientation orientation, int rol
 	    case eTitle:
 		return "Title";
 	    case eTotalTime:
-		return "seconds";
+		return "Total Time";
 	}
     }
 
