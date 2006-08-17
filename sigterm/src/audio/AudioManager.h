@@ -58,6 +58,8 @@ class AudioManager : public QObject {
 	PlayQueue mPlayQueue;
 	bool mPaused;
 	QList<AudioDecoder *> mAudioDecoderList;
+
+	QByteArray mSDLBuffer;
 };
 
 #endif

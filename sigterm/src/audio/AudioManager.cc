@@ -108,10 +108,9 @@ bool AudioManager::paused() {
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
-    QByteArray test;
-    test.resize(len);
-    if (audioStorage()->get(test)) {
-	memcpy(stream, test.data(), len);
+    mSDLBuffer.resize(len);
+    if (audioStorage()->get(mSDLBuffer)) {
+	memcpy(stream, mSDLBuffer.data(), len);
     }
 }
 
