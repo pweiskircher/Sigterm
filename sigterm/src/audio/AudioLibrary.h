@@ -7,15 +7,15 @@ class AudioManager;
 class AudioFile;
 
 class AudioLibrary {
-    public:
-	AudioLibrary(AudioManager *inAudioManager);
+	public:
+		AudioLibrary(AudioManager *inAudioManager);
 
-	void addAudioFile(AudioFile *inAudioFile);
-	void removeAudioFile(AudioFile *inAudioFile);
+		void addAudioFile(AudioFile *inAudioFile);
+		void removeAudioFile(AudioFile *inAudioFile);
 
-    private:
-	QList<AudioFile *> mAudioFileList;
-	AudioManager *mAudioManager;
+	private:
+		QList<AudioFile *> mAudioFileList;
+		AudioManager *mAudioManager;
 };
 
 #endif

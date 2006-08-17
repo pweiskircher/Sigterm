@@ -6,126 +6,126 @@
 #include "decoders/AudioDecoderFlac.h"
 
 void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
-    AudioManager *mgr = (AudioManager *)userdata;
-    mgr->fillBuffer(stream, len);
+	AudioManager *mgr = (AudioManager *)userdata;
+	mgr->fillBuffer(stream, len);
 }
 
 AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
-    connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
+	connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
 
-    mAudioProcessor.start();
-    mPaused = true;
+	mAudioProcessor.start();
+	mPaused = true;
 
-    mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
-    mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
+	mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
+	mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
 }
 
 void AudioManager::init() {
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-	qDebug("Could not initialize SDL audio.");
-	exit(EXIT_FAILURE);
-    }
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		qDebug("Could not initialize SDL audio.");
+		exit(EXIT_FAILURE);
+	}
 
-    mDesiredAudioSpec.freq = 44100;
-    mDesiredAudioSpec.format = AUDIO_S16LSB;
-    mDesiredAudioSpec.channels = 2;
-    mDesiredAudioSpec.samples = 4096;
-    mDesiredAudioSpec.userdata = this;
-    mDesiredAudioSpec.callback = fillBufferCallback;
+	mDesiredAudioSpec.freq = 44100;
+	mDesiredAudioSpec.format = AUDIO_S16LSB;
+	mDesiredAudioSpec.channels = 2;
+	mDesiredAudioSpec.samples = 4096;
+	mDesiredAudioSpec.userdata = this;
+	mDesiredAudioSpec.callback = fillBufferCallback;
 
-    if (SDL_OpenAudio(&mDesiredAudioSpec, &mHardwareAudioSpec) < 0) {
-	qDebug("Could not open the audio device.");
-	exit(EXIT_FAILURE);
-    }
+	if (SDL_OpenAudio(&mDesiredAudioSpec, &mHardwareAudioSpec) < 0) {
+		qDebug("Could not open the audio device.");
+		exit(EXIT_FAILURE);
+	}
 }
 
 AudioStorage *AudioManager::audioStorage() {
-    return &mAudioStorage;
+	return &mAudioStorage;
 }
 
 AudioLibrary *AudioManager::audioLibrary() {
-    return &mAudioLibrary;
+	return &mAudioLibrary;
 }
 
 QWaitCondition *AudioManager::audioProcessorWaitCondition() {
-    return &mAudioProcessorWaitCondition;
+	return &mAudioProcessorWaitCondition;
 }
 
 PlayQueue *AudioManager::playQueue() {
-    return &mPlayQueue;
+	return &mPlayQueue;
 }
 
 AudioDecoder *AudioManager::createAudioDecoder(AudioFile *inAudioFile) {
-    QListIterator<AudioDecoder *> it(mAudioDecoderList);
-    while (it.hasNext()) {
-	AudioDecoder *d = it.next();
-	if (d->canDecode(inAudioFile->filePath()))
-	    return d->createAudioDecoder(inAudioFile, this);
-    }
+	QListIterator<AudioDecoder *> it(mAudioDecoderList);
+	while (it.hasNext()) {
+		AudioDecoder *d = it.next();
+		if (d->canDecode(inAudioFile->filePath()))
+			return d->createAudioDecoder(inAudioFile, this);
+	}
 
-    return NULL;
+	return NULL;
 }
 
 void AudioManager::audioProcessorPaused() {
-    SDL_PauseAudio(true);
-    mPaused = true;
+	SDL_PauseAudio(true);
+	mPaused = true;
 
-    emit audioPaused(true);
+	emit audioPaused(true);
 }
 
 void AudioManager::setPause(bool inPause) {
-    mPaused = inPause;
+	mPaused = inPause;
 
-    SDL_PauseAudio(inPause);
+	SDL_PauseAudio(inPause);
 
-    if (inPause == true)
-	mAudioProcessor.pause();
+	if (inPause == true)
+		mAudioProcessor.pause();
 
-    mAudioProcessorWaitCondition.wakeAll();
+	mAudioProcessorWaitCondition.wakeAll();
 
-    emit audioPaused(mPaused);
+	emit audioPaused(mPaused);
 }
 
 void AudioManager::togglePause() {
-    setPause(!mPaused);
+	setPause(!mPaused);
 }
 
 void AudioManager::skipTrack() {
-    mAudioProcessor.skipTrack();
-    mAudioProcessorWaitCondition.wakeAll();
+	mAudioProcessor.skipTrack();
+	mAudioProcessorWaitCondition.wakeAll();
 }
 
 void AudioManager::quit() {
-    if (!paused())
-	setPause(true);
-    mAudioProcessor.quit();
-    mAudioProcessorWaitCondition.wakeAll();
-    mAudioProcessor.wait();
+	if (!paused())
+		setPause(true);
+	mAudioProcessor.quit();
+	mAudioProcessorWaitCondition.wakeAll();
+	mAudioProcessor.wait();
 }
 
 bool AudioManager::paused() {
-    return mPaused;
+	return mPaused;
 }
 
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
-    mSDLBuffer.resize(len);
-    if (audioStorage()->get(mSDLBuffer)) {
-	memcpy(stream, mSDLBuffer.data(), len);
-    }
+	mSDLBuffer.resize(len);
+	if (audioStorage()->get(mSDLBuffer)) {
+		memcpy(stream, mSDLBuffer.data(), len);
+	}
 }
 
 void AudioManager::nextTrack() {
-    mPlayQueue.nextTrack();
-    skipTrack();
+	mPlayQueue.nextTrack();
+	skipTrack();
 }
 
 void AudioManager::prevTrack() {
-    mPlayQueue.prevTrack();
-    skipTrack();
+	mPlayQueue.prevTrack();
+	skipTrack();
 }
 
 
 SDL_AudioSpec *AudioManager::hardwareSpec() {
-    return &mHardwareAudioSpec;
+	return &mHardwareAudioSpec;
 }
 

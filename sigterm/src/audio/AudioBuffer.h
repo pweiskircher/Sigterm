@@ -6,41 +6,41 @@
 #include <SDL.h>
 
 class AudioBuffer {
-    public:
-	AudioBuffer(quint32 inRequestedLength);
+	public:
+		AudioBuffer(quint32 inRequestedLength);
 
-	typedef enum {
-	    eEmpty,
-	    eGotDecodedChunk,
-	    eGotConvertedChunk
-	} AudioBufferState;
-	AudioBufferState state();
+		typedef enum {
+			eEmpty,
+			eGotDecodedChunk,
+			eGotConvertedChunk
+		} AudioBufferState;
+		AudioBufferState state();
 
-	QByteArray &byteBuffer();
+		QByteArray &byteBuffer();
 
-	bool prepareForConversion(SDL_AudioCVT *inOutCVT);
-	bool prepareForDecoding();
+		bool prepareForConversion(SDL_AudioCVT *inOutCVT);
+		bool prepareForDecoding();
 
-	void setDecodedChunkLength(quint32 inDecodedChunkLength);
-	void setConvertedChunkLength(quint32 inConvertedChunkLength);
+		void setDecodedChunkLength(quint32 inDecodedChunkLength);
+		void setConvertedChunkLength(quint32 inConvertedChunkLength);
 
-	QByteArray *decodedChunkBuffer(quint32 &outLen);
-	QByteArray *convertedChunkBuffer(quint32 &outLen);
+		QByteArray *decodedChunkBuffer(quint32 &outLen);
+		QByteArray *convertedChunkBuffer(quint32 &outLen);
 
-	void reset();
+		void reset();
 
-	quint32 requestedLength();
-	quint32 decodedChunkLength();
-	quint32 convertedChunkLength();
+		quint32 requestedLength();
+		quint32 decodedChunkLength();
+		quint32 convertedChunkLength();
 
-    private:
-	quint32 mRequestedLength;
-	quint32 mDecodedChunkLength;
-	quint32 mConvertedChunkLength;
+	private:
+		quint32 mRequestedLength;
+		quint32 mDecodedChunkLength;
+		quint32 mConvertedChunkLength;
 
-	QByteArray mByteBuffer;
+		QByteArray mByteBuffer;
 
-	AudioBufferState mState;
+		AudioBufferState mState;
 };
 
 #endif

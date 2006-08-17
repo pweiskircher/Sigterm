@@ -6,49 +6,49 @@
 class AudioFile;
 
 class PlayQueue : public QAbstractTableModel {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-	PlayQueue();
+	public:
+		PlayQueue();
 
-	typedef enum {
-	    eIsPlaying = 0,
-	    eTrackNumber,
-	    eArtist,
-	    eAlbum,
-	    eTitle,
-	    eTotalTime,
-	    eLastElement
-	} Columns;
+		typedef enum {
+			eIsPlaying = 0,
+			eTrackNumber,
+			eArtist,
+			eAlbum,
+			eTitle,
+			eTotalTime,
+			eLastElement
+		} Columns;
 
-	AudioFile *currentFile();
+		AudioFile *currentFile();
 
-	void setNextTrack(int inIndex);
+		void setNextTrack(int inIndex);
 
-	void finished(AudioFile *inAudioFile);
+		void finished(AudioFile *inAudioFile);
 
-	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-	int columnCount(const QModelIndex &parent ) const;
-	int rowCount(const QModelIndex &parent) const;
-	QVariant data(const QModelIndex &index, int role) const;
-	bool hasChildren(const QModelIndex &parent) const;
+		QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+		int columnCount(const QModelIndex &parent ) const;
+		int rowCount(const QModelIndex &parent) const;
+		QVariant data(const QModelIndex &index, int role) const;
+		bool hasChildren(const QModelIndex &parent) const;
 
-	void nextTrack();
-	void prevTrack();
+		void nextTrack();
+		void prevTrack();
 
-	void removeTracks(QModelIndexList &inIndexes);
+		void removeTracks(QModelIndexList &inIndexes);
 
-    private slots:
-	void audioFileStartedPlaying(AudioFile *inAudioFile);
-        void audioFileStoppedPlaying(AudioFile *inAudioFile);
+	private slots:
+		void audioFileStartedPlaying(AudioFile *inAudioFile);
+		void audioFileStoppedPlaying(AudioFile *inAudioFile);
 
-    private:
-	friend class AudioFile;
-	void addAudioFile(AudioFile *inAudioFile);
-	void removeAudioFile(AudioFile *inAudioFile);
+	private:
+		friend class AudioFile;
+		void addAudioFile(AudioFile *inAudioFile);
+		void removeAudioFile(AudioFile *inAudioFile);
 
-	QList<AudioFile *> mAudioFileList;
-	int mCurrentAudioFileIndex;
+		QList<AudioFile *> mAudioFileList;
+		int mCurrentAudioFileIndex;
 };
 
 #endif

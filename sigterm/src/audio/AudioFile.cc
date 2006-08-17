@@ -3,78 +3,78 @@
 #include "AudioDecoder.h"
 
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : mMetaData(this) {
-    mAudioManager = inAudioManager;
-    mFilePath = inFilePath;
-    mDecoder = inAudioManager->createAudioDecoder(this);
-    mDecoder->readInfo();
-    mIsPlaying = false;
+	mAudioManager = inAudioManager;
+	mFilePath = inFilePath;
+	mDecoder = inAudioManager->createAudioDecoder(this);
+	mDecoder->readInfo();
+	mIsPlaying = false;
 
-    mAudioManager->audioLibrary()->addAudioFile(this);
+	mAudioManager->audioLibrary()->addAudioFile(this);
 }
 
 AudioFile::~AudioFile() {
-    mAudioManager->audioLibrary()->removeAudioFile(this);
-    mAudioManager->playQueue()->removeAudioFile(this);
+	mAudioManager->audioLibrary()->removeAudioFile(this);
+	mAudioManager->playQueue()->removeAudioFile(this);
 }
 
 void AudioFile::addToQueue() {
-    mAudioManager->playQueue()->addAudioFile(this);
+	mAudioManager->playQueue()->addAudioFile(this);
 }
 
 void AudioFile::removeFromQueue() {
-    mAudioManager->playQueue()->removeAudioFile(this);
+	mAudioManager->playQueue()->removeAudioFile(this);
 }
 
 
 QString &AudioFile::filePath() {
-    return mFilePath;
+	return mFilePath;
 }
 
 AudioDecoder *AudioFile::decoder() {
-    return mDecoder;
+	return mDecoder;
 }
 
 AudioMetaData *AudioFile::metaData() {
-    return &mMetaData;
+	return &mMetaData;
 }
 
 quint32 AudioFile::timeTotal() {
-    return mTotalSamples/decoder()->audioFormat().frequency();
+	return mTotalSamples/decoder()->audioFormat().frequency();
 }
 
 quint32 AudioFile::timePlayed() {
-    return mPlayedSamples/decoder()->audioFormat().frequency();
+	return mPlayedSamples/decoder()->audioFormat().frequency();
 }
 
 quint32 AudioFile::totalSamples() {
-    return mTotalSamples;
+	return mTotalSamples;
 }
 
 quint32 AudioFile::playedSamples() {
-    return mPlayedSamples;
+	return mPlayedSamples;
 }
 
 
 void AudioFile::setTotalSamples(quint32 inTotalSamples) {
-    mTotalSamples = inTotalSamples;
+	mTotalSamples = inTotalSamples;
 }
 
 void AudioFile::setPlayedSamples(quint32 inPlayedSamples) {
-    mPlayedSamples = inPlayedSamples;
+	mPlayedSamples = inPlayedSamples;
 }
 
 
 bool AudioFile::isPlaying() {
-    return mIsPlaying;
+	return mIsPlaying;
 }
 
 void AudioFile::setIsPlaying(bool inValue) {
-    mIsPlaying = inValue;
+	mIsPlaying = inValue;
 
-    if (mIsPlaying == true) {
-	emit startedPlaying(this);
-    } else {
-	emit stoppedPlaying(this);
-    }
+	if (mIsPlaying == true) {
+		emit startedPlaying(this);
+	} else {
+		emit stoppedPlaying(this);
+	}
 }
 

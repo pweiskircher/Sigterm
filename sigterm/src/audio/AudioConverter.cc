@@ -4,41 +4,41 @@
 #include "AudioBuffer.h"
 
 AudioConverter::AudioConverter(AudioManager *inAudioManager) {
-    mAudioManager = inAudioManager;
+	mAudioManager = inAudioManager;
 }
 
 bool AudioConverter::setSourceFormat(AudioFormat *inFormat) {
-    if (SDL_BuildAudioCVT(&mCVT, inFormat->sdlFormat(), inFormat->channels(), inFormat->frequency(),
-		mAudioManager->hardwareSpec()->format, mAudioManager->hardwareSpec()->channels,
-		mAudioManager->hardwareSpec()->freq) < 0) {
-	qDebug("Error building AudioCVT");
-	return false;
-    }
+	if (SDL_BuildAudioCVT(&mCVT, inFormat->sdlFormat(), inFormat->channels(), inFormat->frequency(),
+				mAudioManager->hardwareSpec()->format, mAudioManager->hardwareSpec()->channels,
+				mAudioManager->hardwareSpec()->freq) < 0) {
+		qDebug("Error building AudioCVT");
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 bool AudioConverter::convert(AudioBuffer *inOutAudioBuffer) {
-    // no conversion needed!
-    if (mCVT.needed == 0) {
-	inOutAudioBuffer->setConvertedChunkLength(inOutAudioBuffer->decodedChunkLength());
+	// no conversion needed!
+	if (mCVT.needed == 0) {
+		inOutAudioBuffer->setConvertedChunkLength(inOutAudioBuffer->decodedChunkLength());
+		return true;
+	}
+
+	if (!inOutAudioBuffer->prepareForConversion(&mCVT)) {
+		qDebug("Error on AudioBuffer::prepareForConversion");
+		return false;
+	}
+
+	if (SDL_ConvertAudio(&mCVT)) {
+		qDebug("Error converting audio ...");
+		return false;
+	}
+
+	//qDebug("converter: converted to %d (%d * %f) bytes", (int)(mCVT.len * mCVT.len_ratio), mCVT.len, mCVT.len_ratio);
+	inOutAudioBuffer->setConvertedChunkLength((quint32)(mCVT.len * mCVT.len_ratio));
+
 	return true;
-    }
-
-    if (!inOutAudioBuffer->prepareForConversion(&mCVT)) {
-	qDebug("Error on AudioBuffer::prepareForConversion");
-	return false;
-    }
-
-    if (SDL_ConvertAudio(&mCVT)) {
-	qDebug("Error converting audio ...");
-	return false;
-    }
-
-    //qDebug("converter: converted to %d (%d * %f) bytes", (int)(mCVT.len * mCVT.len_ratio), mCVT.len, mCVT.len_ratio);
-    inOutAudioBuffer->setConvertedChunkLength((quint32)(mCVT.len * mCVT.len_ratio));
-
-    return true;
 }
 
 

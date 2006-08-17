@@ -10,15 +10,15 @@ class AudioManager;
 class AudioBuffer;
 
 class AudioConverter {
-    public:
-	AudioConverter(AudioManager *inAudioManager);
+	public:
+		AudioConverter(AudioManager *inAudioManager);
 
-	bool setSourceFormat(AudioFormat *inFormat);
-	bool convert(AudioBuffer *inOutAudioBuffer);
+		bool setSourceFormat(AudioFormat *inFormat);
+		bool convert(AudioBuffer *inOutAudioBuffer);
 
-    private:
-	AudioManager *mAudioManager;
-	SDL_AudioCVT mCVT;
+	private:
+		AudioManager *mAudioManager;
+		SDL_AudioCVT mCVT;
 };
 
 #endif

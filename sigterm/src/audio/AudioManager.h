@@ -16,50 +16,50 @@
 class AudioDecoder;
 
 class AudioManager : public QObject {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-	AudioManager();
+	public:
+		AudioManager();
 
-	void init();
-	void setPause(bool inPause);
-	void togglePause();
-	void skipTrack();
-	void quit();
-	bool paused();
-	void fillBuffer(Uint8 *stream, int len);
+		void init();
+		void setPause(bool inPause);
+		void togglePause();
+		void skipTrack();
+		void quit();
+		bool paused();
+		void fillBuffer(Uint8 *stream, int len);
 
-	void nextTrack();
-	void prevTrack();
+		void nextTrack();
+		void prevTrack();
 
-	SDL_AudioSpec *hardwareSpec();
-	AudioStorage *audioStorage();
-	AudioLibrary *audioLibrary();
-	QWaitCondition *audioProcessorWaitCondition();
-	PlayQueue *playQueue();
+		SDL_AudioSpec *hardwareSpec();
+		AudioStorage *audioStorage();
+		AudioLibrary *audioLibrary();
+		QWaitCondition *audioProcessorWaitCondition();
+		PlayQueue *playQueue();
 
-	AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
+		AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
 
-    signals:
-	void audioPaused(bool inPaused);
+	signals:
+		void audioPaused(bool inPaused);
 
-    private slots:
-	void audioProcessorPaused();
+	private slots:
+		void audioProcessorPaused();
 
-    private:
-	AudioProcessor mAudioProcessor;
-	AudioStorage mAudioStorage;
-	AudioLibrary mAudioLibrary;
+	private:
+		AudioProcessor mAudioProcessor;
+		AudioStorage mAudioStorage;
+		AudioLibrary mAudioLibrary;
 
-	SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
+		SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
 
-	QMutex mAudioMutex;
-	QWaitCondition mAudioProcessorWaitCondition;
-	PlayQueue mPlayQueue;
-	bool mPaused;
-	QList<AudioDecoder *> mAudioDecoderList;
+		QMutex mAudioMutex;
+		QWaitCondition mAudioProcessorWaitCondition;
+		PlayQueue mPlayQueue;
+		bool mPaused;
+		QList<AudioDecoder *> mAudioDecoderList;
 
-	QByteArray mSDLBuffer;
+		QByteArray mSDLBuffer;
 };
 
 #endif

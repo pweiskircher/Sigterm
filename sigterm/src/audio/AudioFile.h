@@ -10,47 +10,47 @@ class AudioDecoder;
 class AudioManager;
 
 class AudioFile : public QObject {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-	AudioFile(const QString &inFilePath, AudioManager *inAudioManager);
-	~AudioFile();
+	public:
+		AudioFile(const QString &inFilePath, AudioManager *inAudioManager);
+		~AudioFile();
 
-	void addToQueue();
-	void removeFromQueue();
+		void addToQueue();
+		void removeFromQueue();
 
-	QString &filePath();
-	AudioDecoder *decoder();
-	AudioMetaData *metaData();
+		QString &filePath();
+		AudioDecoder *decoder();
+		AudioMetaData *metaData();
 
-	quint32 timeTotal();
-	quint32 timePlayed();
+		quint32 timeTotal();
+		quint32 timePlayed();
 
-	// Total samples in stream. 'Samples' means inter-channel sample, i.e. one second
-	// of 44.1Khz audio will have 44100 samples regardless of the number of channels
-	quint32 totalSamples();
-	quint32 playedSamples();
-	void setTotalSamples(quint32 inTotalSamples);
-	void setPlayedSamples(quint32 inPlayedSamples);
+		// Total samples in stream. 'Samples' means inter-channel sample, i.e. one second
+		// of 44.1Khz audio will have 44100 samples regardless of the number of channels
+		quint32 totalSamples();
+		quint32 playedSamples();
+		void setTotalSamples(quint32 inTotalSamples);
+		void setPlayedSamples(quint32 inPlayedSamples);
 
-	bool isPlaying();
-	void setIsPlaying(bool inValue);
+		bool isPlaying();
+		void setIsPlaying(bool inValue);
 
-    signals:
-	void startedPlaying(AudioFile *inAudioFile);
-	void stoppedPlaying(AudioFile *inAudioFile);
+	signals:
+		void startedPlaying(AudioFile *inAudioFile);
+		void stoppedPlaying(AudioFile *inAudioFile);
 
-    private:
-	QString mFilePath;
-	AudioDecoder *mDecoder;
-	AudioMetaData mMetaData;
+	private:
+		QString mFilePath;
+		AudioDecoder *mDecoder;
+		AudioMetaData mMetaData;
 
-	quint32 mTotalSamples;
-	quint32 mPlayedSamples;
+		quint32 mTotalSamples;
+		quint32 mPlayedSamples;
 
-	bool mIsPlaying;
+		bool mIsPlaying;
 
-	AudioManager *mAudioManager;
+		AudioManager *mAudioManager;
 };
 
 #endif
