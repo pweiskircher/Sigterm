@@ -110,7 +110,7 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 					help.sprintf("%d:%02d", length/60, length%60);
 					return help;
 				} else if (role == Qt::TextAlignmentRole) {
-					return Qt::AlignCenter;
+					return Qt::AlignRight;
 				}
 				break;
 
@@ -118,7 +118,7 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 				if (role == Qt::DisplayRole) {
 					return mAudioFileList[index.row()]->metaData()->trackNumber();
 				} else if (role == Qt::TextAlignmentRole) {
-					return Qt::AlignCenter;
+					return Qt::AlignRight;
 				}
 				break;
 
