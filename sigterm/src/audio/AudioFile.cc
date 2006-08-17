@@ -6,7 +6,9 @@ AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : 
 	mAudioManager = inAudioManager;
 	mFilePath = inFilePath;
 	mDecoder = inAudioManager->createAudioDecoder(this);
-	mDecoder->readInfo();
+	if (mDecoder)
+		mDecoder->readInfo();
+
 	mIsPlaying = false;
 
 	mAudioManager->audioLibrary()->addAudioFile(this);
@@ -39,10 +41,16 @@ AudioMetaData *AudioFile::metaData() {
 }
 
 quint32 AudioFile::timeTotal() {
+	if (!decoder())
+		return 0;
+
 	return mTotalSamples/decoder()->audioFormat().frequency();
 }
 
 quint32 AudioFile::timePlayed() {
+	if (!decoder())
+		return 0;
+
 	return mPlayedSamples/decoder()->audioFormat().frequency();
 }
 
