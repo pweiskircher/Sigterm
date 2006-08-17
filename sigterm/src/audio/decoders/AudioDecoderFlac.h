@@ -8,30 +8,30 @@
 class AudioDecoderFlac;
 
 class AudioDecoderFlac : public AudioDecoder {
-    public:
-	AudioDecoderFlac(AudioFile *inAudioFile, AudioManager *inAudioManager);
-	~AudioDecoderFlac();
+	public:
+		AudioDecoderFlac(AudioFile *inAudioFile, AudioManager *inAudioManager);
+		~AudioDecoderFlac();
 
-	virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
-	virtual bool canDecode(const QString &inFilePath);
-	virtual bool seekToTime(quint32 inMilliSeconds);
-	virtual bool readInfo();
+		virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
+		virtual bool canDecode(const QString &inFilePath);
+		virtual bool seekToTime(quint32 inMilliSeconds);
+		virtual bool readInfo();
 
-	void handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]);
-	void setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si);
-	void setVorbisComments(const FLAC__StreamMetadata_VorbisComment *vc);
+		void handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]);
+		void setAudioFormat(const FLAC__StreamMetadata_StreamInfo *si);
+		void setVorbisComments(const FLAC__StreamMetadata_VorbisComment *vc);
 
-	void setCanDecode(bool inValue);
+		void setCanDecode(bool inValue);
 
-    private:
-	virtual bool openFile();
-	virtual bool closeFile();
-	virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
+	private:
+		virtual bool openFile();
+		virtual bool closeFile();
+		virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
 
-	AudioStorage mStorage;
+		AudioStorage mStorage;
 
-	bool mCanDecode;
-	FLAC__FileDecoder *mDecoder;
+		bool mCanDecode;
+		FLAC__FileDecoder *mDecoder;
 };
 
 #endif
