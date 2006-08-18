@@ -103,9 +103,10 @@ void MainWindow::on_actionQuit_activated() {
 void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {
 	mAudioManager.playQueue()->setNextTrack(index.row());
 
-	if (mAudioManager.paused())
+	mAudioManager.skipTrack();
+	if (mAudioManager.paused()) {
+		mAudioManager.audioStorage()->clear();
 		mAudioManager.togglePause();
-	else
-		mAudioManager.skipTrack();
+	}
 }
 
