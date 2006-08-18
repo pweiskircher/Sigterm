@@ -13,7 +13,6 @@ void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
 	connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
 
-	mAudioProcessor.start();
 	mPaused = true;
 
 	mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
@@ -86,10 +85,16 @@ void AudioManager::setPause(bool inPause) {
 
 	SDL_PauseAudio(inPause);
 
-	if (inPause == true)
+	if (inPause == true) {
 		mAudioProcessor.pause();
+		mAudioProcessorWaitCondition.wakeAll();
 
-	mAudioProcessorWaitCondition.wakeAll();
+		mAudioProcessor.wait();
+		qDebug("thread finished.");
+	} else {
+		mAudioProcessor.start();
+		qDebug("thread started.");
+	}
 
 	emit audioPaused(mPaused);
 }
@@ -104,10 +109,7 @@ void AudioManager::skipTrack() {
 }
 
 void AudioManager::quit() {
-	if (!paused())
-		setPause(true);
-	mAudioProcessor.quit();
-	mAudioProcessorWaitCondition.wakeAll();
+	setPause(true);
 	mAudioProcessor.wait();
 }
 

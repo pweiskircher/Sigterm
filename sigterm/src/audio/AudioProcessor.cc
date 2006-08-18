@@ -9,39 +9,30 @@ AudioProcessor::AudioProcessor(AudioManager *inAudioManager) {
 	mAudioManager = inAudioManager;
 	mPause = false;
 	mSkipTrack = false;
-	mQuit = false;
 }
 
 void AudioProcessor::run() {
-	mMutex.lock();
-	while (mAudioManager->audioProcessorWaitCondition()->wait(&mMutex)) {
-		mMutex.unlock();
-		while (1) {
-			mMutex.lock();
-			if (mQuit) {
-				mMutex.unlock();
-				return;
-			}
-			if (mPause) {
-				mPause = false;
-				emit paused();
-				mMutex.unlock();
-				break;
-			}
-			mMutex.unlock();
+	mPause =  false;
+	mSkipTrack = false;
 
-			PlayQueue *playQueue = mAudioManager->playQueue();
-			AudioFile *file = playQueue->currentFile();
-			if (!file) {
-				emit paused();
-				break;
-			}
-
-			file->setIsDecoding(true);
-			processFile(playQueue, file);
-			file->setIsDecoding(false);
+	while (1) {
+		PlayQueue *playQueue = mAudioManager->playQueue();
+		AudioFile *file = playQueue->currentFile();
+		if (!file) {
+			emit paused();
+			return;
 		}
+
 		mMutex.lock();
+		if (mPause) {
+			mMutex.unlock();
+			return;
+		}
+		mMutex.unlock();
+
+		file->setIsDecoding(true);
+		processFile(playQueue, file);
+		file->setIsDecoding(false);
 	}
 }
 
@@ -53,11 +44,6 @@ void AudioProcessor::pause() {
 void AudioProcessor::skipTrack() {
 	QMutexLocker locker(&mMutex);
 	mSkipTrack = true;
-}
-
-void AudioProcessor::quit() {
-	QMutexLocker locker(&mMutex);
-	mQuit = true;
 }
 
 void AudioProcessor::processFile(PlayQueue *inPlayQueue, AudioFile *inFile) {
@@ -104,8 +90,6 @@ void AudioProcessor::processFile(PlayQueue *inPlayQueue, AudioFile *inFile) {
 
 		while (mAudioManager->audioStorage()->needSpace(convertedLen) == false) {
 			mMutex.lock();
-			mAudioManager->audioStorage()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
-			mAudioManager->audioProcessorWaitCondition()->wait(&mMutex);
 
 			if (mSkipTrack) {
 				mSkipTrack = false;
@@ -117,6 +101,10 @@ void AudioProcessor::processFile(PlayQueue *inPlayQueue, AudioFile *inFile) {
 				mMutex.unlock();
 				return;
 			}
+
+			mAudioManager->audioStorage()->wakeOnBufferGet(mAudioManager->audioProcessorWaitCondition());
+			mAudioManager->audioProcessorWaitCondition()->wait(&mMutex);
+
 			mMutex.unlock();
 		}
 		mAudioManager->audioStorage()->add(&buffer);
