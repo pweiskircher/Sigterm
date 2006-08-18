@@ -16,6 +16,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void audioPaused(bool inPaused);
 	    void updateTrackDisplay();
 
+		void seekSliderChangedValue(int inValue);
+		void seekSliderMoved(int inValue);
+		void seekSliderPressed();
+		void seekSliderReleased();
+
 		void on_nextButton_clicked();
 		void on_playButton_clicked();
 		void on_prevButton_clicked();
@@ -29,6 +34,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 	private:
 		AudioManager mAudioManager;
 		QTimer mTrackDisplayUpdater;
+
+		bool mSeekSliderUserUpdate;
+		quint32 mSeekSliderUserUpdateValue;
 };
 
 #endif

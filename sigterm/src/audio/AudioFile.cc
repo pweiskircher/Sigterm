@@ -58,6 +58,14 @@ quint32 AudioFile::timePlayed() {
 	return mPlayedSamples/decoder()->audioFormat().frequency();
 }
 
+bool AudioFile::seekToTime(quint32 inMilliSeconds) {
+	mAudioManager->audioStorage()->clear();
+	mPlayedSamples = (inMilliSeconds/1000) * decoder()->audioFormat().frequency();
+	decoder()->seekToTime(inMilliSeconds);
+	mAudioManager->skipTrack();
+	return true;
+}
+
 quint32 AudioFile::totalSamples() {
 	return mTotalSamples;
 }
@@ -99,6 +107,7 @@ void AudioFile::bytesRemovedFromAudioStorage(quint32 inSize) {
 		mIsPlaying = false;
 		mPlayedSamples = 0;
 		emit stoppedPlaying(this);
+		return;
 	}
 
 	mPlayedSamples += inSize/mAudioManager->hardwareFormat()->channels()/(mAudioManager->hardwareFormat()->bitsPerSample()/8);

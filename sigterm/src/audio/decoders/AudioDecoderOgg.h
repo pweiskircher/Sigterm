@@ -12,12 +12,12 @@ class AudioDecoderOgg : public AudioDecoder {
 		virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
 		virtual bool canDecode(const QString &inFilePath);
 		virtual bool readInfo();
-		virtual bool seekToTime(quint32 inMilliSeconds);
 
 	private:
 		virtual bool openFile();
 		virtual bool closeFile();
 		virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
+		virtual bool seekToTimeInternal(quint32 inMilliSeconds);
 
 		bool readVorbisInfo(OggVorbis_File *inFile);
 

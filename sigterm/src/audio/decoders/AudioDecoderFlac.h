@@ -14,7 +14,6 @@ class AudioDecoderFlac : public AudioDecoder {
 
 		virtual AudioDecoder *createAudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager);
 		virtual bool canDecode(const QString &inFilePath);
-		virtual bool seekToTime(quint32 inMilliSeconds);
 		virtual bool readInfo();
 
 		void handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]);
@@ -27,6 +26,7 @@ class AudioDecoderFlac : public AudioDecoder {
 		virtual bool openFile();
 		virtual bool closeFile();
 		virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
+		virtual bool seekToTimeInternal(quint32 inMilliSeconds);
 
 		AudioStorage mStorage;
 

@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	mAudioManager.init();
 
 	connect(&mTrackDisplayUpdater, SIGNAL(timeout()), SLOT(updateTrackDisplay()));
+	connect(timeSlider, SIGNAL(valueChanged(int)), SLOT(seekSliderChangedValue(int)));
+	connect(timeSlider, SIGNAL(sliderMoved(int)), SLOT(seekSliderMoved(int)));
+	connect(timeSlider, SIGNAL(sliderPressed()), SLOT(seekSliderPressed()));
+	connect(timeSlider, SIGNAL(sliderReleased()), SLOT(seekSliderReleased()));
 
 	playQueue->setModel(mAudioManager.playQueue());
 
@@ -27,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	playQueue->header()->resizeSection(PlayQueue::eTotalTime, 20);
 
 	playQueue->header()->setStretchLastSection(false);
+
+	mSeekSliderUserUpdate = false;
 }
 
 void MainWindow::audioPaused(bool inPause) {
@@ -49,11 +55,21 @@ void MainWindow::updateTrackDisplay() {
 		timePlayedValue = af->timePlayed();
 	}
 
-	QString help;
-
 	timeSlider->setMinimum(0);
 	timeSlider->setMaximum(timeTotalValue);
-	timeSlider->setValue(timePlayedValue);
+
+	if (mSeekSliderUserUpdate == false)
+		timeSlider->setValue(timePlayedValue);
+}
+
+void MainWindow::seekSliderChangedValue(int inValue) {
+	QSlider *slider = (QSlider *)QObject::sender();
+
+	quint32 timeTotalValue, timePlayedValue;
+	QString help;
+
+	timeTotalValue = slider->maximum();
+	timePlayedValue = inValue;
 
 	help.sprintf("%d:%02d", timePlayedValue/60, timePlayedValue%60);
 	timePlayed->setText(help);
@@ -65,6 +81,22 @@ void MainWindow::updateTrackDisplay() {
 		left = timeTotalValue - timePlayedValue;
 	help.sprintf("-%d:%02d", left/60, left%60);
 	timeLeft->setText(help);
+}
+
+void MainWindow::seekSliderMoved(int inValue) {
+	mSeekSliderUserUpdateValue = inValue;
+}
+
+void MainWindow::seekSliderPressed() {
+	mSeekSliderUserUpdate = true;
+}
+
+void MainWindow::seekSliderReleased() {
+	AudioFile *af = mAudioManager.playQueue()->playingTrack();
+	af->seekToTime(mSeekSliderUserUpdateValue*1000);
+	qDebug("seekSliderUserUpdateValue %d", mSeekSliderUserUpdateValue);
+
+	mSeekSliderUserUpdate = false;
 }
 
 void MainWindow::on_nextButton_clicked() {

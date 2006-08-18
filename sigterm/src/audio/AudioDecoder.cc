@@ -9,10 +9,15 @@ AudioDecoder::AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager)
 	mOpened = false;
 }
 
-	AudioDecoder::~AudioDecoder() {
-		if (opened())
-			close();
-	}
+AudioDecoder::~AudioDecoder() {
+	if (opened())
+		close();
+}
+
+bool AudioDecoder::seekToTime(quint32 inMilliSeconds) {
+	QMutexLocker locker(&mMutex);
+	return seekToTimeInternal(inMilliSeconds);
+}
 
 bool AudioDecoder::open() {
 	if (opened()) {
@@ -47,6 +52,7 @@ AudioFormat &AudioDecoder::audioFormat() {
 }
 
 AudioDecoder::DecodingStatus AudioDecoder::getAudioChunk(AudioBuffer *inOutAudioBuffer) {
+	QMutexLocker locker(&mMutex);
 	if (!opened()) {
 		if (!open())
 			return eStop;

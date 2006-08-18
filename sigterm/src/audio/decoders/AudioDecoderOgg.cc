@@ -51,11 +51,9 @@ bool AudioDecoderOgg::closeFile() {
 }
 
 
-	bool AudioDecoderOgg::seekToTime(quint32 inMilliSeconds) {
-		if (ov_time_seek(&mOggVorbisFile, (double)(inMilliSeconds/1000.0)))
-			return true;
-		return false;
-	}
+bool AudioDecoderOgg::seekToTimeInternal(quint32 inMilliSeconds) {
+	return ov_time_seek(&mOggVorbisFile, (double)(inMilliSeconds/1000.0));
+}
 
 AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(AudioBuffer *inOutAudioBuffer) {
 	if (inOutAudioBuffer->state() != AudioBuffer::eEmpty) {

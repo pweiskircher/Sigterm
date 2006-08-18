@@ -90,8 +90,8 @@ bool AudioDecoderFlac::closeFile() {
 }
 
 
-bool AudioDecoderFlac::seekToTime(quint32 inMilliSeconds) {
-	return false;
+bool AudioDecoderFlac::seekToTimeInternal(quint32 inMilliSeconds) {
+	return FLAC__file_decoder_seek_absolute(mDecoder, audioFormat().frequency() * (inMilliSeconds/1000.0));
 }
 
 bool AudioDecoderFlac::readInfo() {

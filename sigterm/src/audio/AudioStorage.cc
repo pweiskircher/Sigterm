@@ -55,7 +55,6 @@ bool AudioStorage::add(QByteArray &inArray, quint32 inLen) {
 	mMutex.lock();
 	memcpy(mBuffer.data() + mBufferLength, inArray.data(), inLen);
 	mBufferLength += inLen;
-	//qDebug("storage: added %d bytes", len);
 	mMutex.unlock();
 	return true;
 
@@ -112,6 +111,11 @@ void AudioStorage::clear() {
 		quint32 bytes = mAudioFileQueue.head()->bytesInAudioStorage();
 		mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
 		mAudioFileQueue.dequeue();
+	}
+
+	if (mBufferGetCondition) {
+		mBufferGetCondition->wakeAll();
+		mBufferGetCondition = NULL;
 	}
 }
 

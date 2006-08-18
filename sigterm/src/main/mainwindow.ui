@@ -64,6 +64,9 @@
       </item>
       <item>
        <widget class="QSlider" name="timeSlider" >
+        <property name="tracking" >
+         <bool>true</bool>
+        </property>
         <property name="orientation" >
          <enum>Qt::Horizontal</enum>
         </property>

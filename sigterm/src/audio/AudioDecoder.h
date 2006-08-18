@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QString>
 #include <QByteArray>
+#include <QMutex>
 
 #include "AudioFormat.h"
 #include "AudioConverter.h"
@@ -23,10 +24,10 @@ class AudioDecoder {
 		virtual bool canDecode(const QString &inFilePath) = 0;
 
 		virtual bool readInfo() = 0;
+		bool seekToTime(quint32 inMilliSeconds);
 
 		bool open();
 		bool close();
-		virtual bool seekToTime(quint32 inMilliSeconds) = 0;
 
 		bool opened();
 
@@ -45,6 +46,7 @@ class AudioDecoder {
 		virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
 		virtual bool openFile() = 0;
 		virtual bool closeFile() = 0;
+		virtual bool seekToTimeInternal(quint32 inMilliSeconds) = 0;
 
 		void setOpened(bool inValue);
 
@@ -54,6 +56,8 @@ class AudioDecoder {
 		AudioManager *mAudioManager;
 		AudioConverter mConverter;
 		AudioFile *mAudioFile;
+
+		QMutex mMutex;
 
 		bool mOpened;
 };

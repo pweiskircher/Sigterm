@@ -26,6 +26,8 @@ class AudioFile : public QObject {
 		quint32 timeTotal();
 		quint32 timePlayed();
 
+		bool seekToTime(quint32 inMilliSeconds);
+
 		// Total samples in stream. 'Samples' means inter-channel sample, i.e. one second
 		// of 44.1Khz audio will have 44100 samples regardless of the number of channels
 		quint32 totalSamples();
