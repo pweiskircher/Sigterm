@@ -22,6 +22,50 @@ AudioFormat::AudioFormat(quint16 inBitsPerSample, quint16 inChannels, quint32 in
 	setIsUnsigned(inIsUnsigned);
 }
 
+AudioFormat::AudioFormat(SDL_AudioSpec *inAudioSpec) {
+	switch(inAudioSpec->format) {
+		case AUDIO_U8:
+			setBitsPerSample(8);
+			setIsUnsigned(true);
+			setIsBigEndian(false);
+			break;
+
+		case AUDIO_S8:
+			setBitsPerSample(8);
+			setIsUnsigned(false);
+			setIsBigEndian(false);
+			break;
+
+		case AUDIO_U16LSB:
+			setBitsPerSample(16);
+			setIsUnsigned(true);
+			setIsBigEndian(false);
+			break;
+
+		case AUDIO_S16LSB:
+			setBitsPerSample(16);
+			setIsUnsigned(false);
+			setIsBigEndian(false);
+			break;
+
+		case AUDIO_U16MSB:
+			setBitsPerSample(16);
+			setIsUnsigned(true);
+			setIsBigEndian(true);
+			break;
+
+		case AUDIO_S16MSB:
+			setBitsPerSample(16);
+			setIsUnsigned(false);
+			setIsBigEndian(true);
+			break;
+	}
+
+	setChannels(inAudioSpec->channels);
+	setFrequency(inAudioSpec->freq);
+	setBitRate(0);
+}
+
 AudioFormat::~AudioFormat() {
 }
 

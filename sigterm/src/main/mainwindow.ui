@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
-    <height>330</height>
+    <width>621</width>
+    <height>341</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -53,21 +53,55 @@
        </widget>
       </item>
       <item>
-       <spacer>
+       <widget class="QLabel" name="timePlayed" >
+        <property name="text" >
+         <string>0:00</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="timeSlider" >
         <property name="orientation" >
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeType" >
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" >
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="timeLeft" >
+        <property name="text" >
+         <string>-0:00</string>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTreeView" name="playQueue" >
+      <property name="alternatingRowColors" >
+       <bool>true</bool>
+      </property>
+      <property name="selectionMode" >
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="indentation" >
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" >
+      <property name="margin" >
+       <number>0</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
       <item>
        <widget class="QPushButton" name="addButton" >
         <property name="text" >
@@ -97,19 +131,6 @@
       </item>
      </layout>
     </item>
-    <item>
-     <widget class="QTreeView" name="playQueue" >
-      <property name="alternatingRowColors" >
-       <bool>true</bool>
-      </property>
-      <property name="selectionMode" >
-       <enum>QAbstractItemView::ExtendedSelection</enum>
-      </property>
-      <property name="indentation" >
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar" >
@@ -117,7 +138,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>496</width>
+     <width>621</width>
      <height>30</height>
     </rect>
    </property>
@@ -141,8 +162,8 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>308</y>
-     <width>496</width>
+     <y>319</y>
+     <width>621</width>
      <height>22</height>
     </rect>
    </property>

@@ -80,3 +80,11 @@ quint32 AudioBuffer::convertedChunkLength() {
 	return mConvertedChunkLength;
 }
 
+void AudioBuffer::setAudioFile(AudioFile *inAudioFile) {
+	mAudioFile = inAudioFile;
+}
+
+AudioFile *AudioBuffer::audioFile() {
+	return mAudioFile;
+}
+

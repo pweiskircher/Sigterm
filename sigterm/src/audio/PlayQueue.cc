@@ -7,6 +7,7 @@
 
 PlayQueue::PlayQueue() {
 	mCurrentAudioFileIndex = 0;
+	mPlayingTrack = NULL;
 }
 
 void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
@@ -28,6 +29,7 @@ void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
 }
 
 AudioFile *PlayQueue::currentFile() {
+	QMutexLocker locker(&mMutex);
 	if (mAudioFileList.size() == 0)
 		return NULL;
 
@@ -40,11 +42,18 @@ AudioFile *PlayQueue::currentFile() {
 	return mAudioFileList[mCurrentAudioFileIndex];
 }
 
+AudioFile *PlayQueue::playingTrack() {
+	QMutexLocker locker(&mMutex);
+	return mPlayingTrack;
+}
+
 void PlayQueue::setNextTrack(int inIndex) {
+	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex = inIndex;
 }
 
 void PlayQueue::finished(AudioFile *inAudioFile) {
+	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex++;
 }
 
@@ -148,24 +157,34 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 	}
 
 void PlayQueue::nextTrack() {
+	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex++;
 }
 
 void PlayQueue::prevTrack() {
+	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex--;
 }
 
 
 void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
+	QMutexLocker locker(&mMutex);
+
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1)
 		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+	mPlayingTrack = inAudioFile;
 }
 
 void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
+	QMutexLocker locker(&mMutex);
+
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1)
 		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+
+	if (mPlayingTrack == inAudioFile)
+		mPlayingTrack = NULL;
 }
 
 void PlayQueue::removeTracks(QModelIndexList &inIndexes) {

@@ -34,7 +34,12 @@ class AudioFile : public QObject {
 		void setPlayedSamples(quint32 inPlayedSamples);
 
 		bool isPlaying();
-		void setIsPlaying(bool inValue);
+
+		void setIsDecoding(bool inValue);
+
+		void bytesAddedToAudioStorage(quint32 inSize);
+		void bytesRemovedFromAudioStorage(quint32 inSize);
+		quint32 bytesInAudioStorage();
 
 	signals:
 		void startedPlaying(AudioFile *inAudioFile);
@@ -49,8 +54,11 @@ class AudioFile : public QObject {
 		quint32 mPlayedSamples;
 
 		bool mIsPlaying;
+		bool mIsDecoding;
 
 		AudioManager *mAudioManager;
+
+		quint32 mBytesInAudioStorage;
 };
 
 #endif

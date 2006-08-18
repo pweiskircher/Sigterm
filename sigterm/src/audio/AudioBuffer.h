@@ -5,6 +5,8 @@
 #include <QByteArray>
 #include <SDL.h>
 
+class AudioFile;
+
 class AudioBuffer {
 	public:
 		AudioBuffer(quint32 inRequestedLength);
@@ -33,6 +35,9 @@ class AudioBuffer {
 		quint32 decodedChunkLength();
 		quint32 convertedChunkLength();
 
+		void setAudioFile(AudioFile *inAudioFile);
+		AudioFile *audioFile();
+
 	private:
 		quint32 mRequestedLength;
 		quint32 mDecodedChunkLength;
@@ -41,6 +46,8 @@ class AudioBuffer {
 		QByteArray mByteBuffer;
 
 		AudioBufferState mState;
+
+		AudioFile *mAudioFile;
 };
 
 #endif

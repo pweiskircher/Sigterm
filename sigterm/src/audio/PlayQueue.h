@@ -2,6 +2,7 @@
 #define _PLAY_LIST_H
 
 #include <QAbstractItemModel>
+#include <QMutex>
 
 class AudioFile;
 
@@ -22,6 +23,7 @@ class PlayQueue : public QAbstractTableModel {
 		} Columns;
 
 		AudioFile *currentFile();
+		AudioFile *playingTrack();
 
 		void setNextTrack(int inIndex);
 
@@ -49,6 +51,9 @@ class PlayQueue : public QAbstractTableModel {
 
 		QList<AudioFile *> mAudioFileList;
 		int mCurrentAudioFileIndex;
+
+		AudioFile *mPlayingTrack;
+		QMutex mMutex;
 };
 
 #endif

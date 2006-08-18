@@ -5,6 +5,9 @@
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : mMetaData(this) {
 	mAudioManager = inAudioManager;
 	mFilePath = inFilePath;
+	mPlayedSamples = 0;
+	mTotalSamples = 0;
+
 	mDecoder = inAudioManager->createAudioDecoder(this);
 	if (mDecoder)
 		mDecoder->readInfo();
@@ -76,13 +79,30 @@ bool AudioFile::isPlaying() {
 	return mIsPlaying;
 }
 
-void AudioFile::setIsPlaying(bool inValue) {
-	mIsPlaying = inValue;
-
-	if (mIsPlaying == true) {
-		emit startedPlaying(this);
-	} else {
-		emit stoppedPlaying(this);
-	}
+void AudioFile::setIsDecoding(bool inValue) {
+	mIsDecoding = inValue;
 }
 
+void AudioFile::bytesAddedToAudioStorage(quint32 inSize) {
+	mBytesInAudioStorage += inSize;
+}
+
+void AudioFile::bytesRemovedFromAudioStorage(quint32 inSize) {
+	mBytesInAudioStorage -= inSize;
+
+	if (mIsDecoding == true && mIsPlaying == false) {
+		mIsPlaying = true;
+		emit startedPlaying(this);
+	} else if (mIsDecoding == false && mIsPlaying == true && mBytesInAudioStorage == 0) {
+		// TODO: this isn't working right. its possible that we are two times in the storage.
+		mIsPlaying = false;
+		mPlayedSamples = 0;
+		emit stoppedPlaying(this);
+	}
+
+	mPlayedSamples += inSize/mAudioManager->hardwareFormat()->channels()/(mAudioManager->hardwareFormat()->bitsPerSample()/8);
+}
+
+quint32 AudioFile::bytesInAudioStorage() {
+	return mBytesInAudioStorage;
+}

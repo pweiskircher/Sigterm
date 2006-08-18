@@ -18,6 +18,12 @@ AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
 
 	mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
 	mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
+
+	mHardwareAudioFormat = NULL;
+}
+
+AudioManager::~AudioManager() {
+	delete mHardwareAudioFormat;
 }
 
 void AudioManager::init() {
@@ -37,6 +43,8 @@ void AudioManager::init() {
 		qDebug("Could not open the audio device.");
 		exit(EXIT_FAILURE);
 	}
+
+	mHardwareAudioFormat = new AudioFormat(&mHardwareAudioSpec);
 }
 
 AudioStorage *AudioManager::audioStorage() {
@@ -127,5 +135,9 @@ void AudioManager::prevTrack() {
 
 SDL_AudioSpec *AudioManager::hardwareSpec() {
 	return &mHardwareAudioSpec;
+}
+
+AudioFormat *AudioManager::hardwareFormat() {
+	return mHardwareAudioFormat;
 }
 

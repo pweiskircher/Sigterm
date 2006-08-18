@@ -1,5 +1,7 @@
 #include "AudioStorage.h"
 #include "AudioBuffer.h"
+#include "AudioFile.h"
+
 #include <QWaitCondition>
 #include <QThread>
 
@@ -15,7 +17,7 @@ static void usleep(int usecs) {
 // synchronize using a QSemaphore!
 
 AudioStorage::AudioStorage() {
-	mBuffer.resize(1024*128);
+	mBuffer.resize(1024*1024);
 	mBufferLength = 0;
 	mBufferGetCondition = NULL;
 }
@@ -23,7 +25,19 @@ AudioStorage::AudioStorage() {
 bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
 	quint32 len;
 	QByteArray *buffer = inAudioBuffer->convertedChunkBuffer(len);
-	return add(*buffer, len);
+	if (!add(*buffer, len))
+		return false;
+
+	QMutexLocker locker(&mMutex);
+	inAudioBuffer->audioFile()->bytesAddedToAudioStorage(len);
+	if (mAudioFileQueue.empty())
+		mAudioFileQueue.enqueue(inAudioBuffer->audioFile());
+	else {
+		if (mAudioFileQueue.last() != inAudioBuffer->audioFile())
+			mAudioFileQueue.enqueue(inAudioBuffer->audioFile());
+	}
+
+	return true;
 }
 
 bool AudioStorage::add(QByteArray &inArray, quint32 inLen) {
@@ -72,6 +86,20 @@ bool AudioStorage::get(QByteArray &outArray) {
 		mBufferGetCondition->wakeAll();
 		mBufferGetCondition = NULL;
 	}
+
+	quint32 bytesRemoved = outArray.size();
+	while (mAudioFileQueue.empty() == false) {
+		quint32 bytes = mAudioFileQueue.head()->bytesInAudioStorage();
+		if (bytes <= bytesRemoved) {
+			mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
+			mAudioFileQueue.dequeue();
+			bytesRemoved -= bytes;
+		} else {
+			mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
+			break;
+		}
+	}
+
 	mMutex.unlock();
 	return true;
 }
@@ -80,6 +108,11 @@ void AudioStorage::clear() {
 	QMutexLocker locker(&mMutex);
 
 	mBufferLength = 0;
+	while (mAudioFileQueue.empty() == false) {
+		quint32 bytes = mAudioFileQueue.head()->bytesInAudioStorage();
+		mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
+		mAudioFileQueue.dequeue();
+	}
 }
 
 quint32 AudioStorage::bufferLength() {

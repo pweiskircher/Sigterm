@@ -4,8 +4,10 @@
 #include <QByteArray>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QQueue>
 
 class AudioBuffer;
+class AudioFile;
 
 class AudioStorage {
 	public:
@@ -29,6 +31,8 @@ class AudioStorage {
 		quint32 mBufferLength;
 
 		QWaitCondition *mBufferGetCondition;
+
+		QQueue<AudioFile *> mAudioFileQueue;
 };
 
 #endif

@@ -137,7 +137,7 @@ bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
 	audioFormat().setIsBigEndian(false);
 	audioFormat().setIsUnsigned(false);
 
-	audioFile()->setTotalSamples(ov_pcm_total(inFile, -1));
+	audioFile()->setTotalSamples(ov_pcm_total(inFile, -1) * audioFormat().bitsPerSample()/8);
 
 	vorbis_comment *comment = ov_comment(inFile, -1);
 	QStringList list;

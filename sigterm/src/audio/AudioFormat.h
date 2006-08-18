@@ -3,11 +3,14 @@
 
 #include <QtGlobal>
 
+struct SDL_AudioSpec;
+
 class AudioFormat {
 	public:
 		AudioFormat();
 		AudioFormat(quint16 inBitsPerSample, quint16 inChannels, quint32 inFrequency, quint32 inBitRate,
 				bool inIsBigEndian, bool inIsUnsigned);
+		AudioFormat(SDL_AudioSpec *inAudioSpec);
 		~AudioFormat();
 
 		bool isValid();

@@ -14,12 +14,14 @@
 #include "PlayQueue.h"
 
 class AudioDecoder;
+class AudioFormat;
 
 class AudioManager : public QObject {
 	Q_OBJECT
 
 	public:
 		AudioManager();
+		~AudioManager();
 
 		void init();
 		void setPause(bool inPause);
@@ -33,6 +35,7 @@ class AudioManager : public QObject {
 		void prevTrack();
 
 		SDL_AudioSpec *hardwareSpec();
+		AudioFormat *hardwareFormat();
 		AudioStorage *audioStorage();
 		AudioLibrary *audioLibrary();
 		QWaitCondition *audioProcessorWaitCondition();
@@ -52,6 +55,7 @@ class AudioManager : public QObject {
 		AudioLibrary mAudioLibrary;
 
 		SDL_AudioSpec mHardwareAudioSpec, mDesiredAudioSpec;
+		AudioFormat *mHardwareAudioFormat;
 
 		QMutex mAudioMutex;
 		QWaitCondition mAudioProcessorWaitCondition;

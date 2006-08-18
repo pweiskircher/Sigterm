@@ -4,14 +4,17 @@
 #include "ui_mainwindow.h"
 #include "AudioManager.h"
 
+#include <QTimer>
+
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
 
 	public:
 		MainWindow(QWidget *parent = 0);
 
-		private slots:
-			void audioPaused(bool inPaused);
+	private slots:
+		void audioPaused(bool inPaused);
+	    void updateTrackDisplay();
 
 		void on_nextButton_clicked();
 		void on_playButton_clicked();
@@ -25,6 +28,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 	private:
 		AudioManager mAudioManager;
+		QTimer mTrackDisplayUpdater;
 };
 
 #endif

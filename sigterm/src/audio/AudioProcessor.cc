@@ -37,9 +37,9 @@ void AudioProcessor::run() {
 				break;
 			}
 
-			file->setIsPlaying(true);
+			file->setIsDecoding(true);
 			processFile(playQueue, file);
-			file->setIsPlaying(false);
+			file->setIsDecoding(false);
 		}
 		mMutex.lock();
 	}
@@ -63,6 +63,7 @@ void AudioProcessor::quit() {
 void AudioProcessor::processFile(PlayQueue *inPlayQueue, AudioFile *inFile) {
 	AudioDecoder::DecodingStatus status;
 	AudioBuffer buffer(4096);
+	buffer.setAudioFile(inFile);
 
 	bool done = false;
 	emit startedPlaying(inFile);
