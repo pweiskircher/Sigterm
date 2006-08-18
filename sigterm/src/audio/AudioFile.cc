@@ -7,6 +7,7 @@ AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : 
 	mFilePath = inFilePath;
 	mPlayedSamples = 0;
 	mTotalSamples = 0;
+	mBytesInAudioStorage = 0;
 
 	mDecoder = inAudioManager->createAudioDecoder(this);
 	if (mDecoder)

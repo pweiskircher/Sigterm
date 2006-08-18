@@ -95,7 +95,7 @@ bool AudioStorage::get(QByteArray &outArray) {
 			mAudioFileQueue.dequeue();
 			bytesRemoved -= bytes;
 		} else {
-			mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
+			mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytesRemoved);
 			break;
 		}
 	}
