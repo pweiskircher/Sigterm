@@ -91,6 +91,7 @@ bool AudioDecoderFlac::closeFile() {
 
 
 bool AudioDecoderFlac::seekToTimeInternal(quint32 inMilliSeconds) {
+	mStorage.clear();
 	return FLAC__file_decoder_seek_absolute(mDecoder, audioFormat().frequency() * (inMilliSeconds/1000.0));
 }
 
