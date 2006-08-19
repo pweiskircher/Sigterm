@@ -52,7 +52,8 @@ bool AudioDecoderOgg::closeFile() {
 
 
 bool AudioDecoderOgg::seekToTimeInternal(quint32 inMilliSeconds) {
-	return ov_time_seek(&mOggVorbisFile, (double)(inMilliSeconds/1000.0));
+	ov_time_seek(&mOggVorbisFile, (double)(inMilliSeconds/1000.0));
+	return true;
 }
 
 AudioDecoder::DecodingStatus AudioDecoderOgg::getDecodedChunk(AudioBuffer *inOutAudioBuffer) {
@@ -135,7 +136,7 @@ bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
 	audioFormat().setIsBigEndian(false);
 	audioFormat().setIsUnsigned(false);
 
-	audioFile()->setTotalSamples(ov_pcm_total(inFile, -1) * audioFormat().bitsPerSample()/8);
+	audioFile()->setTotalSamples((ov_pcm_total(inFile, -1) * audioFormat().bitsPerSample()/8) / audioFormat().channels());
 
 	vorbis_comment *comment = ov_comment(inFile, -1);
 	QStringList list;
