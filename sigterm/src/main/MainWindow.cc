@@ -114,6 +114,7 @@ void MainWindow::on_prevButton_clicked() {
 void MainWindow::on_addButton_clicked() {
 	// TODO: save last directory
 	QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg)");
+	qSort(files.begin(), files.end());
 	for (int i=0; i<files.size(); i++) {
 		AudioFile *af = new AudioFile(files[i], &mAudioManager);
 		af->addToQueue();

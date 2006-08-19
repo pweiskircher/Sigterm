@@ -52,6 +52,14 @@ void PlayQueue::setNextTrack(int inIndex) {
 	mCurrentAudioFileIndex = inIndex;
 }
 
+void PlayQueue::setNextTrack(AudioFile *inAudioFile) {
+	mMutex.lock();
+	int index = mAudioFileList.indexOf(inAudioFile);
+	mMutex.unlock();
+	if (index != -1)
+		setNextTrack(index);
+}
+
 void PlayQueue::finished(AudioFile *inAudioFile) {
 	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex++;

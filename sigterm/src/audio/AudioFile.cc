@@ -65,6 +65,7 @@ bool AudioFile::seekToTime(quint32 inMilliSeconds) {
 	mAudioManager->setPause(true);
 	mAudioManager->audioStorage()->clear();
 	decoder()->seekToTime(inMilliSeconds);
+	mAudioManager->playQueue()->setNextTrack(this);
 	mAudioManager->setPause(false);
 	mPlayedSamples = (inMilliSeconds/1000) * decoder()->audioFormat().frequency();
 	SDL_UnlockAudio();

@@ -26,6 +26,7 @@ class PlayQueue : public QAbstractTableModel {
 		AudioFile *playingTrack();
 
 		void setNextTrack(int inIndex);
+		void setNextTrack(AudioFile *inAudioFile);
 
 		void finished(AudioFile *inAudioFile);
 
