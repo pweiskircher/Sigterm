@@ -2,6 +2,8 @@
 #include "AudioManager.h"
 #include "AudioDecoder.h"
 
+#include <SDL.h>
+
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : mMetaData(this) {
 	mAudioManager = inAudioManager;
 	mFilePath = inFilePath;
@@ -59,10 +61,11 @@ quint32 AudioFile::timePlayed() {
 }
 
 bool AudioFile::seekToTime(quint32 inMilliSeconds) {
+	SDL_LockAudio();
 	mAudioManager->audioStorage()->clear();
 	mPlayedSamples = (inMilliSeconds/1000) * decoder()->audioFormat().frequency();
 	decoder()->seekToTime(inMilliSeconds);
-	mAudioManager->skipTrack();
+	SDL_UnlockAudio();
 	return true;
 }
 
