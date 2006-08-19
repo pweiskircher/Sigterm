@@ -65,6 +65,25 @@ SET(SIGTERM_LIBRARIES
   ${FLAC_LIBRARY}
 )
 
+SET(AAC_STUFF
+src/audio/aac_stuff/aacinfo.c
+src/audio/aac_stuff/aacinfo.h
+src/audio/aac_stuff/drms.c
+src/audio/aac_stuff/drms.h
+src/audio/aac_stuff/drmstables.h
+src/audio/aac_stuff/getopt.c
+src/audio/aac_stuff/getopt.h
+src/audio/aac_stuff/mp4atom.c
+src/audio/aac_stuff/mp4ff.c
+src/audio/aac_stuff/mp4ff.h
+src/audio/aac_stuff/mp4ff_int_types.h
+src/audio/aac_stuff/mp4ffint.h
+src/audio/aac_stuff/mp4meta.c
+src/audio/aac_stuff/mp4sample.c
+src/audio/aac_stuff/mp4tagupdate.c
+src/audio/aac_stuff/mp4util.c
+)
+
 SET(MACOSX_BUNDLE_INFO_STRING	"Sigterm Music Player")
 # SET(MACOSX_BUNDLE_ICON_FILE
 SET(MACOSX_BUNDLE_GUI_IDENTIFIER "at.sigterm.sigterm")
@@ -79,7 +98,7 @@ IF(WIN32)
   SET(SIGTERM_SRCS ${SIGTERM_SRCS} src/main/qtmain_win.cpp)
 ENDIF(WIN32)
 
-ADD_EXECUTABLE(sigterm WIN32 MACOSX_BUNDLE ${SIGTERM_SRCS} ${SIGTERM_UI_H} ${SIGTERM_MOC_SRCS})
+ADD_EXECUTABLE(sigterm WIN32 MACOSX_BUNDLE ${SIGTERM_SRCS} ${SIGTERM_UI_H} ${SIGTERM_MOC_SRCS} ${AAC_STUFF})
 
 # hack for broken pkgconfig on win32
 IF(WIN32)
@@ -88,3 +107,5 @@ ELSE(WIN32)
   # sane unix stuff
   TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} ${VORBISFILE_LINK_FLAGS})
 ENDIF(WIN32)
+
+
