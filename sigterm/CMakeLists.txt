@@ -55,6 +55,7 @@ src/audio/AudioFile.h
 src/audio/PlayQueue.h
 )
 
+QT4_ADD_RESOURCES(src/main/mainwindow.qrc)
 QT4_WRAP_CPP(SIGTERM_MOC_SRCS ${SIGTERM_MOC})
 QT4_WRAP_UI(SIGTERM_UI_H ${SIGTERM_UI})
 
@@ -71,8 +72,6 @@ src/audio/aac_stuff/aacinfo.h
 src/audio/aac_stuff/drms.c
 src/audio/aac_stuff/drms.h
 src/audio/aac_stuff/drmstables.h
-src/audio/aac_stuff/getopt.c
-src/audio/aac_stuff/getopt.h
 src/audio/aac_stuff/mp4atom.c
 src/audio/aac_stuff/mp4ff.c
 src/audio/aac_stuff/mp4ff.h
