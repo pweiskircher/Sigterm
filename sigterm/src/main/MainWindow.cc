@@ -48,9 +48,9 @@ void MainWindow::audioPaused(bool inPause) {
 void MainWindow::updateTrackDisplay() {
 	AudioFile *af = mAudioManager.playQueue()->playingTrack();
 	quint32 timeTotalValue, timePlayedValue;
-	if (!af)
+	if (!af) {
 		timeTotalValue = timePlayedValue = 0;
-	else {
+	} else {
 		timeTotalValue = af->timeTotal();
 		timePlayedValue = af->timePlayed();
 	}
@@ -113,7 +113,7 @@ void MainWindow::on_prevButton_clicked() {
 
 void MainWindow::on_addButton_clicked() {
 	// TODO: save last directory
-	QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg)");
+	QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg *.m4a)");
 	qSort(files.begin(), files.end());
 	for (int i=0; i<files.size(); i++) {
 		AudioFile *af = new AudioFile(files[i], &mAudioManager);

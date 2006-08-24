@@ -2,6 +2,8 @@
 #include "AudioFile.h"
 #include "AudioBuffer.h"
 
+#include <QStringList>
+
 static int _fseek64_wrap(FILE *f,ogg_int64_t off,int whence){
 	if(f==NULL)return(-1);
 	return fseek(f,off,whence);

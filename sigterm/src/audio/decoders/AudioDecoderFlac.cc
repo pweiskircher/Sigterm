@@ -29,7 +29,7 @@ static void metadata_candecode_callback(const FLAC__FileDecoder *decoder, const 
 }
 
 static void error_callback(const FLAC__FileDecoder *decoder, ::FLAC__StreamDecoderErrorStatus status, void *userdata) {
-	qDebug("error callback: %d", status);
+//	qDebug("error callback: %d", status);
 }
 
 
@@ -173,20 +173,18 @@ bool AudioDecoderFlac::canDecode(const QString &inFilePath) {
 	setCanDecode(false);
 
 	if (!FLAC__file_decoder_set_filename(decoder, qPrintable(inFilePath))) {
-		qDebug("Couldn't set filename on flac decoder.");
-		return false;
+		goto end;
 	}
 
 	if (FLAC__file_decoder_init(decoder) != FLAC__FILE_DECODER_OK) {
-		qDebug("Couldn't initialize flac decoder context.");
-		return false;
+		goto end;
 	}
 
 	if (!FLAC__file_decoder_process_until_end_of_metadata(decoder)) {
-		qDebug("Couldn't process flac file to end of meta data.");
-		return false;
+		goto end;
 	}
 
+end:
 	FLAC__file_decoder_finish(decoder);
 	FLAC__file_decoder_delete(decoder);
 

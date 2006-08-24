@@ -4,6 +4,7 @@
 
 #include "decoders/AudioDecoderOgg.h"
 #include "decoders/AudioDecoderFlac.h"
+#include "decoders/AudioDecoderMp4.h"
 
 void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 	AudioManager *mgr = (AudioManager *)userdata;
@@ -17,6 +18,7 @@ AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
 
 	mAudioDecoderList.append(new AudioDecoderOgg(NULL, this));
 	mAudioDecoderList.append(new AudioDecoderFlac(NULL, this));
+	mAudioDecoderList.append(new AudioDecoderMp4(NULL, this));
 
 	mHardwareAudioFormat = NULL;
 }

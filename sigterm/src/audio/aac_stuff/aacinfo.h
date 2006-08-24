@@ -28,6 +28,10 @@
 #ifndef AACINFO_H__
 #define AACINFO_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //#include "filestream.h"
 #include <stdio.h>
 
@@ -45,10 +49,10 @@ int get_AAC_format(FILE *file, faadAACInfo *info,
                    unsigned long **seek_table, int *seek_table_len,
                    int no_seek_table);
 
-static int read_ADIF_header(FILE *file, faadAACInfo *info);
-static int read_ADTS_header(FILE *file, faadAACInfo *info,
-                            unsigned long **seek_table, int *seek_table_len,
-                            int tagsize, int no_seek_table);
 int StringComp(char const *str1, char const *str2, unsigned long len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

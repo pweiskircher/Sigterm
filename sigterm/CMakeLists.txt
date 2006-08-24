@@ -20,10 +20,13 @@ PKGCONFIG(vorbisfile VORBISFILE_INCLUDE_DIR VORBISFILE_LINK_DIR VORBISFILE_LINK_
 FIND_LIBRARY(FLAC_LIBRARY FLAC /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FLAC_INCLUDE_DIR FLAC/file_decoder.h /usr/include /usr/local/include /opt/local/include)
 
-INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${FLAC_INCLUDE_DIR})
+FIND_LIBRARY(FAAD_LIBRARY faad /usr/lib /usr/local/lib /opt/local/lib)
+FIND_PATH(FAAD_INCLUDE_DIR neaacdec.h /usr/include /usr/local/include /opt/local/include)
+
+INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(src/audio/)
+INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/)
 
 SET(SIGTERM_SRCS
 src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
@@ -38,6 +41,7 @@ src/audio/PlayQueue.cc src/audio/PlayQueue.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/AudioMetaData.cc src/audio/AudioMetaData.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
+src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
@@ -64,6 +68,7 @@ SET(SIGTERM_LIBRARIES
   ${QT_QTGUI_LIBRARY}
   ${SIGTERM_SDL_LIBRARY}
   ${FLAC_LIBRARY}
+  ${FAAD_LIBRARY}
 )
 
 SET(AAC_STUFF

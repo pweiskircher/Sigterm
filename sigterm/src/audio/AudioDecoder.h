@@ -8,6 +8,7 @@
 
 #include "AudioFormat.h"
 #include "AudioConverter.h"
+#include "AudioFile.h"
 
 #include <SDL.h>
 

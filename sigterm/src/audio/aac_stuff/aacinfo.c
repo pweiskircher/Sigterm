@@ -37,6 +37,10 @@
 #define ADIF_MAX_SIZE 30 /* Should be enough */
 #define ADTS_MAX_SIZE 10 /* Should be enough */
 
+static int read_ADIF_header(FILE *file, faadAACInfo *info);
+static int read_ADTS_header(FILE *file, faadAACInfo *info,
+				     unsigned long **seek_table, int *seek_table_len,
+					 int tagsize, int no_seek_table);
 static int sample_rates[] = {96000,88200,64000,48000,44100,32000,24000,22050,16000,12000,11025,8000};
 
 static int read_ADIF_header(FILE *file, faadAACInfo *info)
