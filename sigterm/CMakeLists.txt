@@ -1,4 +1,5 @@
 PROJECT(sigterm)
+CMAKE_MINIMUM_REQUIRED(2.4)
 
 IF(WIN32)
   MESSAGE(">> sigterm: Building for Win32")
