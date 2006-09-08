@@ -11,7 +11,8 @@ class AudioFile;
 
 class AudioStorage {
 	public:
-		AudioStorage();
+		AudioStorage(quint32 inBufferSize=128*1024);
+		~AudioStorage();
 
 		bool add(AudioBuffer *inAudioBuffer);
 		bool add(QByteArray &inArray, quint32 inLen);
@@ -27,8 +28,13 @@ class AudioStorage {
 
 	private:
 		QMutex mMutex;
-		QByteArray mBuffer;
-		quint32 mBufferLength;
+		quint32 mBufferSize;
+		quint8 *mBuffer;
+
+		QQueue<quint8 *> mUsedBufferList;
+		QQueue<quint8 *> mFreeBufferList;
+		quint8 *mPartialUsedBuffer;
+		quint8 *mPartialFreeBuffer;
 
 		QWaitCondition *mBufferGetCondition;
 

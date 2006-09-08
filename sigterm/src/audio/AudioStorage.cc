@@ -4,6 +4,7 @@
 
 #include <QWaitCondition>
 #include <QThread>
+#include <QDebug>
 
 #ifdef WIN32
 #include <windows.h>
@@ -16,10 +17,26 @@ static void usleep(int usecs) {
 
 // synchronize using a QSemaphore!
 
-AudioStorage::AudioStorage() {
-	mBuffer.resize(1024*1024);
-	mBufferLength = 0;
+#define CHUNK_SIZE 4096
+
+AudioStorage::AudioStorage(quint32 inBufferSize) {
+	quint32 roundedLen = (inBufferSize / CHUNK_SIZE) * CHUNK_SIZE;
+	mBuffer = new quint8[roundedLen];
+
+	mBufferSize = roundedLen;
+
+	mPartialUsedBuffer = NULL;
+	mPartialFreeBuffer = NULL;
+
+	for (unsigned int i=0; i < roundedLen; i += CHUNK_SIZE) {
+		mFreeBufferList.enqueue(mBuffer + i);
+	}
+
 	mBufferGetCondition = NULL;
+}
+
+AudioStorage::~AudioStorage() {
+	delete mBuffer;
 }
 
 bool AudioStorage::add(AudioBuffer *inAudioBuffer) {
@@ -53,8 +70,27 @@ bool AudioStorage::add(QByteArray &inArray, quint32 inLen) {
 	}
 
 	mMutex.lock();
-	memcpy(mBuffer.data() + mBufferLength, inArray.data(), inLen);
-	mBufferLength += inLen;
+	for (unsigned int i=0; i < inLen; i += CHUNK_SIZE) {
+		quint8 *fb = mFreeBufferList.head();
+		quint32 len;
+
+		if (mPartialFreeBuffer) {
+			len = mPartialFreeBuffer - fb;
+			fb = mPartialFreeBuffer;
+			mPartialFreeBuffer = NULL;
+		} else {
+			len = CHUNK_SIZE;
+		}
+
+		if (len + i > inLen) {
+			len = inLen - i;
+			mPartialFreeBuffer = fb + len;
+		} else {
+			mUsedBufferList.enqueue(mFreeBufferList.dequeue());
+		}
+
+		memcpy(fb, inArray.data() + i, len);
+	}
 	mMutex.unlock();
 	return true;
 
@@ -77,9 +113,27 @@ bool AudioStorage::get(QByteArray &outArray) {
 	}
 
 	mMutex.lock();
-	outArray = mBuffer.left(outArray.size());
-	memmove(mBuffer.data(), mBuffer.data() + outArray.size(), mBufferLength - outArray.size());
-	mBufferLength -= outArray.size();
+	for (int i = 0; i < outArray.size(); i += CHUNK_SIZE) {
+		quint8 *fb = mUsedBufferList.head();
+		quint32 len;
+
+		if (mPartialUsedBuffer) {
+			len = mPartialUsedBuffer - fb;
+			fb = mPartialUsedBuffer;
+			mPartialUsedBuffer = NULL;
+		} else {
+			len = CHUNK_SIZE;
+		}
+
+		if (i + len > (quint32)outArray.size()) {
+			len = outArray.size() - i;
+			mPartialUsedBuffer = fb + len;
+		} else {
+			mFreeBufferList.enqueue(mUsedBufferList.dequeue());
+		}
+
+		memcpy(outArray.data() + i, fb, len);
+	}
 
 	if (mBufferGetCondition) {
 		mBufferGetCondition->wakeAll();
@@ -106,7 +160,9 @@ bool AudioStorage::get(QByteArray &outArray) {
 void AudioStorage::clear() {
 	QMutexLocker locker(&mMutex);
 
-	mBufferLength = 0;
+	mFreeBufferList += mUsedBufferList;
+	mUsedBufferList.clear();
+
 	while (mAudioFileQueue.empty() == false) {
 		quint32 bytes = mAudioFileQueue.head()->bytesInAudioStorage();
 		mAudioFileQueue.head()->bytesRemovedFromAudioStorage(bytes);
@@ -120,19 +176,28 @@ void AudioStorage::clear() {
 }
 
 quint32 AudioStorage::bufferLength() {
-	return mBufferLength;
+	quint32 len = 0;
+
+	if (mPartialUsedBuffer)
+		len += mPartialUsedBuffer - mUsedBufferList.head();
+	else
+		len += CHUNK_SIZE;
+
+	len += CHUNK_SIZE * (mUsedBufferList.size() - 1);
+
+	return len;
 }
 
 bool AudioStorage::needSpace(quint32 inSpace) {
 	QMutexLocker locker(&mMutex);
-	if (mBufferLength + inSpace > (quint32)mBuffer.size())
+	if (inSpace > (mBufferSize - bufferLength()))
 		return false;
 	return true;
 }
 
 bool AudioStorage::needData(quint32 inData) {
 	QMutexLocker locker(&mMutex);
-	if (mBufferLength < inData)
+	if (bufferLength() < inData)
 		return false;
 	return true;
 }
