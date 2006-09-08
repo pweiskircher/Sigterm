@@ -168,6 +168,7 @@ AudioDecoder::DecodingStatus AudioDecoderMp4::getDecodedChunk(AudioBuffer *inOut
 
 		unsigned char *sampleBuffer = (unsigned char *)NeAACDecDecode(mAacHandle, &mAacFrameInfo, buffer, bufferSize);
 		if (mAacFrameInfo.error > 0) {
+			free(buffer);
 			status = eStop;
 			break;
 		}
@@ -177,6 +178,8 @@ AudioDecoder::DecodingStatus AudioDecoderMp4::getDecodedChunk(AudioBuffer *inOut
 		a.resize(len);
 		memcpy(a.data(), sampleBuffer, len);
 		mAudioStorage.add(a, len);
+
+		free(buffer);
 	}
 
 	if (status == eContinue) {
