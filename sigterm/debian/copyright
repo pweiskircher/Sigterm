@@ -1,10 +1,27 @@
-This package was debianized by Christian Hofstaedtler <ch@zeha.at> on
-Sat,  9 Sep 2006 01:11:11 +0200.
+This package was debianized by Christian Hofstaedtler <christian@hofstaedtler.name> on
+Sat, 9 Sep 2006 01:11:11 +0200.
 
 It was downloaded from https://ssl.namespace.at/svn/sigterm/trunk/sigterm
 
-Copyright Holder: Patrik Weißkircher <pat@amd.co.at>
+Upstream Author and copyright holder: Patrik Weißkircher <pat@amd.co.at>
 
 License:
 
-Yet to be determined, probably GPL.
+The final license has yet to be determined, but will probably be GPL.
+
+   This package is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License.
+
+   This package is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this package; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
