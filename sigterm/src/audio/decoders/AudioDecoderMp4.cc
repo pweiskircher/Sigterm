@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 // TODO: mMp4File memory leak?!
+// TODO: clean up - open and readinfo is almost the same..
 
 /*
  * find AAC track
@@ -260,6 +261,53 @@ bool AudioDecoderMp4::readInfo() {
 		audioFile()->metaData()->setTotalTracks(QString(val).toUInt());
 		free(val);
 	}
+
+	quint32 mp4Track = getAACTrack(mp4File);
+	if (mp4Track < 0) {
+		fclose(aacFile);
+		qDebug("Unsupported audio format");
+		return false;
+	}
+
+	NeAACDecHandle aacHandle = NeAACDecOpen();
+	NeAACDecConfigurationPtr conf = NeAACDecGetCurrentConfiguration(aacHandle);
+	conf->outputFormat = FAAD_FMT_16BIT;
+	audioFormat().setBitsPerSample(16);
+	NeAACDecSetConfiguration(aacHandle, conf);
+
+	unsigned char *buffer = NULL;
+	quint32 bufferSize;
+
+	mp4ff_get_decoder_config(mp4File, mp4Track, &buffer, &bufferSize);
+
+	unsigned long samplerate;
+	unsigned char c;
+	char err = NeAACDecInit2(aacHandle, (unsigned char *)buffer, bufferSize, &samplerate, &c);
+	if (err < 0) {
+		qDebug("Could not initialize aac.");
+		fclose(aacFile);
+		NeAACDecClose(aacHandle);
+		return false;
+	}
+
+	mp4AudioSpecificConfig mp4ASC;
+	memset(&mp4ASC, 0, sizeof(mp4ASC));
+	NeAACDecAudioSpecificConfig(buffer, bufferSize, &mp4ASC);
+
+	fseek(aacFile, err, SEEK_SET);
+
+	audioFormat().setFrequency(samplerate);
+	audioFormat().setChannels(c);
+	audioFormat().setIsBigEndian(true);
+	audioFormat().setIsUnsigned(false);
+
+	mF = 1024.0;
+	if(mp4ASC.sbr_present_flag == 1)
+		mF = mF * 2.0;
+	mF -= 1.0;
+	audioFile()->setTotalSamples(mp4ff_num_samples(mp4File, mp4Track) * mF);
+
+	mSampleId = 0;
 
 	fclose(aacFile);
 
