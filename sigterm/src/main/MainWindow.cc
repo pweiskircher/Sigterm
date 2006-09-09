@@ -3,13 +3,38 @@
 #include "AudioFile.h"
 #include "AudioDecoder.h"
 
-#include <QFileDialog>
 #include <QDebug>
+#include <QFileDialog>
 #include <QHeaderView>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
+
+	mSettings.setValue("Misc/Dummy", "IgnoreMe");
+	mSettings.sync();
+
+	QString defaultDataDirectory = QDir::homePath() + "/.sigterm";
+	QString dataDirectory = mSettings.value("Main/DataDirectory", defaultDataDirectory).toString();
+	QDir dataDir(dataDirectory);
+	if (!dataDir.exists()) {
+		if (!dataDir.mkpath(dataDir.absolutePath())) {
+			qWarning("Could not create directory '%s'", qPrintable(dataDir.absolutePath()));
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	/* XXX: clearly this is just some test code and can't stay here */
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "sigtermDb");
+	db.setDatabaseName(dataDirectory + "/data.db");
+	bool ok = db.open();
+	if (!ok) { qWarning("Could not open database"); }
+	QSqlQuery *query = new QSqlQuery(db);
+	ok = query->exec("CREATE TABLE playlists(name, id INTEGER)");
+	if (!ok) { qWarning("Could not create database tables"); }
+	/* </XXX> */
+	
 	setupUi(this);
-
 	connect(&mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));
 	connect(qApp, SIGNAL(lastWindowClosed()), SLOT(on_actionQuit_activated()));
 	mAudioManager.init();

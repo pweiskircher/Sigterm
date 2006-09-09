@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "AudioManager.h"
 
+#include <QSettings>
 #include <QTimer>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
@@ -14,7 +15,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 	private slots:
 		void audioPaused(bool inPaused);
-	    void updateTrackDisplay();
+		void updateTrackDisplay();
 
 		void seekSliderChangedValue(int inValue);
 		void seekSliderMoved(int inValue);
@@ -33,6 +34,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 	private:
 		AudioManager mAudioManager;
+		QSettings mSettings;
 		QTimer mTrackDisplayUpdater;
 
 		bool mSeekSliderUserUpdate;
