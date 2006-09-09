@@ -7,10 +7,13 @@
 #include "faad.h"
 
 #include <QFile>
+#include <QDebug>
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+// TODO: mMp4File memory leak?!
 
 /*
  * find AAC track
@@ -209,7 +212,58 @@ bool AudioDecoderMp4::canDecode(const QString &inFilePath) {
 }
 
 bool AudioDecoderMp4::readInfo() {
-	return false;
+	mp4ff_callback_t mp4Callbacks;
+	mp4Callbacks.read = read_callback;
+	mp4Callbacks.seek = seek_callback;
+
+	FILE *aacFile = fopen(qPrintable(audioFile()->filePath()), "rb");
+	if (!aacFile) {
+		qDebug("aac::openFile: Couldn't open file");
+		return false;
+	}
+
+	mp4Callbacks.user_data = aacFile;
+	mp4ff_t *mp4File;
+	if (!(mp4File = mp4ff_open_read(&mp4Callbacks))) {
+		fclose(aacFile);
+		qDebug("can't open mp4 file");
+		return false;
+	}
+
+	char *val;
+	if (mp4ff_meta_get_artist(mp4File, &val)) {
+		audioFile()->metaData()->setArtist(val);
+		free(val);
+	}
+
+	if (mp4ff_meta_get_title(mp4File, &val)) {
+		audioFile()->metaData()->setTitle(val);
+		free(val);
+	}
+
+	if (mp4ff_meta_get_album(mp4File, &val)) {
+		audioFile()->metaData()->setAlbum(val);
+		free(val);
+	}
+
+	if (mp4ff_meta_get_date(mp4File, &val)) {
+		audioFile()->metaData()->setDate(val);
+		free(val);
+	}
+
+	if (mp4ff_meta_get_track(mp4File, &val)) {
+		audioFile()->metaData()->setTrackNumber(QString(val).toUInt());
+		free(val);
+	}
+
+	if (mp4ff_meta_get_totaltracks(mp4File, &val)) {
+		audioFile()->metaData()->setTotalTracks(QString(val).toUInt());
+		free(val);
+	}
+
+	fclose(aacFile);
+
+	return true;
 }
 
 QString AudioDecoderMp4::audioFormatDescription() {
