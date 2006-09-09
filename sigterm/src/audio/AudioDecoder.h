@@ -43,6 +43,9 @@ class AudioDecoder {
 		AudioManager *audioManager();
 		AudioFile *audioFile();
 
+		virtual QString audioFormatDescription() = 0;
+		virtual QStringList audioFormatFileExtensions() = 0;
+
 	private:
 		virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
 		virtual bool openFile() = 0;

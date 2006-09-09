@@ -137,12 +137,25 @@ void MainWindow::on_prevButton_clicked() {
 }
 
 void MainWindow::on_addButton_clicked() {
-	// TODO: save last directory
-	QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files", "/home", "(*.flac *.ogg *.m4a)");
+	QStringList fileFilter = mAudioManager.supportedFileFilter();
+	fileFilter.move(fileFilter.size()-1, 0);
+
+	QString directory = mSettings.value("OpenDialog/LastBrowsedDirectory", QDir::homePath()).toString();
+
+	QStringList files = QFileDialog::getOpenFileNames(this, "Add Music Files ...", directory,
+			fileFilter.join(";;"));
+
 	qSort(files.begin(), files.end());
 	for (int i=0; i<files.size(); i++) {
 		AudioFile *af = new AudioFile(files[i], &mAudioManager);
 		af->addToQueue();
+
+		// ugly workaround becasue we don't get the last directory the user browsed ..
+		// but I'm pretty sure that the file *is* in the directory the user browsed last ;)
+		if (i == 0) {
+			QFileInfo fi(files[i]);
+			mSettings.setValue("OpenDialog/LastBrowsedDirectory", fi.absolutePath());
+		}
 	}
 }
 

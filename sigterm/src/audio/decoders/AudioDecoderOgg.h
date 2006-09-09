@@ -13,6 +13,9 @@ class AudioDecoderOgg : public AudioDecoder {
 		virtual bool canDecode(const QString &inFilePath);
 		virtual bool readInfo();
 
+		QString audioFormatDescription();
+		QStringList audioFormatFileExtensions();
+
 	private:
 		virtual bool openFile();
 		virtual bool closeFile();

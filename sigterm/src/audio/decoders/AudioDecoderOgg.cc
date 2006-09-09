@@ -149,3 +149,12 @@ bool AudioDecoderOgg::readVorbisInfo(OggVorbis_File *inFile) {
 
 	return true;
 }
+
+QString AudioDecoderOgg::audioFormatDescription() {
+	return "OggVorbis";
+}
+
+QStringList AudioDecoderOgg::audioFormatFileExtensions() {
+	return QStringList() << "*.ogg";
+}
+

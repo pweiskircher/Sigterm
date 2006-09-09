@@ -75,6 +75,42 @@ AudioDecoder *AudioManager::createAudioDecoder(AudioFile *inAudioFile) {
 	return NULL;
 }
 
+QStringList AudioManager::supportedFileFilter() {
+	QListIterator<AudioDecoder *> it(mAudioDecoderList);
+	QStringList list;
+	QString allSupported = "All Supported File Format (";
+	bool firstAllSupported = true;
+
+	while (it.hasNext()) {
+		AudioDecoder *d = it.next();
+
+		QString s;
+		bool firstSingleSupported = true;
+		s = d->audioFormatDescription() + " (";
+		QStringList extensions = d->audioFormatFileExtensions();
+		for (int i = 0; i < extensions.size(); i++) {
+			if (firstAllSupported)
+				firstAllSupported = false;
+			else
+				allSupported += " ";
+			allSupported += extensions[i];
+
+			if (firstSingleSupported)
+				firstSingleSupported = false;
+			else
+				s += " ";
+			s += extensions[i];
+		}
+
+		s += ")";
+		list += s;
+	}
+	allSupported += ")";
+	list += allSupported;
+
+	return list;
+}
+
 void AudioManager::audioProcessorPaused() {
 	SDL_PauseAudio(true);
 	mPaused = true;

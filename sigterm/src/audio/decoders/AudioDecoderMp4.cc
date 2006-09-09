@@ -212,3 +212,11 @@ bool AudioDecoderMp4::readInfo() {
 	return false;
 }
 
+QString AudioDecoderMp4::audioFormatDescription() {
+	return "Mpeg Audio 4";
+}
+
+QStringList AudioDecoderMp4::audioFormatFileExtensions() {
+	return QStringList() << "*.mp4" << "*.m4a";
+}
+

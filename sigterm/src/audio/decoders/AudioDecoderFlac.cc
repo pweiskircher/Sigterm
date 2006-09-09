@@ -245,3 +245,11 @@ void AudioDecoderFlac::setCanDecode(bool inValue) {
 	mCanDecode = inValue;
 }
 
+QString AudioDecoderFlac::audioFormatDescription() {
+	return "FLAC";
+}
+
+QStringList AudioDecoderFlac::audioFormatFileExtensions() {
+	return QStringList() << "*.flac";
+}
+

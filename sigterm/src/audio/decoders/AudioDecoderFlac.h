@@ -22,6 +22,9 @@ class AudioDecoderFlac : public AudioDecoder {
 
 		void setCanDecode(bool inValue);
 
+		QString audioFormatDescription();
+		QStringList audioFormatFileExtensions();
+
 	private:
 		virtual bool openFile();
 		virtual bool closeFile();

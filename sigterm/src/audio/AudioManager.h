@@ -43,6 +43,8 @@ class AudioManager : public QObject {
 
 		AudioDecoder *createAudioDecoder(AudioFile *inAudioFile);
 
+		QStringList supportedFileFilter();
+
 	signals:
 		void audioPaused(bool inPaused);
 
