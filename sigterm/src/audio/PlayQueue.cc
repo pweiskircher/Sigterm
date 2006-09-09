@@ -1,13 +1,15 @@
 #include "PlayQueue.h"
 #include "AudioFile.h"
+#include "AudioManager.h"
 
 #include <QFileInfo>
 #include <QPixmap>
 #include <QIcon>
 
-PlayQueue::PlayQueue() {
+PlayQueue::PlayQueue(AudioManager *inAudioManager) {
 	mCurrentAudioFileIndex = 0;
 	mPlayingTrack = NULL;
+	mAudioManager = inAudioManager;
 }
 
 void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
@@ -20,12 +22,21 @@ void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
 }
 
 void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
+	bool needToSkip = false;
+	if (currentFile() == inAudioFile)
+		needToSkip = true;
+
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1) {
 		beginRemoveRows(QModelIndex(), index, index);
 		mAudioFileList.removeAt(index);
 		endRemoveRows();
 	}
+
+	if (mAudioFileList.size() == 0)
+		mAudioManager->setPause(true);
+	else if (needToSkip)
+		mAudioManager->skipTrack();
 }
 
 AudioFile *PlayQueue::currentFile() {

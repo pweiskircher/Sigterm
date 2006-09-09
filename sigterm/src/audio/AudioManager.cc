@@ -11,7 +11,7 @@ void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 	mgr->fillBuffer(stream, len);
 }
 
-AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this) {
+AudioManager::AudioManager() : mAudioProcessor(this), mAudioLibrary(this), mPlayQueue(this) {
 	connect(&mAudioProcessor, SIGNAL(paused()), SLOT(audioProcessorPaused()));
 
 	mPaused = true;

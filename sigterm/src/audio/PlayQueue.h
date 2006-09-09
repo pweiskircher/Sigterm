@@ -5,12 +5,13 @@
 #include <QMutex>
 
 class AudioFile;
+class AudioManager;
 
 class PlayQueue : public QAbstractTableModel {
 	Q_OBJECT
 
 	public:
-		PlayQueue();
+		PlayQueue(AudioManager *inAudioManager);
 
 		typedef enum {
 			eIsPlaying = 0,
@@ -55,6 +56,7 @@ class PlayQueue : public QAbstractTableModel {
 
 		AudioFile *mPlayingTrack;
 		QMutex mMutex;
+		AudioManager *mAudioManager;
 };
 
 #endif
