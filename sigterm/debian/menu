@@ -1,0 +1,2 @@
+?package(sigterm):needs="X11" section="Apps/Sound"\
+  title="sigterm" command="/usr/bin/sigterm"

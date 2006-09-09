@@ -1,0 +1,13 @@
+Source: sigterm
+Section: x11
+Priority: optional
+Maintainer: Christian Hofstaedtler <ch@zeha.at>
+Build-Depends: debhelper (>= 4.0.0), cmake (>= 2.4.3), libfaad2-dev (>= 2.0.0+cvs20060416-0.1sarge1), libflac-dev, libqt4-dev, libsdl1.2debian-alsa, g++ (>= 4.0.0), libvorbis-dev, libogg-dev
+Standards-Version: 3.6.2
+
+Package: sigterm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: a new music player based on QT
+ featuring FLAC, OggVorbis and AAC playback
+
