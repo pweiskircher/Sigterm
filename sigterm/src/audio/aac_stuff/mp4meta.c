@@ -424,3 +424,4 @@ int32_t mp4ff_meta_get_coverart(const mp4ff_t *f, char **value)
 }
 
 #endif
+

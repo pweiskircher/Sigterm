@@ -643,3 +643,4 @@ int32_t mp4ff_meta_update(mp4ff_callback_t *f,const mp4ff_metadata_t * data)
     return 1;
 }
 #endif
+

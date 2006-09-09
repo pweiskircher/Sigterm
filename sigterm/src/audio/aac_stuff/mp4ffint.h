@@ -371,3 +371,4 @@ const char * mp4ff_meta_index_to_genre(uint32_t idx);//returns pointer to static
 #endif /* __cplusplus */
 
 #endif
+
