@@ -1,6 +1,6 @@
-sigterm (0.0.74-1) unstable; urgency=low
+sigterm (0.0.78-1) unstable; urgency=low
 
   * Initial packaging attempt
 
- -- Christian Hofstaedtler <ch@zeha.at>  Sat,  9 Sep 2006 01:11:11 +0200
+ -- Christian Hofstaedtler <christian@hofstaedtler.name>  Sat,  9 Sep 2006 03:06:00 +0200
 
