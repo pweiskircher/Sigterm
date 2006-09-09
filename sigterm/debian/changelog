@@ -1,3 +1,10 @@
+sigterm (0.0.83) unstable; urgency=low
+
+  * Fix Build-Depends (libsdl).
+  * New release with sqlite3 dependency.
+
+ -- Christian Hofstaedtler <christian@hofstaedtler.name>  Sat,  9 Sep 2006 04:34:02 +0200
+
 sigterm (0.0.79) unstable; urgency=low
 
   * Initial packaging attempt
