@@ -3,6 +3,7 @@
 #include "AudioBuffer.h"
 
 #include <QSysInfo>
+#include <QFile>
 
 static ::FLAC__StreamDecoderWriteStatus write_callback(const FLAC__FileDecoder *decoder, const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[], void *userdata) {
 	AudioDecoderFlac *mAudioDecoderFlac = (AudioDecoderFlac *)userdata;
@@ -21,12 +22,14 @@ static void metadata_callback(const FLAC__FileDecoder *decoder, const ::FLAC__St
 	}
 }
 
+#if 0
 static void metadata_candecode_callback(const FLAC__FileDecoder *decoder, const ::FLAC__StreamMetadata *metadata, void *userdata) {
 	AudioDecoderFlac *mAudioDecoderFlac = (AudioDecoderFlac *)userdata;
 	if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
 		mAudioDecoderFlac->setCanDecode(true);
 	}
 }
+#endif
 
 static void error_callback(const FLAC__FileDecoder *decoder, ::FLAC__StreamDecoderErrorStatus status, void *userdata) {
 //	qDebug("error callback: %d", status);
@@ -163,6 +166,8 @@ AudioDecoder::DecodingStatus AudioDecoderFlac::getDecodedChunk(AudioBuffer *inOu
 }
 
 bool AudioDecoderFlac::canDecode(const QString &inFilePath) {
+#if 0
+	// this is much, much to slow
 	FLAC__FileDecoder *decoder;
 	decoder = FLAC__file_decoder_new();
 	FLAC__file_decoder_set_client_data(decoder, this);
@@ -189,6 +194,17 @@ end:
 	FLAC__file_decoder_delete(decoder);
 
 	return mCanDecode;
+#endif
+
+	QFile file(inFilePath);
+	if (!file.open(QIODevice::ReadOnly)) {
+		return false;
+	}
+
+	QByteArray startOfFile = file.read(5);
+	if (startOfFile.size() == 5 && startOfFile.startsWith("fLaC") && startOfFile[4] == '\0')
+		return true;
+	return false;
 }
 
 void AudioDecoderFlac::handleDecodedFlacFrame(const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[]) {

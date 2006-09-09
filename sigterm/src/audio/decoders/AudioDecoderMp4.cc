@@ -6,6 +6,8 @@
 #include "mp4ff.h"
 #include "faad.h"
 
+#include <QFile>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -195,7 +197,15 @@ AudioDecoder::DecodingStatus AudioDecoderMp4::getDecodedChunk(AudioBuffer *inOut
 }
 
 bool AudioDecoderMp4::canDecode(const QString &inFilePath) {
-	return true;
+	QFile file(inFilePath);
+	if (!file.open(QIODevice::ReadOnly)) {
+		return false;
+	}
+
+	QByteArray startOfFile = file.read(8);
+	if (startOfFile.size() == 8 && startOfFile[4] == 'f' && startOfFile[5] == 't' && startOfFile[6] == 'y' && startOfFile[7] == 'p')
+		return true;
+	return false;
 }
 
 bool AudioDecoderMp4::readInfo() {
