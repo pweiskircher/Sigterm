@@ -1,3 +1,11 @@
+sigterm (0.0.90) unstable; urgency=low
+
+  * Better meta tag/info support (support mp4 to too)
+  * Better playlist handling
+  * Detect file types by magic bytes which is a lot faster
+
+ -- Christian Hofstaedtler <christian@hofstaedtler.name>  Sun, 10 Sep 2006 17:24:18 +0200
+
 sigterm (0.0.83) unstable; urgency=low
 
   * Fix Build-Depends (libsdl).
