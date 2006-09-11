@@ -162,8 +162,11 @@ bool AudioStorage::get(QByteArray &outArray) {
 			mGetPartialBufferLength = 0;
 
 			if (len + i > (quint32)outArray.size()) {
-				qDebug("ABORT3 - NOT HANDLED YET");
-				exit(1);
+				quint32 tmp = len;
+				len = outArray.size() - i;
+				mGetPartialBuffer = fb;
+				mGetPartialBufferLength = tmp - len;
+				isGetPartial = true;
 			}
 		} else {
 			len = CHUNK_SIZE;
