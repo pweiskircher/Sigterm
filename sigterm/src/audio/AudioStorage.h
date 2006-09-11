@@ -25,6 +25,7 @@ class AudioStorage {
 		bool needData(quint32 inData);
 
 		void wakeOnBufferGet(QWaitCondition *inCondition);
+		void dump();
 
 	private:
 		QMutex mMutex;
@@ -33,8 +34,11 @@ class AudioStorage {
 
 		QQueue<quint8 *> mUsedBufferList;
 		QQueue<quint8 *> mFreeBufferList;
-		quint8 *mPartialUsedBuffer;
-		quint8 *mPartialFreeBuffer;
+		quint8 *mPartialBuffer;
+		quint32 mPartialBufferLength;
+
+		quint8 *mGetPartialBuffer;
+		quint32 mGetPartialBufferLength;
 
 		QWaitCondition *mBufferGetCondition;
 
