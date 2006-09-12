@@ -56,9 +56,10 @@ for LIB in $COPIED_LIBS; do
 		if [ `echo $DEPLIB | grep .framework` ]; then
 			FRAMEWORK=`echo $DEPLIB | sed -e 's/\(.*.framework\).*$/\1/'`
 			BASE=`basename $FRAMEWORK`
+			BINARY=`echo $BASE | cut -d '.' -f 1`
 
 			echo "Changing depencendy for $LIB ..."
-			install_name_tool -change $DEPLIB @executable_path/../Frameworks/${BASE}.framework/Versions/4.0/$BASE $LIB
+			install_name_tool -change $DEPLIB @executable_path/../Frameworks/${BASE}/Versions/4.0/$BINARY $LIB
 		else
 			BASE=`basename $DEPLIB`
 			echo "Changing depencendy for $LIB ..."
