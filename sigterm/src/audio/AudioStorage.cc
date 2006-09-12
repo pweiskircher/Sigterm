@@ -84,18 +84,17 @@ bool AudioStorage::add(QByteArray &inArray, quint32 inLen) {
 		if (mPartialBuffer) {
 			len = CHUNK_SIZE - mPartialBufferLength;
 
-			mUsedBufferList.enqueue(mPartialBuffer);
 			enqueue = false;
 
 			fb = mPartialBuffer + mPartialBufferLength;
 
-			mPartialBuffer = NULL;
-			mPartialBufferLength = NULL;
-
-
 			if (i + len > inLen) {
-				qDebug("ABORT - NOT HANDLED YET");
-				exit(1);
+				len = inLen - i;
+				mPartialBufferLength += len;
+			} else {
+				mUsedBufferList.enqueue(mPartialBuffer);
+				mPartialBuffer = NULL;
+				mPartialBufferLength = 0;
 			}
 		} else {
 			len = CHUNK_SIZE;
