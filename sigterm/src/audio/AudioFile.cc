@@ -117,6 +117,9 @@ void AudioFile::bytesRemovedFromAudioStorage(quint32 inSize) {
 	}
 
 	mPlayedSamples += inSize/mAudioManager->hardwareFormat()->channels()/(mAudioManager->hardwareFormat()->bitsPerSample()/8);
+
+	if (mPlayedSamples >= mTotalSamples)
+		mPlayedSamples = 0;
 }
 
 quint32 AudioFile::bytesInAudioStorage() {
