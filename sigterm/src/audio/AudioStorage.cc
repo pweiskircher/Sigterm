@@ -185,10 +185,11 @@ bool AudioStorage::get(QByteArray &outArray) {
 
 		memcpy(outArray.data() + i, fb, len);
 
-		if (!isGetPartial)
-			if (enqueue)
+		if (!isGetPartial) {
+			if (enqueue) {
 				mFreeBufferList.enqueue(fb);
-		else {
+			}
+		} else {
 			memmove(fb, fb + len, CHUNK_SIZE - len);
 		}
 
