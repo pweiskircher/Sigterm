@@ -142,17 +142,20 @@ bool AudioStorage::get(QByteArray &outArray) {
 		quint8 *fb;
 		quint32 len;
 		bool isGetPartial = false;
+		bool enqueue = true;
 
 		if (mPartialBuffer && mUsedBufferList.size() == 0) {
 			len = mPartialBufferLength;
 			fb = mPartialBuffer;
 
-			mPartialBuffer = NULL;
-			mPartialBufferLength = 0;
-
 			if (len + i > (quint32)outArray.size()) {
-				qDebug("ABORT2 - NOT HANDLED YET");
-				exit(1);
+				qDebug("NOT TESTED YET - IF YOU SEE THIS MESSAGE AND AUDIO SOUNDS WRONG, TELL ME!");
+				len = outArray.size() - i;
+				mPartialBufferLength += len;
+				enqueue = false;
+			} else {
+				mPartialBuffer = NULL;
+				mPartialBufferLength = 0;
 			}
 		} else if (mGetPartialBuffer) {
 			fb = mGetPartialBuffer;
@@ -183,7 +186,8 @@ bool AudioStorage::get(QByteArray &outArray) {
 		memcpy(outArray.data() + i, fb, len);
 
 		if (!isGetPartial)
-			mFreeBufferList.enqueue(fb);
+			if (enqueue)
+				mFreeBufferList.enqueue(fb);
 		else {
 			memmove(fb, fb + len, CHUNK_SIZE - len);
 		}
