@@ -63,13 +63,13 @@ src/audio/PlayQueue.cc src/audio/PlayQueue.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/AudioMetaData.cc src/audio/AudioMetaData.h
 src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
+src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 )
 
-#src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 
 SET(SIGTERM_UI
 src/main/mainwindow.ui
