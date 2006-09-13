@@ -43,12 +43,12 @@ static int getAACTrack(mp4ff_t *infile)
 	return(-1);
 }
 
-uint32_t read_callback(void *user_data, void *buffer, uint32_t length)
+static uint32_t read_callback(void *user_data, void *buffer, uint32_t length)
 {
 	return fread(buffer, 1, length, (FILE*)user_data);
 }
 
-uint32_t seek_callback(void *user_data, uint64_t position)
+static uint32_t seek_callback(void *user_data, uint64_t position)
 {
 	return fseek((FILE*)user_data, position, SEEK_SET);
 }
