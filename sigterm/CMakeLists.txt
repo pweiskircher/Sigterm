@@ -32,13 +32,18 @@ IF(NOT VORBISFILE_INCLUDE_DIR)
 	MESSAGE(FATAL_ERROR "Cant find required library: vorbisfile")
 ENDIF(NOT VORBISFILE_INCLUDE_DIR)
 
+PKGCONFIG(mad MAD_INCLUDE_DIR MAD_LINK_DIR MAD_LINK_FLAGS MAD_CFLAGS)
+IF(NOT MAD_INCLUDE_DIR)
+	MESSAGE(FATAL_ERROR "Cant find required library: mad")
+ENDIF(NOT MAD_INCLUDE_DIR)
+
 FIND_LIBRARY(FLAC_LIBRARY FLAC /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FLAC_INCLUDE_DIR FLAC/file_decoder.h /usr/include /usr/local/include /opt/local/include)
 
 FIND_LIBRARY(FAAD_LIBRARY faad /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FAAD_INCLUDE_DIR neaacdec.h /usr/include /usr/local/include /opt/local/include)
 
-INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR})
 
 #### stuff.
 
@@ -57,12 +62,14 @@ src/audio/AudioLibrary.cc src/audio/AudioLibrary.h
 src/audio/PlayQueue.cc src/audio/PlayQueue.h
 src/audio/AudioBuffer.cc src/audio/AudioBuffer.h
 src/audio/AudioMetaData.cc src/audio/AudioMetaData.h
-src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
-src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
+src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
+src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 )
+
+#src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 
 SET(SIGTERM_UI
 src/main/mainwindow.ui
@@ -126,10 +133,10 @@ ADD_EXECUTABLE(sigterm WIN32 MACOSX_BUNDLE ${SIGTERM_SRCS} ${SIGTERM_UI_H} ${SIG
 
 # hack for broken pkgconfig on win32
 IF(WIN32)
-  TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} -libpath:${VORBISFILE_LINK_DIR} ${VORBISFILE_LINK_FLAGS})
+  TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} -libpath:${VORBISFILE_LINK_DIR} ${VORBISFILE_LINK_FLAGS} -libpath:${MAD_LINK_DIR} ${MAD_LINK_FLAGS})
 ELSE(WIN32)
   # sane unix stuff
-  TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} ${VORBISFILE_LINK_FLAGS})
+  TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} ${VORBISFILE_LINK_FLAGS} ${MAD_LINK_FLAGS})
 ENDIF(WIN32)
 
 
