@@ -34,7 +34,11 @@ ENDIF(NOT VORBISFILE_INCLUDE_DIR)
 
 PKGCONFIG(mad MAD_INCLUDE_DIR MAD_LINK_DIR MAD_LINK_FLAGS MAD_CFLAGS)
 IF(NOT MAD_INCLUDE_DIR)
-	MESSAGE(FATAL_ERROR "Cant find required library: mad")
+	FIND_LIBRARY(MAD_LINK_FLAGS mad /usr/lib /usr/local/lib /opt/local/lib)
+	FIND_PATH(MAD_INCLUDE_DIR mad.h /usr/include /usr/local/include /opt/local/include)
+	IF(NOT MAD_INCLUDE_DIR)
+		MESSAGE(FATAL_ERROR "Cant find required library: mad")
+	ENDIF(NOT MAD_INCLUDE_DIR)
 ENDIF(NOT MAD_INCLUDE_DIR)
 
 FIND_LIBRARY(FLAC_LIBRARY FLAC /usr/lib /usr/local/lib /opt/local/lib)
