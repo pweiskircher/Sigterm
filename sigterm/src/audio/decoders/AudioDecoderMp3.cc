@@ -166,7 +166,7 @@ bool AudioDecoderMp3::openFile() {
 	mad_timer_reset(&mMadTimer);
 
 	audioFile()->setTotalSamples(0);
-	audioFormat().setIsBigEndian(false);
+	audioFormat().setIsBigEndian(QSysInfo::ByteOrder == QSysInfo::BigEndian);
 	audioFormat().setIsUnsigned(false);
 	audioFormat().setBitsPerSample(16);
 
@@ -419,18 +419,18 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 		ptr = a.data();
 		
 		for (int i=0; i < mMadSynth.pcm.length; i++) {
-			signed long* sample;
+			short* sample;
 			
-			sample = (signed long*)ptr;
-			*sample = (signed long)audio_linear_dither(16,
+			sample = (short*)ptr;
+			*sample = (short)audio_linear_dither(16,
 					mMadSynth.pcm.samples[0][i],
 					&mDither);
 
 			ptr+=2;
 			
 			if (audioFormat().channels()==2) {
-				sample = (signed long*)ptr;
-				*sample = (signed long)audio_linear_dither(16,
+				sample = (short*)ptr;
+				*sample = (short)audio_linear_dither(16,
 						mMadSynth.pcm.samples[1][i],
 						&mDither);
 				ptr+=2;
