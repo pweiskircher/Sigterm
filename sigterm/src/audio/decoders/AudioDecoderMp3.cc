@@ -1,14 +1,23 @@
+/*
+ * AudioDecoderMp3.cc
+ *
+ * implements the .MP3 Audio Decoder for sigterm, based on libmad. 
+ * Most of our stuff is really stolen from mpd, the music player
+ * daemon.
+ *
+ */
+
 #include "AudioDecoderMp3.h"
 #include "AudioFile.h"
 #include "AudioBuffer.h"
 
-#include <QFile>
 #include <QDebug>
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* xing stuff stolen from alsaplayer */
 # define XING_MAGIC	(('X' << 24) | ('i' << 16) | ('n' << 8) | 'g')
@@ -81,6 +90,7 @@ static unsigned long prng(unsigned long state) {
 }
 
 static signed long audio_linear_dither(unsigned int bits, mad_fixed_t sample, struct audio_dither *dither) {
+	
 	unsigned int scalebits;
 	mad_fixed_t output, mask, random;
 
@@ -138,8 +148,11 @@ AudioDecoder *AudioDecoderMp3::createAudioDecoder(AudioFile *inAudioFile, AudioM
 }
 
 bool AudioDecoderMp3::openFile() {
-	mInputFile = fopen(qPrintable(audioFile()->filePath()), "rb");
-	if (!mInputFile) {
+	if (mInputFile.isOpen())
+		mInputFile.close();
+
+	mInputFile.setFileName(audioFile()->filePath());
+	if (!mInputFile.open(QIODevice::ReadOnly)) {
 		qDebug("AudioDecoderMp3::openFile: Couldn't open file");
 		return false;
 	}
@@ -157,18 +170,20 @@ bool AudioDecoderMp3::openFile() {
 	audioFormat().setIsUnsigned(false);
 	audioFormat().setBitsPerSample(16);
 
-	decodeFirstFrame();
+	if (!decodeFirstFrame())
+		return false;
 	
-	qWarning("samplerate: %d\n", mMadFrame.header.samplerate);
 	
 	audioFormat().setFrequency(mMadFrame.header.samplerate);
 	audioFormat().setChannels(MAD_NCHANNELS(&mMadFrame.header));
+	
+	qWarning("samplerate: %d, channels: %d\n", audioFormat().frequency(), audioFormat().channels());
 
 	return true;
 }
 
 bool AudioDecoderMp3::closeFile() {
-	fclose(mInputFile);
+	mInputFile.close();
 	
 	mad_synth_finish(&mMadSynth);
 	mad_frame_finish(&mMadFrame);
@@ -178,26 +193,44 @@ bool AudioDecoderMp3::closeFile() {
 }
 
 bool AudioDecoderMp3::fillDecoderBuffer() {
-	unsigned char buffer[4096];
-	size_t l = 4095;
-	clearerr(mInputFile);
-	l = fread(buffer, sizeof(unsigned char), l, mInputFile);
+
+	if (mMadStream.buffer != NULL && mMadStream.error != MAD_ERROR_BUFLEN)
+		return true;	/* nothing to do */
+
+	size_t readSize;
+	size_t remaining;
+	unsigned char * readStart;
+	
+	readSize = AUDIODECODER_MP3_READBUFFER_SIZE;
+	readStart = mBufferRead;
+	remaining = 0;
+
+	if(mMadStream.next_frame != NULL) {
+		remaining = mMadStream.bufend-mMadStream.next_frame;
+		memmove(mBufferRead,mMadStream.next_frame,remaining);
+		readStart += remaining;
+		readSize -= remaining;
+	}
+	
+	qint64 l = mInputFile.read((char*)readStart, readSize);
+	if (l == -1 || l == 0)
+		return false; // QFile error || EOF
+	
 	mReadBytes += l;
 	qWarning("mad: refilling buffer %d/%d bytes",l,mReadBytes);
+	/*
 	if (ferror(mInputFile) || feof(mInputFile)) {
 		return false;
-	}
-	mad_stream_buffer(&mMadStream, buffer, l);
+	}*/
+	mad_stream_buffer(&mMadStream, mBufferRead, l+remaining);
 	mMadStream.error = MAD_ERROR_NONE;
 	return true;
 }
 
 int AudioDecoderMp3::decodeNextFrameHeader() {
 
-	if(mMadStream.buffer==NULL || mMadStream.error==MAD_ERROR_BUFLEN) {
-		if (!fillDecoderBuffer()) {
-			return DECODE_BREAK;
-		}
+	if (!fillDecoderBuffer()) {
+		return DECODE_BREAK;
 	}
 	if(mad_header_decode(&mMadFrame.header,&mMadStream)) {
 #ifdef HAVE_ID3TAG
@@ -230,7 +263,7 @@ int AudioDecoderMp3::decodeNextFrameHeader() {
 			else
 			{
 				qWarning("unrecoverable frame level error "
-					"(%s).\n",
+					"(%s).",
 					mad_stream_errorstr(&mMadStream));
 				return DECODE_BREAK;
 			}
@@ -245,10 +278,8 @@ int AudioDecoderMp3::decodeNextFrameHeader() {
 
 int AudioDecoderMp3::decodeNextFrame() {
 
-	if (mMadStream.buffer==NULL || mMadStream.error==MAD_ERROR_BUFLEN) {
-		if (!fillDecoderBuffer()) {
-			return DECODE_BREAK;
-		}
+	if (!fillDecoderBuffer()) {
+		return DECODE_BREAK;
 	}
 	
 	if (mad_frame_decode(&mMadFrame, &mMadStream)) {
@@ -283,7 +314,7 @@ int AudioDecoderMp3::decodeNextFrame() {
 	return DECODE_OK;
 }
 
-int AudioDecoderMp3::decodeFirstFrame() {
+bool AudioDecoderMp3::decodeFirstFrame() {
 	struct xing xing;
 	int ret;
 	int skip;
@@ -291,6 +322,8 @@ int AudioDecoderMp3::decodeFirstFrame() {
 	memset(&xing,0,sizeof(struct xing));
 	xing.flags = 0;
 	mReadBytes = 0;
+	mTimeElapsed = 0.0;
+	mTimeTotal = 0.0;
 
 	qWarning("decodeFirstFrame()");
 
@@ -298,9 +331,9 @@ int AudioDecoderMp3::decodeFirstFrame() {
 		skip = 0;
 		while((ret = decodeNextFrameHeader())==DECODE_CONT);
 		if(ret==DECODE_SKIP) skip = 1;
-		else if(ret==DECODE_BREAK) return -1;
+		else if(ret==DECODE_BREAK) return false;
 		while((ret = decodeNextFrame())==DECODE_CONT);
-		if(ret==DECODE_BREAK) return -1;
+		if(ret==DECODE_BREAK) return false;
 		if(!skip && ret==DECODE_OK) break;
 	}
 
@@ -310,6 +343,9 @@ int AudioDecoderMp3::decodeFirstFrame() {
 			mad_timer_multiply(&duration, xing.frames);
 
 			audioFile()->setTotalSamples(xing.frames);
+
+			mTimeTotal = ((float)mad_timer_count(duration,
+						MAD_UNITS_MILLISECONDS))/1000;
 /*			data->muteFrame = MUTEFRAME_SKIP;
 			data->totalTime = ((float)mad_timer_count(duration,
 						MAD_UNITS_MILLISECONDS))/1000;
@@ -328,10 +364,14 @@ int AudioDecoderMp3::decodeFirstFrame() {
 			offset-= mMadStream.bufend-mMadStream.buffer;
 		}
 		if(1 /*instream->Size >= offset*/) {
-/*			data->totalTime = ((data->inStream->size-offset)*8.0)/
-					(data->frame).header.bitrate;
-			data->maxFrames = 
-				data->totalTime/frameTime+FRAMES_CUSHION;*/
+/*			struct stat st;
+			fstat(mInputFile, &st);
+			
+*/
+			mTimeTotal = ((mInputFile.size()-offset)*8.0)/
+					mMadFrame.header.bitrate;
+/*			data->maxFrames = 
+				mTimeTotal/frameTime+FRAMES_CUSHION;*/
 		}
 		else {
 /*			data->maxFrames = FRAMES_CUSHION;
@@ -341,8 +381,8 @@ int AudioDecoderMp3::decodeFirstFrame() {
 
 /*	data->frameOffset = malloc(sizeof(long)*data->maxFrames);
 	data->times = malloc(sizeof(mad_timer_t)*data->maxFrames);*/
-
-	return 0;
+	qWarning("total time: %d\n", mTimeTotal);
+	return true;
 }
 
 
@@ -370,7 +410,7 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 	while (mAudioStorage.needData(inOutAudioBuffer->requestedLength()) == false) {
 
 		mad_synth_frame(&mMadSynth,&mMadFrame);
-		qWarning("decode made %d samples\n", mMadSynth.pcm.length);
+		qWarning("decode made %d samples", mMadSynth.pcm.length);
 		
 		QByteArray a;
 		quint32 len = mMadSynth.pcm.length * (audioFormat().channels()) * 2; /* FIXME: replace 2 with bits/8 */
@@ -397,7 +437,7 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 			}
 		}
 	
-		qWarning("array is %d bytes\n", a.length());
+		qWarning("array is %d bytes", a.length());
 		
 		mAudioStorage.add(a, a.length());
 
@@ -441,7 +481,7 @@ bool AudioDecoderMp3::canDecode(const QString &inFilePath) {
 
 
 bool AudioDecoderMp3::readInfo() {
-	qWarning("entered readInfo()\n");
+	qWarning("entered readInfo()");
 
 	if (!openFile())
 		return false;
