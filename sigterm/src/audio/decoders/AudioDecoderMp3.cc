@@ -399,7 +399,6 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 	while (mAudioStorage.needData(inOutAudioBuffer->requestedLength()) == false) {
 
 		mad_synth_frame(&mMadSynth,&mMadFrame);
-		qWarning("decode made %d samples", mMadSynth.pcm.length);
 		
 		QByteArray a;
 		quint32 len = mMadSynth.pcm.length * (audioFormat().channels()) * 2; /* FIXME: replace 2 with bits/8 */
@@ -426,8 +425,6 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 			}
 		}
 	
-		qWarning("array is %d bytes", a.length());
-		
 		mAudioStorage.add(a, a.length());
 
 		int skip, ret;
