@@ -158,6 +158,17 @@ bool AudioDecoderMp3::openFile() {
 		return false;
 	}
 
+	mInputFile.seek(mInputFile.size() - 128);
+	char id3v1[128];
+	if (mInputFile.read(id3v1, sizeof(id3v1)) >= 0) {
+		struct id3_tag *id3Tag = id3_tag_parse((id3_byte_t*)id3v1, sizeof(id3v1));
+		if (id3Tag) {
+			audioFile()->metaData()->parseId3Tags(id3Tag);
+			id3_tag_delete(id3Tag);
+		}
+	}
+	mInputFile.seek(0);
+
 	memset(&mDither, 0, sizeof(struct audio_dither));
 	
 	mad_stream_init(&mMadStream);
