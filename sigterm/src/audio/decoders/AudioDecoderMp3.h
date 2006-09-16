@@ -9,6 +9,14 @@
 
 #define AUDIODECODER_MP3_READBUFFER_SIZE 40960
 
+struct xing {
+	long flags;
+	unsigned long frames;
+	unsigned long bytes;
+	unsigned char toc[100];
+	long scale;
+};
+
 struct audio_dither {
 	mad_fixed_t error[3];
 	mad_fixed_t random;
@@ -44,6 +52,7 @@ class AudioDecoderMp3 : public AudioDecoder {
 		struct mad_frame mMadFrame;
 		struct mad_synth mMadSynth;
 		struct audio_dither mDither;
+		struct xing mXing;
 		mad_timer_t mMadTimer;
 	/*	unsigned char readBuffer[READ_BUFFER_SIZE];
 		char outputBuffer[MP3_DATA_OUTPUT_BUFFER_SIZE];

@@ -24,14 +24,6 @@
 /* xing stuff stolen from alsaplayer */
 # define XING_MAGIC	(('X' << 24) | ('i' << 16) | ('n' << 8) | 'g')
 
-struct xing {
-  	long flags;			/* valid fields (see below) */
-  	unsigned long frames;		/* total number of frames */
-  	unsigned long bytes;		/* total number of bytes */
-  	unsigned char toc[100];		/* 100-point seek table */
-  	long scale;			/* ?? */
-};
-
 enum {
   	XING_FRAMES = 0x00000001L,
   	XING_BYTES  = 0x00000002L,
@@ -68,7 +60,9 @@ static int parse_xing(struct xing *xing, struct mad_bitptr ptr, unsigned int bit
 	if (xing->flags & XING_TOC) {
 		int i;
 		if (bitlen < 800) goto fail;
-		for (i = 0; i < 100; ++i) xing->toc[i] = mad_bit_read(&ptr, 8);
+		for (i = 0; i < 100; ++i) {
+			xing->toc[i] = mad_bit_read(&ptr, 8);
+		}
 		bitlen -= 800;
 	}
 
@@ -268,7 +262,6 @@ bool AudioDecoderMp3::fillDecoderBuffer() {
 	}
 	
 	mReadBytes += l;
-	qWarning("mad: refilling buffer %d/%d bytes",l,mReadBytes);
 	
 	mad_stream_buffer(&mMadStream, mBufferRead, l+remaining);
 	mMadStream.error = MAD_ERROR_NONE;
@@ -354,12 +347,11 @@ int AudioDecoderMp3::decodeNextFrame() {
 #define FRAMES_CUSHION		2000
 
 bool AudioDecoderMp3::decodeFirstFrame() {
-	struct xing xing;
 	int ret;
 	int skip;
 
-	memset(&xing,0,sizeof(struct xing));
-	xing.flags = 0;
+	memset(&mXing,0,sizeof(struct xing));
+	mXing.flags = 0;
 	mReadBytes = 0;
 	mTimeElapsed = 0.0;
 	mTimeTotal = 0.0;
@@ -376,13 +368,13 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 		if(!skip && ret==DECODE_OK) break;
 	}
 
-	if (parse_xing(&xing,mMadStream.anc_ptr,mMadStream.anc_bitlen)) {
-		if (xing.flags & XING_FRAMES) {
+	if (parse_xing(&mXing,mMadStream.anc_ptr,mMadStream.anc_bitlen)) {
+		if (mXing.flags & XING_FRAMES) {
 			mad_timer_t duration = mMadFrame.header.duration;
-			mad_timer_multiply(&duration, xing.frames);
+			mad_timer_multiply(&duration, mXing.frames);
 
 			mTimeTotal = ((float)mad_timer_count(duration, MAD_UNITS_MILLISECONDS))/1000;
-			audioFile()->setTotalSamples(xing.frames * 32 * MAD_NSBSAMPLES(&mMadFrame.header));
+			audioFile()->setTotalSamples(mXing.frames * 32 * MAD_NSBSAMPLES(&mMadFrame.header));
 		}
 	}
 	else {
@@ -415,8 +407,6 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 
 
 bool AudioDecoderMp3::seekToTimeInternal(quint32 inMilliSeconds) {
-	qWarning("AudioDecoderMp3::seekToTimeInternal called, but we can't seek right now");
-//	mSampleId = (audioFormat().frequency() * (inMilliSeconds/1000.0)) / mF;
 	return false;
 }
 
