@@ -80,7 +80,6 @@ class AudioDecoderMp3 : public AudioDecoder {
 		quint32 mSampleId;*/
 
 		AudioStorage mAudioStorage;
-		size_t mReadBytes;
 //		float mF;
 };
 

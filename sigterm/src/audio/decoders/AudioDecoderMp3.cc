@@ -261,8 +261,6 @@ bool AudioDecoderMp3::fillDecoderBuffer() {
 		return false; // QFile error || EOF
 	}
 	
-	mReadBytes += l;
-	
 	mad_stream_buffer(&mMadStream, mBufferRead, l+remaining);
 	mMadStream.error = MAD_ERROR_NONE;
 	return true;
@@ -352,7 +350,6 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 
 	memset(&mXing,0,sizeof(struct xing));
 	mXing.flags = 0;
-	mReadBytes = 0;
 	mTimeElapsed = 0.0;
 	mTimeTotal = 0.0;
 
