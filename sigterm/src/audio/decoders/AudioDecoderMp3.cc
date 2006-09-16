@@ -172,8 +172,7 @@ bool AudioDecoderMp3::openFile() {
 
 	if (!decodeFirstFrame())
 		return false;
-	
-	
+
 	audioFormat().setFrequency(mMadFrame.header.samplerate);
 	audioFormat().setChannels(MAD_NCHANNELS(&mMadFrame.header));
 	
@@ -314,6 +313,8 @@ int AudioDecoderMp3::decodeNextFrame() {
 	return DECODE_OK;
 }
 
+#define FRAMES_CUSHION		2000
+
 bool AudioDecoderMp3::decodeFirstFrame() {
 	struct xing xing;
 	int ret;
@@ -342,36 +343,26 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 			mad_timer_t duration = mMadFrame.header.duration;
 			mad_timer_multiply(&duration, xing.frames);
 
-			audioFile()->setTotalSamples(xing.frames);
-
-			mTimeTotal = ((float)mad_timer_count(duration,
-						MAD_UNITS_MILLISECONDS))/1000;
-/*			data->muteFrame = MUTEFRAME_SKIP;
-			data->totalTime = ((float)mad_timer_count(duration,
-						MAD_UNITS_MILLISECONDS))/1000;
-			data->maxFrames = xing.frames;*/
+			mTimeTotal = ((float)mad_timer_count(duration, MAD_UNITS_MILLISECONDS))/1000;
+			audioFile()->setTotalSamples(xing.frames * 32 * MAD_NSBSAMPLES(&mMadFrame.header));
 		}
 	}
 	else {
-		size_t offset = 0;
+		size_t offset = mInputFile.pos();
+#if 0
 		mad_timer_t duration = mMadFrame.header.duration;
 		float frameTime = ((float)mad_timer_count(duration,
 					MAD_UNITS_MILLISECONDS))/1000;
+#endif
 		if(mMadStream.this_frame!=NULL) {
-			offset = mMadStream.bufend-mMadStream.this_frame;
+			offset -= mMadStream.bufend-mMadStream.this_frame;
 		}
 		else {
-			offset-= mMadStream.bufend-mMadStream.buffer;
+			offset -= mMadStream.bufend-mMadStream.buffer;
 		}
-		if(1 /*instream->Size >= offset*/) {
-/*			struct stat st;
-			fstat(mInputFile, &st);
-			
-*/
-			mTimeTotal = ((mInputFile.size()-offset)*8.0)/
-					mMadFrame.header.bitrate;
-/*			data->maxFrames = 
-				mTimeTotal/frameTime+FRAMES_CUSHION;*/
+		if(mInputFile.size() >= offset) {
+			mTimeTotal = ((mInputFile.size()-offset)*8.0)/mMadFrame.header.bitrate;
+			audioFile()->setTotalSamples(mTimeTotal * mMadFrame.header.samplerate);
 		}
 		else {
 /*			data->maxFrames = FRAMES_CUSHION;
@@ -379,9 +370,7 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 		}
 	}
 
-/*	data->frameOffset = malloc(sizeof(long)*data->maxFrames);
-	data->times = malloc(sizeof(mad_timer_t)*data->maxFrames);*/
-	qWarning("total time: %d\n", mTimeTotal);
+	qWarning("total time: %f total samples: %d\n", mTimeTotal, audioFile()->totalSamples());
 	return true;
 }
 
