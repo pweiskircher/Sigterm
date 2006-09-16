@@ -41,13 +41,16 @@ IF(NOT MAD_INCLUDE_DIR)
 	ENDIF(NOT MAD_INCLUDE_DIR)
 ENDIF(NOT MAD_INCLUDE_DIR)
 
+FIND_LIBRARY(ID3TAG_LIBRARY id3tag /usr/lib /usr/local/lib /opt/local/lib)
+FIND_PATH(ID3TAG_INCLUDE_DIR id3tag.h /usr/include /usr/local/include /opt/local/include)
+
 FIND_LIBRARY(FLAC_LIBRARY FLAC /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FLAC_INCLUDE_DIR FLAC/file_decoder.h /usr/include /usr/local/include /opt/local/include)
 
 FIND_LIBRARY(FAAD_LIBRARY faad /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FAAD_INCLUDE_DIR neaacdec.h /usr/include /usr/local/include /opt/local/include)
 
-INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR} ${ID3TAG_INCLUDE_DIR})
 
 #### stuff.
 
@@ -98,6 +101,7 @@ SET(SIGTERM_LIBRARIES
   ${SIGTERM_SDL_LIBRARY}
   ${FLAC_LIBRARY}
   ${FAAD_LIBRARY}
+  ${ID3TAG_LIBRARY}
 )
 
 SET(AAC_STUFF

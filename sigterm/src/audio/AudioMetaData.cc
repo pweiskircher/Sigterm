@@ -3,6 +3,8 @@
 
 #include <QFileInfo>
 
+#include <id3tag.h>
+
 AudioMetaData::AudioMetaData(AudioFile *inAudioFile) {
 	mAudioFile = inAudioFile;
 	mTrackNumber = 0;
@@ -30,6 +32,25 @@ void AudioMetaData::parseVorbisComments(QStringList &inList) {
 			setTotalTracks(comment.mid(comment.indexOf("=")+1).toInt());
 		}
 	}
+}
+
+void AudioMetaData::parseId3Tags(struct id3_tag *inTag) {
+	QString s;
+
+	s = getID3Info(inTag, ID3_FRAME_ARTIST);
+	if (s.length()) setArtist(s);
+
+	s = getID3Info(inTag, ID3_FRAME_TITLE);
+	if (s.length()) setTitle(s);
+
+	s = getID3Info(inTag, ID3_FRAME_ALBUM);
+	if (s.length()) setAlbum(s);
+
+	s = getID3Info(inTag, ID3_FRAME_TRACK);
+	if (s.length()) setTrackNumber(s.toInt());
+
+	s = getID3Info(inTag, ID3_FRAME_YEAR);
+	if (s.length()) setDate(s);
 }
 
 QString &AudioMetaData::artist() {
@@ -85,3 +106,27 @@ void AudioMetaData::setDate(const QString &inDate) {
 	mDate = inDate;
 }
 
+QString AudioMetaData::getID3Info(struct id3_tag *tag, char *id) {
+	struct id3_frame const *frame;
+	id3_ucs4_t const *ucs4;
+	id3_utf8_t *utf8;
+	union id3_field const *field;
+	unsigned int nstrings;
+
+	frame = id3_tag_findframe(tag, id, 0);
+	if (!frame)
+		return QString();
+
+	field = &frame->fields[1];
+	nstrings = id3_field_getnstrings(field);
+	if (nstrings < 1) return NULL;
+
+	ucs4 = id3_field_getstrings(field, 0);
+	utf8 = id3_ucs4_utf8duplicate(ucs4);
+	if (!utf8) return NULL;
+
+	QString ret = QString::fromUtf8((const char *)utf8);
+	free(utf8);
+
+	return ret;
+}

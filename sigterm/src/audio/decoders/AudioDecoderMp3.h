@@ -35,6 +35,7 @@ class AudioDecoderMp3 : public AudioDecoder {
 		int decodeNextFrameHeader();
 		int decodeNextFrame();
 		bool fillDecoderBuffer();
+		void parseId3Tag(signed long tagsize);
 
 		QFile mInputFile;
 		unsigned char mBufferRead[AUDIODECODER_MP3_READBUFFER_SIZE];

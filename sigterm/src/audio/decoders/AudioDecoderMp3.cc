@@ -19,6 +19,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <id3tag.h>
+
 /* xing stuff stolen from alsaplayer */
 # define XING_MAGIC	(('X' << 24) | ('i' << 16) | ('n' << 8) | 'g')
 
@@ -46,7 +48,6 @@ enum {
 };
 
 static int parse_xing(struct xing *xing, struct mad_bitptr ptr, unsigned int bitlen) {
-	
 	if (bitlen < 64 || mad_bit_read(&ptr, 32) != XING_MAGIC) goto fail;
 
 	xing->flags = mad_bit_read(&ptr, 32);
@@ -191,6 +192,47 @@ bool AudioDecoderMp3::closeFile() {
 	return true;
 }
 
+void AudioDecoderMp3::parseId3Tag(signed long tagsize) {
+	id3_length_t count = mMadStream.bufend - mMadStream.this_frame;
+	id3_byte_t const *id3_data;
+	id3_byte_t *allocated = NULL;
+
+	if ((id3_length_t)tagsize <= count) {
+		id3_data = mMadStream.this_frame;
+		mad_stream_skip(&mMadStream, tagsize);
+	} else {
+		allocated = new id3_byte_t[tagsize];
+		memcpy(allocated, mMadStream.this_frame, count);
+		mad_stream_skip(&mMadStream, count);
+
+		while (count < (id3_length_t)tagsize) {
+			qint64 len;
+
+			len = mInputFile.read((char *)allocated+count, tagsize - count);
+			if (len <= 0 && mInputFile.atEnd())
+				break;
+			else count += len;
+		}
+
+		if (count != (id3_length_t)tagsize) {
+			qDebug("Error parsing id3 tag\n");
+			goto fail;
+		}
+
+		id3_data = allocated;
+	}
+
+	struct id3_tag *id3Tag = id3_tag_parse(id3_data, tagsize);
+
+	if (id3Tag) {
+		audioFile()->metaData()->parseId3Tags(id3Tag);
+		id3_tag_delete(id3Tag);
+	}
+
+fail:
+	if (allocated) free(allocated);
+}
+
 bool AudioDecoderMp3::fillDecoderBuffer() {
 
 	if (mMadStream.buffer != NULL && mMadStream.error != MAD_ERROR_BUFLEN)
@@ -231,9 +273,8 @@ int AudioDecoderMp3::decodeNextFrameHeader() {
 		return DECODE_BREAK;
 	}
 	if(mad_header_decode(&mMadFrame.header,&mMadStream)) {
-#ifdef HAVE_ID3TAG
-		if(mMadStream.error==MAD_ERROR_LOSTSYNC && 
-				mMadStream.this_frame) 
+		if(mMadStream.error==MAD_ERROR_LOSTSYNC &&
+				mMadStream.this_frame)
 		{
 			signed long tagsize = id3_tag_query(
 					mMadStream.this_frame,
@@ -241,18 +282,10 @@ int AudioDecoderMp3::decodeNextFrameHeader() {
 					mMadStream.this_frame);
 
 			if(tagsize>0) {
-				if(tag && !(*tag)) {
-					*tag = mp3_parseId3Tag(data, tagsize);
-					
-				}
-				else {
-					mad_stream_skip(&mMadStream,
-							tagsize);
-				}
+				parseId3Tag(tagsize);
 				return DECODE_CONT;
 			}
 		}
-#endif
 		if (MAD_RECOVERABLE(mMadStream.error)) {
 			return DECODE_SKIP;
 		} else {
@@ -281,18 +314,16 @@ int AudioDecoderMp3::decodeNextFrame() {
 	}
 	
 	if (mad_frame_decode(&mMadFrame, &mMadStream)) {
-#ifdef HAVE_ID3TAG
 		if (mMadStream.error==MAD_ERROR_LOSTSYNC) {
 			signed long tagsize = id3_tag_query(
-					(data->stream).this_frame,
-					(data->stream).bufend-
-					(data->stream).this_frame);
+					mMadStream.this_frame,
+					mMadStream.bufend-
+					mMadStream.this_frame);
 			if(tagsize>0) {
-				mad_stream_skip(&(data->stream),tagsize);
+				mad_stream_skip(&mMadStream,tagsize);
 				return DECODE_CONT;
 			}
 		}
-#endif
 		if (MAD_RECOVERABLE(mMadStream.error)) {
 			return DECODE_SKIP;
 		}

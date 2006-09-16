@@ -5,6 +5,7 @@
 #include <QStringList>
 
 class AudioFile;
+struct id3_tag;
 
 class AudioMetaData {
 	public:
@@ -12,6 +13,7 @@ class AudioMetaData {
 		~AudioMetaData();
 
 		void parseVorbisComments(QStringList &inList);
+		void parseId3Tags(struct id3_tag *inTag);
 
 		QString &artist();
 		QString &title();
@@ -30,6 +32,8 @@ class AudioMetaData {
 	private:
 		QString mArtist, mTitle, mAlbum, mDate;
 		quint16 mTrackNumber, mTotalTracks;
+
+		QString getID3Info(struct id3_tag *tag, char *id);
 
 		AudioFile *mAudioFile;
 };
