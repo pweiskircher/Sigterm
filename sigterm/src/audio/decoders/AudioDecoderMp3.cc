@@ -206,31 +206,31 @@ bool AudioDecoderMp3::closeFile() {
 void AudioDecoderMp3::parseId3Tag(signed long tagsize) {
 	id3_length_t count = mMadStream.bufend - mMadStream.this_frame;
 	id3_byte_t const *id3_data;
-	id3_byte_t *allocated = NULL;
+	QByteArray data;
 
 	if ((id3_length_t)tagsize <= count) {
 		id3_data = mMadStream.this_frame;
 		mad_stream_skip(&mMadStream, tagsize);
 	} else {
-		allocated = new id3_byte_t[tagsize];
-		memcpy(allocated, mMadStream.this_frame, count);
+		data.resize(tagsize);
+		memcpy(data.data(), mMadStream.this_frame, count);
 		mad_stream_skip(&mMadStream, count);
 
 		while (count < (id3_length_t)tagsize) {
 			qint64 len;
 
-			len = mInputFile.read((char *)allocated+count, tagsize - count);
-			if (len <= 0 && mInputFile.atEnd())
+			len = mInputFile.read((char *)data.data()+count, tagsize - count);
+			if (len <= 0)
 				break;
 			else count += len;
 		}
 
 		if (count != (id3_length_t)tagsize) {
 			qDebug("Error parsing id3 tag\n");
-			goto fail;
+			return;
 		}
 
-		id3_data = allocated;
+		id3_data = (id3_byte_t*)data.data();
 	}
 
 	struct id3_tag *id3Tag = id3_tag_parse(id3_data, tagsize);
@@ -239,9 +239,6 @@ void AudioDecoderMp3::parseId3Tag(signed long tagsize) {
 		audioFile()->metaData()->parseId3Tags(id3Tag);
 		id3_tag_delete(id3Tag);
 	}
-
-fail:
-	if (allocated) free(allocated);
 }
 
 bool AudioDecoderMp3::fillDecoderBuffer() {
