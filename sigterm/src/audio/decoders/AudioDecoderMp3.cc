@@ -212,15 +212,14 @@ bool AudioDecoderMp3::fillDecoderBuffer() {
 	}
 	
 	qint64 l = mInputFile.read((char*)readStart, readSize);
-	if (l == -1 || l == 0)
+	if (l == -1 || l == 0) {
+		qWarning("reached end of input file");
 		return false; // QFile error || EOF
+	}
 	
 	mReadBytes += l;
 	qWarning("mad: refilling buffer %d/%d bytes",l,mReadBytes);
-	/*
-	if (ferror(mInputFile) || feof(mInputFile)) {
-		return false;
-	}*/
+	
 	mad_stream_buffer(&mMadStream, mBufferRead, l+remaining);
 	mMadStream.error = MAD_ERROR_NONE;
 	return true;
@@ -377,8 +376,9 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 
 
 bool AudioDecoderMp3::seekToTimeInternal(quint32 inMilliSeconds) {
+	qWarning("AudioDecoderMp3::seekToTimeInternal called, but we can't seek right now");
 //	mSampleId = (audioFormat().frequency() * (inMilliSeconds/1000.0)) / mF;
-	return true;
+	return false;
 }
 
 
@@ -427,15 +427,32 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 	
 		mAudioStorage.add(a, a.length());
 
-		int skip, ret;
-		while(1) {
-			skip=0;
+		while(true) {
+			bool skipFrame = false;
+			int	ret;
+			
 			while((ret = decodeNextFrameHeader())==DECODE_CONT);
-			if(ret==DECODE_BREAK) break;
-			else if(ret==DECODE_SKIP) skip = 1;
+			
+			if (ret == DECODE_BREAK) {
+				qWarning("decodeNextFrameHeader() returned DECODE_BREAK");
+				status = eStop;
+				break;
+			}
+			else if (ret == DECODE_SKIP) {
+				skipFrame = true;
+			}
+			
 			while((ret = decodeNextFrame())==DECODE_CONT);
-			if(ret==DECODE_BREAK) break;
-			if(!skip && ret==DECODE_OK) break;
+			
+			if (ret == DECODE_BREAK) {
+				qWarning("decodeNextFrame() returned DECODE_BREAK");
+				status = eStop;
+				break;
+			}
+			
+			if (!skipFrame && ret == DECODE_OK) {
+				break;
+			}
 		}
 		
 	}
