@@ -124,7 +124,7 @@ bool AudioDecoderMp4::openFile() {
 
 	audioFormat().setFrequency(samplerate);
 	audioFormat().setChannels(c);
-	audioFormat().setIsBigEndian(true);
+	audioFormat().setIsBigEndian(QSysInfo::ByteOrder == QSysInfo::BigEndian);
 	audioFormat().setIsUnsigned(false);
 
 	mF = 1024.0;
