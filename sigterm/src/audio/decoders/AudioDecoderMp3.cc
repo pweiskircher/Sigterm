@@ -133,6 +133,8 @@ static signed long audio_linear_dither(unsigned int bits, mad_fixed_t sample, st
 
 
 AudioDecoderMp3::AudioDecoderMp3(AudioFile *inAudioFile, AudioManager *inAudioManager) : AudioDecoder(inAudioFile, inAudioManager) {
+	mHighestFrame = 0;
+	mCurrentFrame = 0;
 }
 
 AudioDecoderMp3::~AudioDecoderMp3() {
@@ -189,10 +191,14 @@ bool AudioDecoderMp3::openFile() {
 
 bool AudioDecoderMp3::closeFile() {
 	mInputFile.close();
-	
+
 	mad_synth_finish(&mMadSynth);
 	mad_frame_finish(&mMadFrame);
 	mad_stream_finish(&mMadStream);
+
+	mSeekTable.clear();
+	mHighestFrame = 0;
+	mCurrentFrame = 0;
 
 	return true;
 }
@@ -303,6 +309,22 @@ int AudioDecoderMp3::decodeNextFrameHeader() {
 		return DECODE_SKIP;
 	}
 
+	mCurrentFrame++;
+	if (mCurrentFrame >= mHighestFrame) {
+		mad_timer_add(&mMadTimer, mMadFrame.header.duration);
+		mSeekTable[mCurrentFrame].time = mMadTimer;
+		mSeekTable[mCurrentFrame].frameOffset = mInputFile.pos();
+		if (mMadStream.this_frame != NULL) {
+			mSeekTable[mCurrentFrame].frameOffset -= mMadStream.bufend - mMadStream.this_frame;
+		} else {
+			mSeekTable[mCurrentFrame].frameOffset -= mMadStream.bufend - mMadStream.buffer;
+		}
+
+		mHighestFrame = mCurrentFrame;
+
+		//qDebug("mSeekTable[%d].time: %d .frameOffset: %d", mCurrentFrame, mad_timer_count(mSeekTable[mCurrentFrame].time, MAD_UNITS_MILLISECONDS), mSeekTable[mCurrentFrame].frameOffset);
+	}
+
 	return DECODE_OK;
 }
 
@@ -372,6 +394,7 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 
 			mTimeTotal = ((float)mad_timer_count(duration, MAD_UNITS_MILLISECONDS))/1000;
 			audioFile()->setTotalSamples(mXing.frames * 32 * MAD_NSBSAMPLES(&mMadFrame.header));
+			qDebug() << "xing frames: " << mXing.frames;
 		}
 	}
 	else {
@@ -404,7 +427,34 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 
 
 bool AudioDecoderMp3::seekToTimeInternal(quint32 inMilliSeconds) {
-	return false;
+	int newFrame=0;
+
+	mAudioStorage.clear();
+
+	while (newFrame < mHighestFrame && inMilliSeconds > ((float)mad_timer_count(mSeekTable[newFrame].time, MAD_UNITS_MILLISECONDS)))
+		newFrame++;
+	if (newFrame < mHighestFrame) {
+		mInputFile.seek(mSeekTable[newFrame].frameOffset);
+		mad_stream_buffer(&mMadStream, mBufferRead, 0);
+		mMadStream.error = (mad_error)0;
+		mCurrentFrame = newFrame;
+	} else {
+		while (1) {
+			int ret;
+			while((ret = decodeNextFrameHeader())==DECODE_CONT);
+			while (newFrame < mHighestFrame && inMilliSeconds > ((float)mad_timer_count(mSeekTable[newFrame].time, MAD_UNITS_MILLISECONDS)))
+				newFrame++;
+			if (newFrame < mHighestFrame) {
+				mInputFile.seek(mSeekTable[newFrame].frameOffset);
+				mad_stream_buffer(&mMadStream, mBufferRead, 0);
+				mMadStream.error = (mad_error)0;
+				mCurrentFrame = newFrame;
+				break;
+			}
+		}
+	}
+
+	return true;
 }
 
 

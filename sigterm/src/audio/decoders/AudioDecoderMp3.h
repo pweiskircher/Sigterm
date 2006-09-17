@@ -4,6 +4,7 @@
 #include "AudioDecoder.h"
 #include "AudioStorage.h"
 #include <QFile>
+#include <QMap>
 
 #include <mad.h>
 
@@ -20,6 +21,11 @@ struct xing {
 struct audio_dither {
 	mad_fixed_t error[3];
 	mad_fixed_t random;
+};
+
+struct seekTableEntry {
+	mad_timer_t time;
+	qint32 frameOffset;
 };
 
 class AudioDecoderMp3 : public AudioDecoder {
@@ -62,6 +68,10 @@ class AudioDecoderMp3 : public AudioDecoder {
 		float mTimeTotal;
 		float mTimeElapsed;
 		int mMuteFrame;
+
+		QMap<int, seekTableEntry> mSeekTable;
+		qint32 mHighestFrame;
+		qint32 mCurrentFrame;
 
 		mad_timer_t * mMadTimes;
 /*		long highestFrame;
