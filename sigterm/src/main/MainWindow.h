@@ -13,6 +13,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 	public:
 		MainWindow(QWidget *parent = 0);
+		~MainWindow();
 
 	private slots:
 		void audioPaused(bool inPaused);

@@ -52,6 +52,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	mSeekSliderUserUpdate = false;
 }
 
+MainWindow::~MainWindow() {
+	delete mLibrary;
+}
+
 void MainWindow::audioPaused(bool inPause) {
 	if (inPause) {
 		playButton->setText("Play");
