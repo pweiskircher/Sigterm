@@ -46,7 +46,7 @@ static int getAACTrack(mp4ff_t *infile)
 static uint32_t read_callback(void *user_data, void *buffer, uint32_t length)
 {
 	if (!buffer) return 0;
-	if (size > 100*1024*1024) return 0;
+	if (length > 100*1024*1024) return 0;
 	return fread(buffer, 1, length, (FILE*)user_data);
 }
 
