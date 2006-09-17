@@ -233,22 +233,22 @@ bool AudioDecoderMp4::readInfo() {
 
 	char *val;
 	if (mp4ff_meta_get_artist(mp4File, &val)) {
-		audioFile()->metaData()->setArtist(val);
+		audioFile()->metaData()->setArtist(QString::fromUtf8(val));
 		free(val);
 	}
 
 	if (mp4ff_meta_get_title(mp4File, &val)) {
-		audioFile()->metaData()->setTitle(val);
+		audioFile()->metaData()->setTitle(QString::fromUtf8(val));
 		free(val);
 	}
 
 	if (mp4ff_meta_get_album(mp4File, &val)) {
-		audioFile()->metaData()->setAlbum(val);
+		audioFile()->metaData()->setAlbum(QString::fromUtf8(val));
 		free(val);
 	}
 
 	if (mp4ff_meta_get_date(mp4File, &val)) {
-		audioFile()->metaData()->setDate(val);
+		audioFile()->metaData()->setDate(QString::fromUtf8(val));
 		free(val);
 	}
 
