@@ -67,6 +67,7 @@ mp4ff_callback_t *getMP4FF_cb(FILE *mp4file)
 AudioDecoderMp4::AudioDecoderMp4(AudioFile *inAudioFile, AudioManager *inAudioManager) : AudioDecoder(inAudioFile, inAudioManager) {
 	mMp4Callbacks.read = read_callback;
 	mMp4Callbacks.seek = seek_callback;
+	mAacFile = NULL;
 }
 
 AudioDecoderMp4::~AudioDecoderMp4() {
@@ -140,6 +141,8 @@ bool AudioDecoderMp4::openFile() {
 
 bool AudioDecoderMp4::closeFile() {
 	fclose(mAacFile);
+	mAacFile = NULL;
+
 	NeAACDecClose(mAacHandle);
 	return true;
 }
@@ -151,6 +154,9 @@ bool AudioDecoderMp4::seekToTimeInternal(quint32 inMilliSeconds) {
 }
 
 AudioDecoder::DecodingStatus AudioDecoderMp4::getDecodedChunk(AudioBuffer *inOutAudioBuffer) {
+	if (!mAacFile)
+		return eStop;
+
 	if (inOutAudioBuffer->state() != AudioBuffer::eEmpty) {
 		qDebug("AudioDecoderFlac: AudioBuffer in wrong state!");
 		return eContinue;
