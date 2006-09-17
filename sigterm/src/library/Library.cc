@@ -35,8 +35,8 @@ bool Library::createDatabase() {
 	return true;
 }
 
-QString &Library::filePath() {
-	return mFilePath;
+QString &Library::databasePath() {
+	return mDatabasePath;
 }
 
 
