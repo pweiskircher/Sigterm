@@ -3,6 +3,7 @@
 
 #include "ui_mainwindow.h"
 #include "AudioManager.h"
+#include "Library.h"
 
 #include <QSettings>
 #include <QTimer>
@@ -36,6 +37,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		AudioManager mAudioManager;
 		QSettings mSettings;
 		QTimer mTrackDisplayUpdater;
+		Library *mLibrary;
 
 		bool mSeekSliderUserUpdate;
 		quint32 mSeekSliderUserUpdateValue;

@@ -1,13 +1,12 @@
 #include "MainWindow.h"
 #include "PlayQueue.h"
 #include "AudioFile.h"
+#include "Library.h"
 #include "AudioDecoder.h"
 
 #include <QDebug>
 #include <QFileDialog>
 #include <QHeaderView>
-#include <QSqlDatabase>
-#include <QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
 
@@ -24,15 +23,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 		}
 	}
 
-	/* XXX: clearly this is just some test code and can't stay here */
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "sigtermDb");
-	db.setDatabaseName(dataDirectory + "/data.db");
-	bool ok = db.open();
-	if (!ok) { qWarning("Could not open database"); }
-	QSqlQuery *query = new QSqlQuery(db);
-	ok = query->exec("CREATE TABLE playlists(name, id INTEGER)");
-	if (!ok) { qWarning("Could not create database tables"); }
-	/* </XXX> */
+	mLibrary = new Library(dataDirectory + "/library.db");
+	mLibrary->open();
 	
 	setupUi(this);
 	connect(&mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));

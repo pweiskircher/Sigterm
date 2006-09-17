@@ -55,7 +55,7 @@ INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_
 #### stuff.
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/)
+INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/)
 
 SET(SIGTERM_SRCS
 src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
@@ -73,6 +73,7 @@ src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
 src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
+src/library/Library.cc src/library/Library.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 )
