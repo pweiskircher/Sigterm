@@ -52,7 +52,6 @@ static uint32_t read_callback(void *user_data, void *buffer, uint32_t length)
 
 static uint32_t seek_callback(void *user_data, uint64_t position)
 {
-	if (!buffer) return 0;
 	return fseek((FILE*)user_data, position, SEEK_SET);
 }
 
