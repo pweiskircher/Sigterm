@@ -115,7 +115,7 @@
       <item>
        <widget class="QPushButton" name="deleteButton" >
         <property name="text" >
-         <string>Delete</string>
+         <string>Remove</string>
         </property>
        </widget>
       </item>
@@ -142,7 +142,7 @@
      <x>0</x>
      <y>0</y>
      <width>621</width>
-     <height>30</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHuhu" >

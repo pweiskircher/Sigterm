@@ -145,8 +145,6 @@ AudioDecoder *AudioDecoderMp3::createAudioDecoder(AudioFile *inAudioFile, AudioM
 }
 
 bool AudioDecoderMp3::openFile() {
-	if (mInputFile.isOpen())
-		mInputFile.close();
 
 	mInputFile.setFileName(audioFile()->filePath());
 	if (!mInputFile.open(QIODevice::ReadOnly)) {
@@ -178,8 +176,10 @@ bool AudioDecoderMp3::openFile() {
 	audioFormat().setIsUnsigned(false);
 	audioFormat().setBitsPerSample(16);
 
-	if (!decodeFirstFrame())
+	if (!decodeFirstFrame()) {
+		closeFile();
 		return false;
+	}
 
 	audioFormat().setFrequency(mMadFrame.header.samplerate);
 	audioFormat().setChannels(MAD_NCHANNELS(&mMadFrame.header));
@@ -190,7 +190,8 @@ bool AudioDecoderMp3::openFile() {
 }
 
 bool AudioDecoderMp3::closeFile() {
-	mInputFile.close();
+	if (mInputFile.isOpen())
+		mInputFile.close();
 
 	mad_synth_finish(&mMadSynth);
 	mad_frame_finish(&mMadFrame);
@@ -436,18 +437,24 @@ bool AudioDecoderMp3::seekToTimeInternal(quint32 inMilliSeconds) {
 	if (newFrame < mHighestFrame) {
 		mInputFile.seek(mSeekTable[newFrame].frameOffset);
 		mad_stream_buffer(&mMadStream, mBufferRead, 0);
-		mMadStream.error = (mad_error)0;
+		mMadStream.error = MAD_ERROR_NONE;
 		mCurrentFrame = newFrame;
 	} else {
 		while (1) {
+			
 			int ret;
 			while((ret = decodeNextFrameHeader())==DECODE_CONT);
+			if (ret == DECODE_BREAK) {
+				return false;
+			}
+			
 			while (newFrame < mHighestFrame && inMilliSeconds > ((float)mad_timer_count(mSeekTable[newFrame].time, MAD_UNITS_MILLISECONDS)))
 				newFrame++;
+			
 			if (newFrame < mHighestFrame) {
 				mInputFile.seek(mSeekTable[newFrame].frameOffset);
 				mad_stream_buffer(&mMadStream, mBufferRead, 0);
-				mMadStream.error = (mad_error)0;
+				mMadStream.error = MAD_ERROR_NONE;
 				mCurrentFrame = newFrame;
 				break;
 			}
@@ -477,7 +484,7 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 		mad_synth_frame(&mMadSynth,&mMadFrame);
 		
 		QByteArray a;
-		quint32 len = mMadSynth.pcm.length * (audioFormat().channels()) * 2; /* FIXME: replace 2 with bits/8 */
+		quint32 len = mMadSynth.pcm.length * audioFormat().channels() * (audioFormat().bitsPerSample()/8);
 		a.resize(len);
 		char * ptr;
 		ptr = a.data();
@@ -571,7 +578,7 @@ bool AudioDecoderMp3::readInfo() {
 }
 
 QString AudioDecoderMp3::audioFormatDescription() {
-	return "MPEG 2 Audio Layer III";
+	return "MPEG Audio Layer 3";
 }
 
 QStringList AudioDecoderMp3::audioFormatFileExtensions() {
