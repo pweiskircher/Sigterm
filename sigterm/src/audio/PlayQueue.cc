@@ -104,76 +104,76 @@ int PlayQueue::columnCount(const QModelIndex &parent) const {
 	return eLastElement;
 }
 
-	int PlayQueue::rowCount(const QModelIndex &parent) const {
-		if (!parent.isValid())
-			return mAudioFileList.size();
-		return 0;
-	}
+int PlayQueue::rowCount(const QModelIndex &parent) const {
+	if (!parent.isValid())
+		return mAudioFileList.size();
+	return 0;
+}
 
-	QVariant PlayQueue::data(const QModelIndex &index, int role) const {
-		if (index.isValid() == false)
-			return QVariant();
-
-		switch ((Columns)index.column()) {
-			case eIsPlaying:
-				if (role == Qt::DecorationRole) {
-					if (mAudioFileList[index.row()]->isPlaying()) {
-						QPixmap p(8,8);
-						p.fill(Qt::blue);
-						return QIcon(p);
-					}
-				}
-				break;
-
-			case eTitle:
-				if (role == Qt::DisplayRole) {
-					return mAudioFileList[index.row()]->metaData()->title();
-				}
-				break;
-
-			case eTotalTime:
-				if (role == Qt::DisplayRole) {
-					QString help;
-					quint32 length = mAudioFileList[index.row()]->timeTotal();
-					help.sprintf("%d:%02d", length/60, length%60);
-					return help;
-				} else if (role == Qt::TextAlignmentRole) {
-					return Qt::AlignRight;
-				}
-				break;
-
-			case eTrackNumber:
-				if (role == Qt::DisplayRole) {
-					return mAudioFileList[index.row()]->metaData()->trackNumber();
-				} else if (role == Qt::TextAlignmentRole) {
-					return Qt::AlignRight;
-				}
-				break;
-
-			case eArtist:
-				if (role == Qt::DisplayRole) {
-					return mAudioFileList[index.row()]->metaData()->artist();
-				}
-				break;
-
-			case eAlbum:
-				if (role == Qt::DisplayRole) {
-					return mAudioFileList[index.row()]->metaData()->album();
-				}
-				break;
-
-			case eLastElement:
-				break;
-		}
-
+QVariant PlayQueue::data(const QModelIndex &index, int role) const {
+	if (index.isValid() == false)
 		return QVariant();
+
+	switch ((Columns)index.column()) {
+		case eIsPlaying:
+			if (role == Qt::DecorationRole) {
+				if (mAudioFileList[index.row()]->isPlaying()) {
+					QPixmap p(8,8);
+					p.fill(Qt::blue);
+					return QIcon(p);
+				}
+			}
+			break;
+
+		case eTitle:
+			if (role == Qt::DisplayRole) {
+				return mAudioFileList[index.row()]->metaData()->title();
+			}
+			break;
+
+		case eTotalTime:
+			if (role == Qt::DisplayRole) {
+				QString help;
+				quint32 length = mAudioFileList[index.row()]->timeTotal();
+				help.sprintf("%d:%02d", length/60, length%60);
+				return help;
+			} else if (role == Qt::TextAlignmentRole) {
+				return Qt::AlignRight;
+			}
+			break;
+
+		case eTrackNumber:
+			if (role == Qt::DisplayRole) {
+				return mAudioFileList[index.row()]->metaData()->trackNumber();
+			} else if (role == Qt::TextAlignmentRole) {
+				return Qt::AlignRight;
+			}
+			break;
+
+		case eArtist:
+			if (role == Qt::DisplayRole) {
+				return mAudioFileList[index.row()]->metaData()->artist();
+			}
+			break;
+
+		case eAlbum:
+			if (role == Qt::DisplayRole) {
+				return mAudioFileList[index.row()]->metaData()->album();
+			}
+			break;
+
+		case eLastElement:
+			break;
 	}
 
-	bool PlayQueue::hasChildren(const QModelIndex &parent) const {
-		if (parent.isValid() == false)
-			return true;
-		return false;
-	}
+	return QVariant();
+}
+
+bool PlayQueue::hasChildren(const QModelIndex &parent) const {
+	if (parent.isValid() == false)
+		return true;
+	return false;
+}
 
 void PlayQueue::nextTrack() {
 	QMutexLocker locker(&mMutex);
