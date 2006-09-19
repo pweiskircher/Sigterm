@@ -80,7 +80,13 @@ AudioDecoder *AudioDecoderMp4::createAudioDecoder(AudioFile *inAudioFile, AudioM
 }
 
 bool AudioDecoderMp4::openFile() {
-	mAacFile = fopen(qPrintable(audioFile()->filePath()), "rb");
+	mFile.setFileName(audioFile()->filePath());
+	if (!mFile.open(QIODevice::ReadOnly)) {
+		qDebug("aac::openFile: Couldn't open file");
+		return false;
+	}
+
+	mAacFile = fdopen(mFile.handle(), "rb");
 	if (!mAacFile) {
 		qDebug("aac::openFile: Couldn't open file");
 		return false;
@@ -115,6 +121,7 @@ bool AudioDecoderMp4::openFile() {
 	if (err < 0) {
 		qDebug("Could not initialize aac.");
 		fclose(mAacFile);
+		mFile.close();
 		NeAACDecClose(mAacHandle);
 		return false;
 	}
@@ -143,6 +150,7 @@ bool AudioDecoderMp4::openFile() {
 
 bool AudioDecoderMp4::closeFile() {
 	fclose(mAacFile);
+	mFile.close();
 	mAacFile = NULL;
 
 	NeAACDecClose(mAacHandle);
@@ -225,7 +233,13 @@ bool AudioDecoderMp4::readInfo() {
 	mp4Callbacks.read = read_callback;
 	mp4Callbacks.seek = seek_callback;
 
-	FILE *aacFile = fopen(qPrintable(audioFile()->filePath()), "rb");
+	QFile file(audioFile()->filePath());
+	if (!file.open(QIODevice::ReadOnly)) {
+		qDebug("aac::openFile: Couldn't open file");
+		return false;
+	}
+
+	FILE *aacFile = fdopen(file.handle(), "rb");
 	if (!aacFile) {
 		qDebug("aac::openFile: Couldn't open file");
 		return false;

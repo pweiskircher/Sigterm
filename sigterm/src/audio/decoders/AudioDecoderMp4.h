@@ -6,6 +6,7 @@
 
 #include <neaacdec.h>
 #include "mp4ff.h"
+#include <QFile>
 
 class AudioDecoderMp4 : public AudioDecoder {
 	public:
@@ -25,6 +26,7 @@ class AudioDecoderMp4 : public AudioDecoder {
 		virtual AudioDecoder::DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer);
 		virtual bool seekToTimeInternal(quint32 inMilliSeconds);
 
+		QFile mFile;
 		FILE *mAacFile;
 		NeAACDecHandle mAacHandle;
 		NeAACDecFrameInfo mAacFrameInfo;
