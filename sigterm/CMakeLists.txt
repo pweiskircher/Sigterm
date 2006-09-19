@@ -76,15 +76,18 @@ src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/library/Library.cc src/library/Library.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
+src/main/Preferences.cc src/main/Preferences.h
 )
 
 
 SET(SIGTERM_UI
 src/main/mainwindow.ui
+src/main/preferences.ui
 )
 
 SET(SIGTERM_MOC
 src/main/MainWindow.h
+src/main/Preferences.h
 src/audio/AudioProcessor.h
 src/audio/AudioManager.h
 src/audio/AudioFile.h

@@ -8,6 +8,8 @@
 #include <QSettings>
 #include <QTimer>
 
+class Preferences;
+
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
 
@@ -31,6 +33,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void on_addButton_clicked();
 		void on_deleteButton_clicked();
 
+		void on_actionPreferences_activated();
 		void on_actionQuit_activated();
 		void on_playQueue_doubleClicked(const QModelIndex &index);
 
@@ -39,6 +42,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		QSettings mSettings;
 		QTimer mTrackDisplayUpdater;
 		Library *mLibrary;
+		Preferences *mPreferences;
 
 		bool mSeekSliderUserUpdate;
 		quint32 mSeekSliderUserUpdateValue;

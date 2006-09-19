@@ -3,12 +3,14 @@
 #include "AudioFile.h"
 #include "Library.h"
 #include "AudioDecoder.h"
+#include "Preferences.h"
 
 #include <QDebug>
 #include <QFileDialog>
 #include <QHeaderView>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
+
 
 	mSettings.setValue("Misc/Dummy", "IgnoreMe");
 	mSettings.sync();
@@ -22,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	mPreferences = new Preferences(this);
 
 	mLibrary = new Library(dataDirectory + "/library.db");
 	mLibrary->open();
@@ -160,6 +164,9 @@ void MainWindow::on_deleteButton_clicked() {
 	mAudioManager.playQueue()->removeTracks(l);
 }
 
+void MainWindow::on_actionPreferences_activated() {
+	mPreferences->exec();
+}
 
 void MainWindow::on_actionQuit_activated() {
 	mAudioManager.quit();
