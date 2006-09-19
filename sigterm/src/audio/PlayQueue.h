@@ -42,6 +42,9 @@ class PlayQueue : public QAbstractTableModel {
 
 		void removeTracks(QModelIndexList &inIndexes);
 
+		bool loadFromFile(const QString fileName);
+		bool saveToFile(const QString fileName);
+
 	private slots:
 		void audioFileStartedPlaying(AudioFile *inAudioFile);
 		void audioFileStoppedPlaying(AudioFile *inAudioFile);

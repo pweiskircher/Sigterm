@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	mSettings.sync();
 
 	QString defaultDataDirectory = QDir::homePath() + "/.sigterm";
-	QString dataDirectory = mSettings.value("Main/DataDirectory", defaultDataDirectory).toString();
-	QDir dataDir(dataDirectory);
+	mDataDirectory = mSettings.value("Main/DataDirectory", defaultDataDirectory).toString();
+	QDir dataDir(mDataDirectory);
 	if (!dataDir.exists()) {
 		if (!dataDir.mkpath(dataDir.absolutePath())) {
 			qWarning("Could not create directory '%s'", qPrintable(dataDir.absolutePath()));
@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mPreferences = new Preferences(this);
 
-	mLibrary = new Library(dataDirectory + "/library.db");
+	mLibrary = new Library(mDataDirectory + "/library.db");
 	mLibrary->open();
 	
 	setupUi(this);
@@ -53,10 +53,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	playQueue->header()->setStretchLastSection(false);
 
+	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
+
 	mSeekSliderUserUpdate = false;
 }
 
 MainWindow::~MainWindow() {
+	mAudioManager.playQueue()->saveToFile(mDataDirectory + "/PlayQueue.m3u");
 	delete mLibrary;
 }
 

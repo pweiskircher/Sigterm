@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QPixmap>
 #include <QIcon>
+#include <QTextStream>
 
 PlayQueue::PlayQueue(AudioManager *inAudioManager) {
 	mCurrentAudioFileIndex = 0;
@@ -225,5 +226,53 @@ void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 		// TODO: we should delete the item if its not in our library
 		af->removeFromQueue();
 	}
+}
+
+bool PlayQueue::saveToFile(QString fileName) {
+
+	QFile playlistFile(fileName);
+	if (!playlistFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+		return false;
+	}
+	
+	QTextStream playlist(&playlistFile);
+	
+	QListIterator<AudioFile *> afit(mAudioFileList);
+	while (afit.hasNext()) {
+		AudioFile *af = afit.next();
+		playlist << af->filePath() << endl;
+	}
+	playlist.flush();
+	playlistFile.close();
+
+	return true;
+}
+
+bool PlayQueue::loadFromFile(QString fileName) {
+	
+	QFile playlistFile(fileName);
+	if (!playlistFile.open(QFile::ReadOnly | QFile::Text)) {
+		return false;
+	}
+
+	QTextStream playlist(&playlistFile);
+	QString itemFileName;
+	while(!playlist.atEnd()) {
+		
+		itemFileName = playlist.readLine();
+
+		if (itemFileName.isNull())
+			break;
+		
+		if (itemFileName.startsWith("#"))
+			continue;
+	
+		AudioFile *af = new AudioFile(itemFileName, mAudioManager);
+		af->addToQueue();
+	}
+
+	playlistFile.close();
+
+	return true;
 }
 

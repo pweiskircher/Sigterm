@@ -43,6 +43,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		QTimer mTrackDisplayUpdater;
 		Library *mLibrary;
 		Preferences *mPreferences;
+		QString mDataDirectory;
 
 		bool mSeekSliderUserUpdate;
 		quint32 mSeekSliderUserUpdateValue;
