@@ -553,6 +553,7 @@ AudioDecoder::DecodingStatus AudioDecoderMp3::getDecodedChunk(AudioBuffer *inOut
 }
 
 bool AudioDecoderMp3::canDecode(const QString &inFilePath) {
+
 	QFile file(inFilePath);
 	if (!file.open(QIODevice::ReadOnly)) {
 		return false;
@@ -561,10 +562,17 @@ bool AudioDecoderMp3::canDecode(const QString &inFilePath) {
 	/*
 	 * there are no magic bytes, so we just have to pretend
 	 * that we could play the file. sorry.
+	 *
+	 * this check is a hack - we only accept MP3 files if they
+	 * end with ".mp3". prevents some problems, and isn't too bad,
+	 * I guess.
 	 */
+	if (!inFilePath.endsWith(".mp3", Qt::CaseInsensitive)) {
+		return false;
+	}
+
 	return true;
 }
-
 
 bool AudioDecoderMp3::readInfo() {
 	qWarning("entered readInfo()");
