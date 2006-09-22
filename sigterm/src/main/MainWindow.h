@@ -3,12 +3,13 @@
 
 #include "ui_mainwindow.h"
 #include "AudioManager.h"
-#include "Library.h"
 
 #include <QSettings>
 #include <QTimer>
 
+class Library;
 class Preferences;
+class LastFMClient;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
@@ -43,6 +44,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		QTimer mTrackDisplayUpdater;
 		Library *mLibrary;
 		Preferences *mPreferences;
+		LastFMClient *mLastFMClient;
 		QString mDataDirectory;
 
 		bool mSeekSliderUserUpdate;

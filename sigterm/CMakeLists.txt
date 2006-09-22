@@ -55,7 +55,7 @@ INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_
 #### stuff.
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
-INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/)
+INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/ src/misc/)
 
 SET(SIGTERM_SRCS
 src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
@@ -74,6 +74,7 @@ src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/library/Library.cc src/library/Library.h
+src/misc/LastFMClient.cc src/misc/LastFMClient.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h
@@ -92,6 +93,7 @@ src/audio/AudioProcessor.h
 src/audio/AudioManager.h
 src/audio/AudioFile.h
 src/audio/PlayQueue.h
+src/misc/LastFMClient.h
 )
 
 QT4_ADD_RESOURCES(src/main/mainwindow.qrc)
@@ -102,6 +104,7 @@ SET(SIGTERM_LIBRARIES
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTSQL_LIBRARY}
+  ${QT_QTNETWORK_LIBRARY}
   ${SIGTERM_SDL_LIBRARY}
   ${FLAC_LIBRARY}
   ${FAAD_LIBRARY}

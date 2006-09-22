@@ -4,6 +4,7 @@
 #include "Library.h"
 #include "AudioDecoder.h"
 #include "Preferences.h"
+#include "LastFMClient.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -29,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mLibrary = new Library(mDataDirectory + "/library.db");
 	mLibrary->open();
+
+	mLastFMClient = new LastFMClient(mDataDirectory + "/lastfm.ini");
 	
 	setupUi(this);
 	connect(&mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));
