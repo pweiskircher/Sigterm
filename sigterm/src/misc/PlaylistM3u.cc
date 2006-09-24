@@ -1,4 +1,6 @@
 #include <QString>
+#include <QDir>
+#include <QFileInfo>
 #include "PlaylistM3u.h"
 #include "AudioFile.h"
 #include "AudioManager.h"
@@ -32,20 +34,31 @@ bool PlaylistM3u::load(QList<AudioFile *> &audioFileList) {
 	
 	if (!openFile(QFile::ReadOnly))
 		return false;
-	
+
+	QFileInfo fiPlaylist(mFile.fileName());
+	QDir baseDir = fiPlaylist.dir();
+
 	QTextStream playlist(&mFile);
 	QString itemFileName;
 	while(!playlist.atEnd()) {
-		
+
 		itemFileName = playlist.readLine();
 
 		if (itemFileName.isNull())
 			break;
-		
+
+		if (itemFileName.isEmpty())
+			continue;
+
 		if (itemFileName.startsWith("#"))
 			continue;
-	
-		AudioFile *af = new AudioFile(itemFileName, mAudioManager);
+
+		QFileInfo fi(itemFileName);
+		if (fi.isRelative()) {
+			fi.setFile(baseDir, itemFileName);
+		}
+
+		AudioFile *af = new AudioFile(fi.filePath(), mAudioManager);
 		audioFileList.append(af);
 	}
 
