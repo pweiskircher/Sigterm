@@ -33,6 +33,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 		void on_addButton_clicked();
 		void on_deleteButton_clicked();
+		void on_addPlaylistButton_clicked();
 
 		void on_actionPreferences_activated();
 		void on_actionQuit_activated();

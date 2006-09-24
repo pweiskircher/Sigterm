@@ -170,6 +170,21 @@ void MainWindow::on_deleteButton_clicked() {
 	mAudioManager.playQueue()->removeTracks(l);
 }
 
+void MainWindow::on_addPlaylistButton_clicked() {
+
+	QString directory = mSettings.value("OpenDialog/LastBrowsedDirectory", QDir::homePath()).toString();
+
+	QString file = QFileDialog::getOpenFileName(this, "Load Playlist ...", directory, "Playlist Files (*.m3u)");
+	if (file.isEmpty())
+		return;
+
+	mAudioManager.playQueue()->appendFromFile(file);
+	
+	// same ugly workaround as above
+	QFileInfo fi(file);
+	mSettings.setValue("OpenDialog/LastBrowsedDirectory", fi.absolutePath());
+}
+
 void MainWindow::on_actionPreferences_activated() {
 	mPreferences->exec();
 }

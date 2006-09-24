@@ -229,6 +229,16 @@ void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 	}
 }
 
+bool PlayQueue::clear() {
+	mAudioManager->setPause(true);
+	QListIterator<AudioFile *> afit(mAudioFileList);
+	while (afit.hasNext()) {
+		AudioFile *af = afit.next();
+		// TODO: we should delete the item if its not in our library
+		af->removeFromQueue();
+	}
+}
+
 bool PlayQueue::saveToFile(QString fileName) {
 	PlaylistM3u playlist(fileName, mAudioManager);
 	playlist.save(mAudioFileList);
@@ -236,6 +246,11 @@ bool PlayQueue::saveToFile(QString fileName) {
 }
 
 bool PlayQueue::loadFromFile(QString fileName) {
+	clear();
+	return appendFromFile(fileName);
+}
+
+bool PlayQueue::appendFromFile(QString fileName) {
 	QList<AudioFile *> myList;
 	PlaylistM3u playlist(fileName, mAudioManager);
 	playlist.load(myList);
