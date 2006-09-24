@@ -75,6 +75,7 @@ src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/library/Library.cc src/library/Library.h
 src/misc/LastFMClient.cc src/misc/LastFMClient.h
+src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h
