@@ -2,7 +2,7 @@
 #include "AudioFile.h"
 #include "PlayQueue.h"
 #include <math.h>
-#include <QSysInfo.h>
+#include <QSysInfo>
 
 #include "decoders/AudioDecoderOgg.h"
 #include "decoders/AudioDecoderFlac.h"
