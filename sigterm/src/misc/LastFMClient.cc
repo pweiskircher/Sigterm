@@ -7,6 +7,7 @@ bool LastFMEntry::load(QSettings &inSettings, const QString &inSection) {
 	mMusicBrainzId = inSettings.value(inSection + "/MusicBrainzId").toString();
 	mSeconds = inSettings.value(inSection + "/Seconds").toString();
 	mDatePlayed = inSettings.value(inSection + "/DatePlayed").toString();
+	return true;
 }
 
 bool LastFMEntry::save(QSettings &inSettings, const QString &inSection) {
@@ -16,6 +17,7 @@ bool LastFMEntry::save(QSettings &inSettings, const QString &inSection) {
 	inSettings.setValue(inSection + "/MusicBrainzId", mMusicBrainzId);
 	inSettings.setValue(inSection + "/Seconds", mSeconds);
 	inSettings.setValue(inSection + "/DatePlayed", mDatePlayed);
+	return true;
 }
 
 QString LastFMEntry::toGetRequest(int count) {
