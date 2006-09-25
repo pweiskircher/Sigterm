@@ -229,7 +229,7 @@ void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 	}
 }
 
-bool PlayQueue::clear() {
+void PlayQueue::clear() {
 	mAudioManager->setPause(true);
 	QListIterator<AudioFile *> afit(mAudioFileList);
 	while (afit.hasNext()) {
