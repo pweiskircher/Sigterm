@@ -195,6 +195,8 @@ void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
 	if (index != -1)
 		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 	mPlayingTrack = inAudioFile;
+
+	emit audioFileStarted(inAudioFile);
 }
 
 void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
@@ -206,6 +208,8 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
 
 	if (mPlayingTrack == inAudioFile)
 		mPlayingTrack = NULL;
+
+	emit audioFileStopped(inAudioFile);
 }
 
 void PlayQueue::removeTracks(QModelIndexList &inIndexes) {

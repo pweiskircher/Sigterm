@@ -60,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	playQueue->header()->setStretchLastSection(false);
 
+	connect(mAudioManager.playQueue(), SIGNAL(audioFileStarted(AudioFile*)), SLOT(audioFileStarted(AudioFile*)));
+	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*)), SLOT(audioFileStopped(AudioFile*)));
+
 	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
 
 	mSeekSliderUserUpdate = false;
@@ -214,5 +217,13 @@ void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {
 		mAudioManager.audioStorage()->clear();
 		mAudioManager.togglePause();
 	}
+}
+
+void MainWindow::audioFileStarted(AudioFile *inAudioFile) {
+	qDebug() << "Started Playing: " << inAudioFile->filePath() << "samples played: " << inAudioFile->playedSamples();
+}
+
+void MainWindow::audioFileStopped(AudioFile *inAudioFile) {
+	qDebug() << "Stopped Playing: " << inAudioFile->filePath() << "samples played: " << inAudioFile->playedSamples();
 }
 

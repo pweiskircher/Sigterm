@@ -47,6 +47,10 @@ class PlayQueue : public QAbstractTableModel {
 		bool saveToFile(const QString fileName);
 		void clear();
 
+	signals:
+		void audioFileStarted(AudioFile *inAudioFile);
+		void audioFileStopped(AudioFile *inAudioFile);
+
 	private slots:
 		void audioFileStartedPlaying(AudioFile *inAudioFile);
 		void audioFileStoppedPlaying(AudioFile *inAudioFile);

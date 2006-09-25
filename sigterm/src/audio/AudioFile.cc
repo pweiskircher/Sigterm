@@ -2,6 +2,7 @@
 #include "AudioManager.h"
 #include "AudioDecoder.h"
 
+#include <QDebug>
 #include <SDL.h>
 
 AudioFile::AudioFile(const QString &inFilePath, AudioManager *inAudioManager) : mMetaData(this) {

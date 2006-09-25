@@ -10,6 +10,7 @@
 class Library;
 class Preferences;
 class LastFMClient;
+class AudioFile;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
@@ -40,6 +41,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void on_actionPreferences_activated();
 		void on_actionQuit_activated();
 		void on_playQueue_doubleClicked(const QModelIndex &index);
+
+		void audioFileStarted(AudioFile *inAudioFile);
+		void audioFileStopped(AudioFile *inAudioFile);
 
 	private:
 		AudioManager mAudioManager;

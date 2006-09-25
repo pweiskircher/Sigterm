@@ -7,12 +7,13 @@
 class AudioFile;
 
 class LastFMEntry {
+	public:
 	bool load(QSettings &inSettings, const QString &inSection);
 	bool save(QSettings &inSettings, const QString &inSection);
 	QString toGetRequest(int count);
 
 	QString mArtist;
-	QString mTrack;
+	QString mTitle;
 	QString mAlbum;
 	QString mMusicBrainzId;
 	QString mSeconds;
@@ -26,7 +27,7 @@ class LastFMClient : public QObject {
 		LastFMClient(const QString &inRecordFile);
 
 		void setUsername(const QString &inUsername);
-		void setPassword(const QString &inPassword);
+		void setMd5edPassword(const QString &inPassword);
 
 		void submitTrack(AudioFile *inAudioFile);
 
@@ -37,7 +38,7 @@ class LastFMClient : public QObject {
 		void submitTracks();
 
 		QString mUsername;
-		QString mPassword;
+		QString mMd5edPassword;
 		QHttp mHttpClient;
 
 		QString mMd5Challenge;
