@@ -253,12 +253,12 @@ int get_AAC_format(FILE *file, faadAACInfo *info,
     info->length = 0;
 
 	/* Determine the header type of the file, check the first two bytes */
-    if(strnicmp((char *)adxx_id, "AD", 2) == 0)
+    if(strncasecmp((char *)adxx_id, "AD", 2) == 0)
     {
 		/* We think its an ADIF header, but check the rest just to make sure */
 		tmp = fread(adxx_id+2, 1, 2, file);
 		
-		if(strnicmp((char *)adxx_id, "ADIF", 4) == 0)
+		if(strncasecmp((char *)adxx_id, "ADIF", 4) == 0)
 		{
 			read_ADIF_header(file, info);
 		}
