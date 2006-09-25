@@ -124,6 +124,9 @@
         <property name="orientation" >
          <enum>Qt::Horizontal</enum>
         </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Expanding</enum>
+        </property>
         <property name="sizeHint" >
          <size>
           <width>40</width>
@@ -131,6 +134,21 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QSlider" name="volumeSlider" >
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>0</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="addPlaylistButton" >

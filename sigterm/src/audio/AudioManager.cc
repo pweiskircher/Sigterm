@@ -1,13 +1,14 @@
 #include "AudioManager.h"
 #include "AudioFile.h"
 #include "PlayQueue.h"
+#include <math.h>
 
 #include "decoders/AudioDecoderOgg.h"
 #include "decoders/AudioDecoderFlac.h"
 #include "decoders/AudioDecoderMp4.h"
 #include "decoders/AudioDecoderMp3.h"
 
-void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
+static void fillBufferCallback(void *userdata, Uint8 *stream, int len) {
 	AudioManager *mgr = (AudioManager *)userdata;
 	mgr->fillBuffer(stream, len);
 }
@@ -160,7 +161,26 @@ bool AudioManager::paused() {
 void AudioManager::fillBuffer(Uint8 *stream, int len) {
 	mSDLBuffer.resize(len);
 	if (audioStorage()->get(mSDLBuffer)) {
+		
 		memcpy(stream, mSDLBuffer.data(), len);
+		
+		/* for the sake of wtfness: */
+		/* double volume_d = 100.0*(exp(mVolume/50.0)-1)/(M_E*M_E-1)+0.5; */
+		double volume_d = (1000.0*(exp(mVolume/25.0)-1)/(54.5981500331F-1)+0.5);
+		int volume = (int)volume_d;
+		volume = (volume>1000) ? 1000 : (volume<0 ? 0 : volume);
+		
+		/* FIXME: can this crash if len is not a multiple of 2? */
+		qint16 *buffer = (qint16 *)stream;
+		int lenRemaining = len;
+		while(lenRemaining > 0) {
+			qint32 temp = *buffer;
+			temp *= volume;
+			temp /= 1000;
+			*buffer = temp > 32767 ? 32767 : (temp < -32768 ? -32768 : temp);
+			buffer++;
+			lenRemaining -= 2;
+		}
 	}
 }
 
@@ -181,5 +201,13 @@ SDL_AudioSpec *AudioManager::hardwareSpec() {
 
 AudioFormat *AudioManager::hardwareFormat() {
 	return mHardwareAudioFormat;
+}
+
+int AudioManager::volume() {
+	return mVolume;
+}
+
+void AudioManager::setVolume(int inVolume) {
+	mVolume = inVolume > 100 ? 100 : (inVolume < 0 ? 0 : inVolume);
 }
 

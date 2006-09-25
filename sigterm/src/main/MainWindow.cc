@@ -44,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	connect(timeSlider, SIGNAL(sliderPressed()), SLOT(seekSliderPressed()));
 	connect(timeSlider, SIGNAL(sliderReleased()), SLOT(seekSliderReleased()));
 
+	connect(volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderChangedValue(int)));
+	mAudioManager.setVolume(80);
+	volumeSlider->setValue((int)((volumeSlider->maximum() * mAudioManager.volume())/100));
+	
 	playQueue->setModel(mAudioManager.playQueue());
 
 	playQueue->header()->resizeSection(PlayQueue::eIsPlaying, 20);
@@ -128,6 +132,13 @@ void MainWindow::seekSliderReleased() {
 	qDebug("seekSliderUserUpdateValue %d", mSeekSliderUserUpdateValue);
 
 	mSeekSliderUserUpdate = false;
+}
+
+void MainWindow::volumeSliderChangedValue(int inValue) {
+	QSlider *slider = (QSlider *)QObject::sender();
+
+	int volume = (inValue*100)/slider->maximum();
+	mAudioManager.setVolume(volume);
 }
 
 void MainWindow::on_nextButton_clicked() {

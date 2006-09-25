@@ -27,6 +27,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void seekSliderPressed();
 		void seekSliderReleased();
 
+		void volumeSliderChangedValue(int inValue);
+		
 		void on_nextButton_clicked();
 		void on_playButton_clicked();
 		void on_prevButton_clicked();

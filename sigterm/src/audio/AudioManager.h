@@ -33,6 +33,9 @@ class AudioManager : public QObject {
 
 		void nextTrack();
 		void prevTrack();
+		
+		void setVolume(int inVolume);
+		int volume();
 
 		SDL_AudioSpec *hardwareSpec();
 		AudioFormat *hardwareFormat();
@@ -64,6 +67,7 @@ class AudioManager : public QObject {
 		PlayQueue mPlayQueue;
 		bool mPaused;
 		QList<AudioDecoder *> mAudioDecoderList;
+		int mVolume;
 
 		QByteArray mSDLBuffer;
 };
