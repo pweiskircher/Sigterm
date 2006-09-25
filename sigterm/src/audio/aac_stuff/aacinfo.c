@@ -34,7 +34,7 @@
 //#include "filestream.h"
 #include "aacinfo.h"
 
-#ifdef _MSVC_VER
+#ifdef WIN32
 #define strncasecmp strnicmp
 #endif
 

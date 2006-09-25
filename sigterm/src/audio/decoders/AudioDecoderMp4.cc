@@ -120,7 +120,6 @@ bool AudioDecoderMp4::openFile() {
 	char err = NeAACDecInit2(mAacHandle, (unsigned char *)buffer, bufferSize, &samplerate, &c);
 	if (err < 0) {
 		qDebug("Could not initialize aac.");
-		fclose(mAacFile);
 		mFile.close();
 		NeAACDecClose(mAacHandle);
 		return false;
@@ -149,7 +148,6 @@ bool AudioDecoderMp4::openFile() {
 }
 
 bool AudioDecoderMp4::closeFile() {
-	fclose(mAacFile);
 	mFile.close();
 	mAacFile = NULL;
 
@@ -248,7 +246,6 @@ bool AudioDecoderMp4::readInfo() {
 	mp4Callbacks.user_data = aacFile;
 	mp4ff_t *mp4File;
 	if (!(mp4File = mp4ff_open_read(&mp4Callbacks))) {
-		fclose(aacFile);
 		qDebug("can't open mp4 file");
 		return false;
 	}
@@ -286,7 +283,6 @@ bool AudioDecoderMp4::readInfo() {
 
 	quint32 mp4Track = getAACTrack(mp4File);
 	if (mp4Track < 0) {
-		fclose(aacFile);
 		qDebug("Unsupported audio format");
 		return false;
 	}
@@ -307,7 +303,6 @@ bool AudioDecoderMp4::readInfo() {
 	char err = NeAACDecInit2(aacHandle, (unsigned char *)buffer, bufferSize, &samplerate, &c);
 	if (err < 0) {
 		qDebug("Could not initialize aac.");
-		fclose(aacFile);
 		NeAACDecClose(aacHandle);
 		return false;
 	}
@@ -330,8 +325,6 @@ bool AudioDecoderMp4::readInfo() {
 	audioFile()->setTotalSamples(mp4ff_num_samples(mp4File, mp4Track) * mF);
 
 	mSampleId = 0;
-
-	fclose(aacFile);
 
 	return true;
 }
