@@ -34,6 +34,10 @@
 //#include "filestream.h"
 #include "aacinfo.h"
 
+#ifdef _MSVC_VER
+#define strncasecmp strnicmp
+#endif
+
 #define ADIF_MAX_SIZE 30 /* Should be enough */
 #define ADTS_MAX_SIZE 10 /* Should be enough */
 
@@ -249,12 +253,12 @@ int get_AAC_format(FILE *file, faadAACInfo *info,
     info->length = 0;
 
 	/* Determine the header type of the file, check the first two bytes */
-    if(strncasecmp((char *)adxx_id, "AD", 2) == 0)
+    if(strnicmp((char *)adxx_id, "AD", 2) == 0)
     {
 		/* We think its an ADIF header, but check the rest just to make sure */
 		tmp = fread(adxx_id+2, 1, 2, file);
 		
-		if(strncasecmp((char *)adxx_id, "ADIF", 4) == 0)
+		if(strnicmp((char *)adxx_id, "ADIF", 4) == 0)
 		{
 			read_ADIF_header(file, info);
 		}
