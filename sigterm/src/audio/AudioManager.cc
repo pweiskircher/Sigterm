@@ -2,6 +2,7 @@
 #include "AudioFile.h"
 #include "PlayQueue.h"
 #include <math.h>
+#include <QSysInfo.h>
 
 #include "decoders/AudioDecoderOgg.h"
 #include "decoders/AudioDecoderFlac.h"
@@ -37,7 +38,7 @@ void AudioManager::init() {
 	}
 
 	mDesiredAudioSpec.freq = 44100;
-	mDesiredAudioSpec.format = AUDIO_S16LSB;
+	mDesiredAudioSpec.format = QSysInfo::ByteOrder == QSysInfo::BigEndian ? AUDIO_S16MSB : AUDIO_S16LSB;
 	mDesiredAudioSpec.channels = 2;
 	mDesiredAudioSpec.samples = 4096;
 	mDesiredAudioSpec.userdata = this;
