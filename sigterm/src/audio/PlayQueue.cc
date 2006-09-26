@@ -58,6 +58,10 @@ AudioFile *PlayQueue::currentFile() {
 	return mAudioFileList[mCurrentAudioFileIndex];
 }
 
+int PlayQueue::currentFileId() {
+	return mCurrentAudioFileIndex;
+}
+
 AudioFile *PlayQueue::playingTrack() {
 	QMutexLocker locker(&mMutex);
 	return mPlayingTrack;
@@ -372,4 +376,5 @@ bool PlayQueue::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 	
 	return true;
 }
+
 

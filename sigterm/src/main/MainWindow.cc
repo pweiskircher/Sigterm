@@ -10,8 +10,13 @@
 #include <QFileDialog>
 #include <QHeaderView>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
+enum PlayMode {
+	PlayMode_Stopped,
+	PlayMode_Playing,
+	PlayMode_Paused
+};
 
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
 
 	mSettings.setValue("Misc/Dummy", "IgnoreMe");
 	mSettings.sync();
@@ -45,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	connect(timeSlider, SIGNAL(sliderReleased()), SLOT(seekSliderReleased()));
 
 	connect(volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderChangedValue(int)));
-	mAudioManager.setVolume(80);
+	mAudioManager.setVolume(mSettings.value("Main/Volume", 80).toInt());
 	volumeSlider->setValue((int)((volumeSlider->maximum() * mAudioManager.volume())/100));
 	
 	playQueue->setModel(mAudioManager.playQueue());
@@ -69,6 +74,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
 
+	/* restore state */
+	int lastTrack = mSettings.value("State/Track", 0).toInt();
+	mAudioManager.playQueue()->setNextTrack(lastTrack);
+	mAudioManager.skipTrack();
+
+	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
+	if (lastMode == PlayMode_Playing)
+		mAudioManager.setPause(false);
+
+#if 0
+	/* XXX race condition: this here works only if PlayQueue already received the audioFileStartedPlaying signal, which is of course: TEHSUX */	
+	int lastPosition = mSettings.value("State/Position", 0).toInt();
+	if (lastPosition != 0) {
+		qDebug() << "restoring play position " << lastPosition;
+		AudioFile *af = mAudioManager.playQueue()->playingTrack();
+		if (af)
+			af->seekToTime(lastPosition);
+	}
+#endif
+	
 	mSeekSliderUserUpdate = false;
 }
 
@@ -102,6 +127,8 @@ void MainWindow::updateTrackDisplay() {
 
 	if (mSeekSliderUserUpdate == false)
 		timeSlider->setValue(timePlayedValue);
+
+	mSettings.setValue("State/Position", af->timePlayed());
 }
 
 void MainWindow::seekSliderChangedValue(int inValue) {
@@ -134,9 +161,12 @@ void MainWindow::seekSliderPressed() {
 }
 
 void MainWindow::seekSliderReleased() {
+	/* TODO: seekToTime should probably be in class AudioManager (or class PlayQueue?) */
 	AudioFile *af = mAudioManager.playQueue()->playingTrack();
-	af->seekToTime(mSeekSliderUserUpdateValue*1000);
-	qDebug("seekSliderUserUpdateValue %d", mSeekSliderUserUpdateValue);
+	if (af) {
+		af->seekToTime(mSeekSliderUserUpdateValue*1000);
+		qDebug("seekSliderUserUpdateValue %d", mSeekSliderUserUpdateValue);
+	}
 
 	mSeekSliderUserUpdate = false;
 }
@@ -146,6 +176,8 @@ void MainWindow::volumeSliderChangedValue(int inValue) {
 
 	int volume = (inValue*100)/slider->maximum();
 	mAudioManager.setVolume(volume);
+	
+	mSettings.setValue("Main/Volume", volume);
 }
 
 void MainWindow::on_nextButton_clicked() {
@@ -153,6 +185,11 @@ void MainWindow::on_nextButton_clicked() {
 }
 
 void MainWindow::on_playButton_clicked() {
+	if (mAudioManager.paused())
+		mSettings.setValue("State/Mode", PlayMode_Playing);
+	else
+		mSettings.setValue("State/Mode", PlayMode_Paused);
+
 	mAudioManager.togglePause();
 }
 
@@ -174,7 +211,7 @@ void MainWindow::on_addButton_clicked() {
 		AudioFile *af = new AudioFile(files[i], &mAudioManager);
 		af->addToQueue();
 
-		// ugly workaround becasue we don't get the last directory the user browsed ..
+		// ugly workaround because we don't get the last directory the user browsed ..
 		// but I'm pretty sure that the file *is* in the directory the user browsed last ;)
 		if (i == 0) {
 			QFileInfo fi(files[i]);
@@ -225,9 +262,13 @@ void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {
 
 void MainWindow::audioFileStarted(AudioFile *inAudioFile) {
 	qDebug() << "Started Playing: " << inAudioFile->filePath() << "samples played: " << inAudioFile->playedSamples();
+	mSettings.setValue("State/Mode", PlayMode_Playing);
+	mSettings.setValue("State/Track", mAudioManager.playQueue()->currentFileId());
 }
 
 void MainWindow::audioFileStopped(AudioFile *inAudioFile) {
 	qDebug() << "Stopped Playing: " << inAudioFile->filePath() << "samples played: " << inAudioFile->playedSamples();
+	mSettings.setValue("State/Mode", PlayMode_Stopped);
+	mSettings.setValue("State/Track", mAudioManager.playQueue()->currentFileId());
 }
 

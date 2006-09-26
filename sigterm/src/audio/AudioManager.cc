@@ -195,7 +195,6 @@ void AudioManager::prevTrack() {
 	skipTrack();
 }
 
-
 SDL_AudioSpec *AudioManager::hardwareSpec() {
 	return &mHardwareAudioSpec;
 }

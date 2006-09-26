@@ -24,6 +24,7 @@ class PlayQueue : public QAbstractTableModel {
 		} Columns;
 
 		AudioFile *currentFile();
+		int currentFileId();
 		AudioFile *playingTrack();
 
 		void setNextTrack(int inIndex);
