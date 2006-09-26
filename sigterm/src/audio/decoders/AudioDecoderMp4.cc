@@ -220,6 +220,8 @@ bool AudioDecoderMp4::canDecode(const QString &inFilePath) {
 		return false;
 	}
 
+	file.seek(fileId3V2TagSize(file));
+	
 	QByteArray startOfFile = file.read(8);
 	if (startOfFile.size() == 8 && startOfFile[4] == 'f' && startOfFile[5] == 't' && startOfFile[6] == 'y' && startOfFile[7] == 'p')
 		return true;

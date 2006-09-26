@@ -5,6 +5,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QMutex>
+#include <QFile>
 
 #include "AudioFormat.h"
 #include "AudioConverter.h"
@@ -46,6 +47,9 @@ class AudioDecoder {
 		virtual QString audioFormatDescription() = 0;
 		virtual QStringList audioFormatFileExtensions() = 0;
 
+	protected:
+		qint64 AudioDecoder::fileId3V2TagSize(QFile& file);
+		
 	private:
 		virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
 		virtual bool openFile() = 0;

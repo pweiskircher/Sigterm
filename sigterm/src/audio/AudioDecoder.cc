@@ -100,3 +100,36 @@ AudioFile *AudioDecoder::audioFile() {
 void AudioDecoder::setOpened(bool inValue) {
 	mOpened = inValue;
 }
+
+qint64 AudioDecoder::fileId3V2TagSize(QFile& file) {
+
+	qint64 id3TagSize = 0;
+	qint64 startPos = file.pos();
+	
+	QByteArray startOfFile = file.read(5);
+	/*
+	 * wiiii, evil hack: skip id3v2 header if present. ideally this would be in the input
+	 * stream class
+	 */
+	if (startOfFile.size() == 5 && 
+			(char)startOfFile[0] == 'I' &&
+			(char)startOfFile[1] == 'D' &&
+			(char)startOfFile[2] == '3')
+	{
+		unsigned char id3VersionMajor = startOfFile[3];
+		unsigned char id3VersionMinor = startOfFile[4];
+		if (id3VersionMajor <= 3 && id3VersionMinor < 0xFF) {
+			QByteArray flags_a = file.read(1);
+			// unsigned char flags = flags_a[0];
+			QByteArray id3size_a = file.read(4);
+			if (id3size_a.size() == 4) {
+				// TODO: figure out how we can do this in an xplatform-correct way and then memcpy() it
+				id3TagSize = (id3size_a[0]<<21) | (id3size_a[1]<<14) | (id3size_a[2]<<7) | id3size_a[3];
+				id3TagSize += 10;
+			}
+		}
+	}
+	file.seek(startPos);
+	return id3TagSize;
+}
+

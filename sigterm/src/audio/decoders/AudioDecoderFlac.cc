@@ -201,39 +201,9 @@ end:
 		return false;
 	}
 
-	QByteArray startOfFile = file.read(5);
+	file.seek(fileId3V2TagSize(file));
 	
-	/*
-	 * wiiii, evil hack: skip id3v2 header if present. ideally this would be in the input
-	 * stream class
-	 */
-	if (startOfFile.size() == 5 && 
-			(char)startOfFile[0] == 'I' &&
-			(char)startOfFile[1] == 'D' &&
-			(char)startOfFile[2] == '3')
-	{
-		unsigned char id3VersionMajor = startOfFile[3];
-		unsigned char id3VersionMinor = startOfFile[4];
-		if (id3VersionMajor <= 3 && id3VersionMinor < 0xFF) {
-			QByteArray flags_a = file.read(1);
-			// unsigned char flags = flags_a[0];
-			QByteArray id3size_a = file.read(4);
-			if (id3size_a.size() == 4) {
-				quint32 id3size;
-				// TODO: figure out how we can do this in an xplatform-correct way and then memcpy() it
-				id3size = (id3size_a[0]<<21) | (id3size_a[1]<<14) | (id3size_a[2]<<7) | id3size_a[3];
-				id3size += 10;
-#if 0
-				qWarning("0: %i, 1: %i, 2: %i, 3: %i\n", (char)id3size_a[0], (char)id3size_a[1], (char)id3size_a[2], (char)id3size_a[3]);
-				qWarning("id3size is: %d", id3size);
-#endif
-				file.seek(id3size);
-				startOfFile = file.read(5);
-			} else {
-				file.reset();
-			}
-		}
-	}
+	QByteArray startOfFile = file.read(5);
 
 	if (startOfFile.size() == 5 && startOfFile.startsWith("fLaC") && startOfFile[4] == '\0')
 		return true;

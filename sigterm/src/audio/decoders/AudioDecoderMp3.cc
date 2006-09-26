@@ -569,6 +569,16 @@ bool AudioDecoderMp3::canDecode(const QString &inFilePath) {
 		return false;
 	}
 
+	file.seek(fileId3V2TagSize(file));
+	
+	QByteArray startOfFile = file.read(4);
+	if (startOfFile.size() != 4)
+		return false;
+
+	// MPEG ADTS layer III v1 header
+	if ((unsigned char)startOfFile[0] != 0xFF && ((unsigned char)startOfFile[1]&0xFE != 0xFA))
+		return false;
+	
 	return true;
 }
 
