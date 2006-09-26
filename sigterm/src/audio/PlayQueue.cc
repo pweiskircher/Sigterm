@@ -301,6 +301,7 @@ Qt::ItemFlags PlayQueue::flags(const QModelIndex &index) const {
 QStringList PlayQueue::mimeTypes() const {
 	QStringList types;
 	types << "text/plain";
+	types << "text/uri-list";
 	return types;
 }
 
@@ -328,7 +329,6 @@ QMimeData* PlayQueue::mimeData(const QModelIndexList &indexes) const {
 }
 
 bool PlayQueue::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
-	
 	if (action == Qt::IgnoreAction)
 		return true;
 
