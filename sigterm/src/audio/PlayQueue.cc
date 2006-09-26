@@ -360,7 +360,10 @@ bool PlayQueue::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 		QFileInfo fi(itemFileName);
 		if (!fi.isRelative() && fi.exists()) {
 			AudioFile *af = new AudioFile(fi.filePath(), mAudioManager);
-			af->addToQueue();
+			if (af->decoder())
+				af->addToQueue();
+			else
+				delete af;
 		}
 	}
 	
