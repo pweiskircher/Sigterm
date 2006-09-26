@@ -83,7 +83,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	mAudioManager.skipTrack();
 
 	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
-	if (lastMode == PlayMode_Playing)
+	bool playAutomatically = mSettings.value("Main/StatePlayAutomatically", false).toBool();
+	if (playAutomatically && lastMode == PlayMode_Playing)
 		mAudioManager.setPause(false);
 
 #if 0
