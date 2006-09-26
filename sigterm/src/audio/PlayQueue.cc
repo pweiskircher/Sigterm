@@ -218,7 +218,17 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
 	emit audioFileStopped(inAudioFile);
 }
 
-void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
+bool PlayQueue::removeTracks(QList<AudioFile*> &inList) {
+	QListIterator<AudioFile *> afit(inList);
+	while (afit.hasNext()) {
+		AudioFile *af = afit.next();
+		// TODO: we should delete the item if its not in our library
+		af->removeFromQueue();
+	}
+	return true;
+}
+
+bool PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 	QModelIndex index;
 	QListIterator<QModelIndex> it(inIndexes);
 
@@ -230,13 +240,7 @@ void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 
 		list.append(mAudioFileList[index.row()]);
 	}
-
-	QListIterator<AudioFile *> afit(list);
-	while (afit.hasNext()) {
-		AudioFile *af = afit.next();
-		// TODO: we should delete the item if its not in our library
-		af->removeFromQueue();
-	}
+	return removeTracks(list);
 }
 
 bool PlayQueue::removeRows(int rowStart, int count, const QModelIndex & parent) {
@@ -246,14 +250,7 @@ bool PlayQueue::removeRows(int rowStart, int count, const QModelIndex & parent) 
 	for(int row=rowStart; row<(rowStart+count); row++) {
 		list.append(mAudioFileList[row]);
 	}
-	
-	QListIterator<AudioFile *> afit(list);
-	while (afit.hasNext()) {
-		AudioFile *af = afit.next();
-		// TODO: we should delete the item if its not in our library
-		af->removeFromQueue();
-	}
-	return true;
+	return removeTracks(list);
 }
 bool PlayQueue::insertRows(int rowStart, int count, const QModelIndex & parent) {
 	qDebug("::insertRows called: %d, %d", rowStart, count);
@@ -262,12 +259,7 @@ bool PlayQueue::insertRows(int rowStart, int count, const QModelIndex & parent) 
 
 void PlayQueue::clear() {
 	mAudioManager->setPause(true);
-	QListIterator<AudioFile *> afit(mAudioFileList);
-	while (afit.hasNext()) {
-		AudioFile *af = afit.next();
-		// TODO: we should delete the item if its not in our library
-		af->removeFromQueue();
-	}
+	removeTracks(mAudioFileList);
 }
 
 bool PlayQueue::saveToFile(QString fileName) {

@@ -35,7 +35,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void on_prevButton_clicked();
 
 		void on_addButton_clicked();
-		void on_deleteButton_clicked();
 		void on_addPlaylistButton_clicked();
 
 		void on_actionPreferences_activated();
@@ -45,6 +44,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void audioFileStarted(AudioFile *inAudioFile);
 		void audioFileStopped(AudioFile *inAudioFile);
 
+		void removeSelectedTracks();
+		
 	private:
 		AudioManager mAudioManager;
 		QSettings mSettings;

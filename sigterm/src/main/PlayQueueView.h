@@ -12,6 +12,9 @@ class PlayQueueView : public QTreeView {
 		PlayQueueView(QWidget* parent = 0);
 		~PlayQueueView();
 
+	signals:
+		void removeSelectedTracksKeyPressed();
+		
 	protected:
 		void keyPressEvent(QKeyEvent* event);
 

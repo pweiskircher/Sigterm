@@ -71,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	connect(mAudioManager.playQueue(), SIGNAL(audioFileStarted(AudioFile*)), SLOT(audioFileStarted(AudioFile*)));
 	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*)), SLOT(audioFileStopped(AudioFile*)));
+	
+	connect(deleteButton, SIGNAL(clicked()), SLOT(removeSelectedTracks()));
+	connect(playQueue, SIGNAL(removeSelectedTracksKeyPressed()), SLOT(removeSelectedTracks()));
 
 	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
 
@@ -220,7 +223,7 @@ void MainWindow::on_addButton_clicked() {
 	}
 }
 
-void MainWindow::on_deleteButton_clicked() {
+void MainWindow::removeSelectedTracks() {
 	QModelIndexList l = playQueue->selectionModel()->selectedIndexes();
 	mAudioManager.playQueue()->removeTracks(l);
 }

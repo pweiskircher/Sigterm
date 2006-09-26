@@ -49,7 +49,8 @@ class PlayQueue : public QAbstractTableModel {
 		void nextTrack();
 		void prevTrack();
 
-		void removeTracks(QModelIndexList &inIndexes);
+		bool removeTracks(QModelIndexList &inIndexes);
+		bool removeTracks(QList<AudioFile*> &inList);
 
 		bool appendFromFile(const QString fileName);
 		bool loadFromFile(const QString fileName);
