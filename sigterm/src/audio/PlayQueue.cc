@@ -7,6 +7,9 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QTextStream>
+#include <QMimeData>
+#include <QtDebug>
+#include <QUrl>
 
 PlayQueue::PlayQueue(AudioManager *inAudioManager) {
 	mCurrentAudioFileIndex = 0;
@@ -187,7 +190,6 @@ void PlayQueue::prevTrack() {
 	mCurrentAudioFileIndex--;
 }
 
-
 void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
 	QMutexLocker locker(&mMutex);
 
@@ -233,6 +235,29 @@ void PlayQueue::removeTracks(QModelIndexList &inIndexes) {
 	}
 }
 
+bool PlayQueue::removeRows(int rowStart, int count, const QModelIndex & parent) {
+	qDebug("::removeRows called: %d, %d", rowStart, count);
+	
+	QList<AudioFile *> list;
+	for(int row=rowStart; row<(rowStart+count); row++) {
+		list.append(mAudioFileList[row]);
+	}
+	
+//	beginRemoveRows(parent, row, row+count);
+	QListIterator<AudioFile *> afit(list);
+	while (afit.hasNext()) {
+		AudioFile *af = afit.next();
+		// TODO: we should delete the item if its not in our library
+		af->removeFromQueue();
+	}
+//	endRemoveRows();
+	return true;
+}
+bool PlayQueue::insertRows(int rowStart, int count, const QModelIndex & parent) {
+	qDebug("::insertRows called: %d, %d", rowStart, count);
+	return true;
+}
+
 void PlayQueue::clear() {
 	mAudioManager->setPause(true);
 	QListIterator<AudioFile *> afit(mAudioFileList);
@@ -264,6 +289,87 @@ bool PlayQueue::appendFromFile(QString fileName) {
 		AudioFile *af = it.next();
 		af->addToQueue();
 	}
+	return true;
+}
+
+Qt::DropActions PlayQueue::supportedDropActions() const {
+	return Qt::CopyAction | Qt::MoveAction;
+}
+
+Qt::ItemFlags PlayQueue::flags(const QModelIndex &index) const {
+	Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+	if (index.isValid())
+		return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+	else
+		return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+QStringList PlayQueue::mimeTypes() const {
+	QStringList types;
+	types << "text/plain";
+	return types;
+}
+
+QMimeData* PlayQueue::mimeData(const QModelIndexList &indexes) const {
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData;
+
+	QTextStream stream(&encodedData, QIODevice::WriteOnly);
+	
+	foreach (QModelIndex index, indexes) {
+		if (index.column() != 0)
+			continue;
+
+		if (index.isValid()) {
+			QUrl url = QUrl::fromLocalFile(mAudioFileList[index.row()]->filePath());
+			QString text = url.toEncoded();
+
+			stream << text;
+			qDebug() << text;
+		}
+	}
+	qDebug() << "::mimeData: " << encodedData;
+	mimeData->setData("text/uri-list", encodedData);
+	return mimeData;
+}
+
+bool PlayQueue::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+	
+	if (action == Qt::IgnoreAction)
+		return true;
+
+	qDebug() << "::dropMimeData " << data->formats().join(" ");
+
+	if (!data->hasFormat("text/plain") && !data->hasFormat("text/uri-list"))
+		return false;
+
+	QByteArray encodedData;
+	
+	if (data->hasFormat("text/plain"))
+		encodedData = data->data("text/plain");
+
+	if (data->hasFormat("text/uri-list"))
+		encodedData = data->data("text/uri-list");
+	
+	qDebug() << encodedData;
+	
+	QTextStream stream(&encodedData, QIODevice::ReadOnly);
+	while(!stream.atEnd()) {
+		QString itemFileName;
+		stream >> itemFileName;
+		qDebug() << itemFileName;
+		if (itemFileName.startsWith("file://")) {
+			QUrl url(itemFileName);
+			itemFileName = url.toLocalFile();
+		}
+		
+		QFileInfo fi(itemFileName);
+		if (!fi.isRelative() && fi.exists()) {
+			AudioFile *af = new AudioFile(fi.filePath(), mAudioManager);
+			af->addToQueue();
+		}
+	}
+	
 	return true;
 }
 

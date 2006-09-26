@@ -59,6 +59,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	playQueue->header()->resizeSection(PlayQueue::eTotalTime, 20);
 
 	playQueue->header()->setStretchLastSection(false);
+	playQueue->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	playQueue->setDragEnabled(true);
+	playQueue->setAcceptDrops(true);
+	playQueue->setDropIndicatorShown(true);
 
 	connect(mAudioManager.playQueue(), SIGNAL(audioFileStarted(AudioFile*)), SLOT(audioFileStarted(AudioFile*)));
 	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*)), SLOT(audioFileStopped(AudioFile*)));

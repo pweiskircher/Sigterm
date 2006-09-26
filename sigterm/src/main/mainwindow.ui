@@ -86,6 +86,15 @@
     </item>
     <item>
      <widget class="QTreeView" name="playQueue" >
+      <property name="acceptDrops" >
+       <bool>true</bool>
+      </property>
+      <property name="showDropIndicator" stdset="0" >
+       <bool>true</bool>
+      </property>
+      <property name="dragEnabled" >
+       <bool>true</bool>
+      </property>
       <property name="alternatingRowColors" >
        <bool>true</bool>
       </property>

@@ -36,6 +36,14 @@ class PlayQueue : public QAbstractTableModel {
 		int rowCount(const QModelIndex &parent) const;
 		QVariant data(const QModelIndex &index, int role) const;
 		bool hasChildren(const QModelIndex &parent) const;
+		Qt::DropActions supportedDropActions() const;
+		Qt::ItemFlags flags(const QModelIndex &index) const;
+		bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
+		bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
+		QStringList mimeTypes() const;
+		QMimeData* mimeData(const QModelIndexList &indexes) const;
+		bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+		
 
 		void nextTrack();
 		void prevTrack();
