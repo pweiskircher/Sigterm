@@ -247,14 +247,12 @@ bool PlayQueue::removeRows(int rowStart, int count, const QModelIndex & parent) 
 		list.append(mAudioFileList[row]);
 	}
 	
-//	beginRemoveRows(parent, row, row+count);
 	QListIterator<AudioFile *> afit(list);
 	while (afit.hasNext()) {
 		AudioFile *af = afit.next();
 		// TODO: we should delete the item if its not in our library
 		af->removeFromQueue();
 	}
-//	endRemoveRows();
 	return true;
 }
 bool PlayQueue::insertRows(int rowStart, int count, const QModelIndex & parent) {

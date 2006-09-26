@@ -85,7 +85,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QTreeView" name="playQueue" >
+     <widget class="PlayQueueView" name="playQueue" >
       <property name="acceptDrops" >
        <bool>true</bool>
       </property>
@@ -225,6 +225,15 @@
   </action>
  </widget>
  <pixmapfunction></pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>PlayQueueView</class>
+   <extends>QTreeView</extends>
+   <header>PlayQueueView.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

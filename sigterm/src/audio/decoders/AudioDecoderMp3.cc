@@ -411,7 +411,7 @@ bool AudioDecoderMp3::decodeFirstFrame() {
 		}
 		if(mInputFile.size() >= offset) {
 			mTimeTotal = ((mInputFile.size()-offset)*8.0)/mMadFrame.header.bitrate;
-			audioFile()->setTotalSamples(mTimeTotal * mMadFrame.header.samplerate);
+			audioFile()->setTotalSamples((quint32)(mTimeTotal * mMadFrame.header.samplerate));
 		}
 		else {
 /*			data->maxFrames = FRAMES_CUSHION;

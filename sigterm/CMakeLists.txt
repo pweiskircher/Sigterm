@@ -44,7 +44,7 @@ FIND_PATH(FLAC_INCLUDE_DIR FLAC/file_decoder.h /usr/include /usr/local/include /
 FIND_LIBRARY(FAAD_LIBRARY faad /usr/lib /usr/local/lib /opt/local/lib)
 FIND_PATH(FAAD_INCLUDE_DIR neaacdec.h /usr/include /usr/local/include /opt/local/include)
 
-INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/ src/misc/)
+INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/ src/misc/ src/main/)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR} ${ID3TAG_INCLUDE_DIR})
 
@@ -70,6 +70,7 @@ src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h
+src/main/PlayQueueView.cc src/main/PlayQueueView.h
 )
 
 
@@ -81,6 +82,7 @@ src/main/preferences.ui
 SET(SIGTERM_MOC
 src/main/MainWindow.h
 src/main/Preferences.h
+src/main/PlayQueueView.h
 src/audio/AudioProcessor.h
 src/audio/AudioManager.h
 src/audio/AudioFile.h
@@ -144,6 +146,7 @@ IF(WIN32)
   TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} -libpath:${VORBISFILE_LINK_DIR} ${VORBISFILE_LINK_FLAGS})
 ELSE(WIN32)
   # sane unix stuff
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
   TARGET_LINK_LIBRARIES(sigterm ${SIGTERM_LIBRARIES} ${VORBISFILE_LINK_FLAGS})
 ENDIF(WIN32)
 
