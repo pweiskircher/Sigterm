@@ -176,7 +176,7 @@
      <x>0</x>
      <y>0</y>
      <width>648</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHuhu" >
@@ -234,6 +234,8 @@
    <pixmap></pixmap>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="mainwindow.qrc" />
+ </resources>
  <connections/>
 </ui>
