@@ -69,6 +69,8 @@ AudioFile *PlayQueue::playingTrack() {
 
 void PlayQueue::setNextTrack(int inIndex) {
 	QMutexLocker locker(&mMutex);
+	if (mAudioFileList.size() < inIndex)
+		return;
 	mCurrentAudioFileIndex = inIndex;
 }
 
