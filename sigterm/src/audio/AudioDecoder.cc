@@ -38,8 +38,10 @@ bool AudioDecoder::open() {
 	if (r)
 		setOpened(true);
 
-	if (mStartTime != 0)	
+	if (mStartTime != 0) {
 		seekToTimeInternal(mStartTime);
+		mStartTime = 0;
+	}
 
 	return r;
 }
