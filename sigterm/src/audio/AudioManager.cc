@@ -32,7 +32,7 @@ AudioManager::~AudioManager() {
 }
 
 void AudioManager::init() {
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+	if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_NOPARACHUTE) < 0) {
 		qDebug("Could not initialize SDL audio.");
 		exit(EXIT_FAILURE);
 	}
