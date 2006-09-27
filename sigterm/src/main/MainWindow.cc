@@ -132,7 +132,7 @@ void MainWindow::updateTrackDisplay() {
 	if (mSeekSliderUserUpdate == false)
 		timeSlider->setValue(timePlayedValue);
 
-	mSettings.setValue("State/Position", af->timePlayed());
+	mSettings.setValue("State/Position", timePlayedValue);
 }
 
 void MainWindow::seekSliderChangedValue(int inValue) {
