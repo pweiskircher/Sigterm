@@ -113,8 +113,8 @@ void AudioFile::bytesRemovedFromAudioStorage(quint32 inSize) {
 	} else if (mIsPlaying == true && mBytesInAudioStorage == 0) {
 		// TODO: this isn't working right. its possible that we are two times in the storage.
 		mIsPlaying = false;
+		emit stoppedPlaying(this, timePlayed());
 		mPlayedSamples = 0;
-		emit stoppedPlaying(this);
 		return;
 	}
 

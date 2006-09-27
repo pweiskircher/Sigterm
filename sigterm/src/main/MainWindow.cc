@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 		}
 	}
 
+	qRegisterMetaType<quint32>("quint32");
+
 	mPreferences = new Preferences(this);
 
 	mLibrary = new Library(mDataDirectory + "/library.db");
@@ -70,7 +72,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	playQueue->setDropIndicatorShown(true);
 
 	connect(mAudioManager.playQueue(), SIGNAL(audioFileStarted(AudioFile*)), SLOT(audioFileStarted(AudioFile*)));
-	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*)), SLOT(audioFileStopped(AudioFile*)));
+	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*, quint32)),
+			SLOT(audioFileStopped(AudioFile*, quint32)));
+	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*, quint32)), mLastFMClient,
+			SLOT(trackStoppedPlaying(AudioFile*, quint32)));
 	
 	connect(deleteButton, SIGNAL(clicked()), SLOT(removeSelectedTracks()));
 	connect(playQueue, SIGNAL(removeSelectedTracksKeyPressed()), SLOT(removeSelectedTracks()));
@@ -266,7 +271,7 @@ void MainWindow::audioFileStarted(AudioFile *inAudioFile) {
 	mSettings.setValue("State/Track", mAudioManager.playQueue()->currentFileId());
 }
 
-void MainWindow::audioFileStopped(AudioFile *inAudioFile) {
+void MainWindow::audioFileStopped(AudioFile *inAudioFile, quint32 inTimePlayed) {
 	qDebug() << "Stopped Playing: " << inAudioFile->filePath() << "samples played: " << inAudioFile->playedSamples();
 	mSettings.setValue("State/Mode", PlayMode_Stopped);
 	mSettings.setValue("State/Track", mAudioManager.playQueue()->currentFileId());

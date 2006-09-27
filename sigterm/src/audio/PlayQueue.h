@@ -60,11 +60,11 @@ class PlayQueue : public QAbstractTableModel {
 
 	signals:
 		void audioFileStarted(AudioFile *inAudioFile);
-		void audioFileStopped(AudioFile *inAudioFile);
+		void audioFileStopped(AudioFile *inAudioFile, quint32 inTimePlayed);
 
 	private slots:
 		void audioFileStartedPlaying(AudioFile *inAudioFile);
-		void audioFileStoppedPlaying(AudioFile *inAudioFile);
+		void audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed);
 
 	private:
 		friend class AudioFile;

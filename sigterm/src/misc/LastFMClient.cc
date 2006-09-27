@@ -1,5 +1,6 @@
 #include "LastFMClient.h"
 #include "AudioFile.h"
+#include "AudioDecoder.h"
 
 #include <QDateTime>
 
@@ -88,9 +89,22 @@ void LastFMClient::submitTrack(AudioFile *inAudioFile) {
 		nextSection++;
 	mSettings.setValue("nextSection", nextSection + 1);
 	e->save(mSettings, QString::number(nextSection));
+	mSettings.sync();
 }
 
 void LastFMClient::httpRequestFinished(int id, bool error) {
+}
+
+void LastFMClient::trackStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed) {
+	if (inAudioFile->decoder()->wasSeeking() == true)
+		return;
+
+	if (inAudioFile->timeTotal() <= 30)
+		return;
+
+	qDebug("timePlayed: %d timeTotal: %d", inTimePlayed, inAudioFile->timeTotal());
+	if (inTimePlayed > 240 || inTimePlayed >= (inAudioFile->timeTotal()/2))
+		submitTrack(inAudioFile);
 }
 
 void LastFMClient::submitTracks() {

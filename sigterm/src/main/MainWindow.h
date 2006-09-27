@@ -42,7 +42,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void on_playQueue_doubleClicked(const QModelIndex &index);
 
 		void audioFileStarted(AudioFile *inAudioFile);
-		void audioFileStopped(AudioFile *inAudioFile);
+		void audioFileStopped(AudioFile *inAudioFile, quint32 inTimePlayed);
 
 		void removeSelectedTracks();
 		

@@ -45,7 +45,7 @@ class AudioFile : public QObject {
 
 	signals:
 		void startedPlaying(AudioFile *inAudioFile);
-		void stoppedPlaying(AudioFile *inAudioFile);
+		void stoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed);
 
 	private:
 		QString mFilePath;

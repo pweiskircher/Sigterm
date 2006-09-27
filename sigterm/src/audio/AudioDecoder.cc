@@ -17,6 +17,7 @@ AudioDecoder::~AudioDecoder() {
 
 bool AudioDecoder::seekToTime(quint32 inMilliSeconds) {
 	QMutexLocker locker(&mMutex);
+	mSeeked = true;
 	if (opened())
 		return seekToTimeInternal(inMilliSeconds);
 	else {
@@ -30,6 +31,8 @@ bool AudioDecoder::open() {
 		qDebug("File already opened.");
 		return false;
 	}
+
+	mSeeked = false;
 
 	bool r = openFile();
 	if (r)
@@ -106,6 +109,10 @@ AudioManager *AudioDecoder::audioManager() {
 
 AudioFile *AudioDecoder::audioFile() {
 	return mAudioFile;
+}
+
+bool AudioDecoder::wasSeeking() {
+	return mSeeked;
 }
 
 void AudioDecoder::setOpened(bool inValue) {

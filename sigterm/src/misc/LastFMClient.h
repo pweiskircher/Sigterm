@@ -33,6 +33,7 @@ class LastFMClient : public QObject {
 
 	private slots:
 		void httpRequestFinished(int id, bool error);
+		void trackStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed);
 
 	private:
 		void submitTracks();

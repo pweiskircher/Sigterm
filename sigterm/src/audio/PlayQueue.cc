@@ -23,7 +23,7 @@ void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
 	endInsertRows();
 
 	connect(inAudioFile, SIGNAL(startedPlaying(AudioFile *)), SLOT(audioFileStartedPlaying(AudioFile *)));
-	connect(inAudioFile, SIGNAL(stoppedPlaying(AudioFile *)), SLOT(audioFileStoppedPlaying(AudioFile *)));
+	connect(inAudioFile, SIGNAL(stoppedPlaying(AudioFile *, quint32)), SLOT(audioFileStoppedPlaying(AudioFile *, quint32)));
 }
 
 void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
@@ -223,7 +223,7 @@ void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
 	emit audioFileStarted(inAudioFile);
 }
 
-void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
+void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed) {
 	QMutexLocker locker(&mMutex);
 
 	int index = mAudioFileList.indexOf(inAudioFile);
@@ -233,7 +233,7 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile) {
 	if (mPlayingTrack == inAudioFile)
 		mPlayingTrack = NULL;
 
-	emit audioFileStopped(inAudioFile);
+	emit audioFileStopped(inAudioFile, inTimePlayed);
 }
 
 bool PlayQueue::removeTracks(QList<AudioFile*> &inList) {

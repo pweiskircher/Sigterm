@@ -47,6 +47,8 @@ class AudioDecoder {
 		virtual QString audioFormatDescription() = 0;
 		virtual QStringList audioFormatFileExtensions() = 0;
 
+		bool wasSeeking();
+
 	protected:
 		qint64 AudioDecoder::fileId3V2TagSize(QFile& file);
 		
@@ -64,6 +66,7 @@ class AudioDecoder {
 		AudioManager *mAudioManager;
 		AudioConverter mConverter;
 		AudioFile *mAudioFile;
+		bool mSeeked;
 		quint32 mStartTime;
 
 		QMutex mMutex;
