@@ -80,6 +80,22 @@ void PlayQueue::setNextTrack(AudioFile *inAudioFile) {
 		setNextTrack(index);
 }
 
+void PlayQueue::setStartTime(quint32 inMilliseconds) {
+	if (mAudioFileList.size() == 0)
+		return;
+	if (mCurrentAudioFileIndex == -1)
+		return;
+	
+	mMutex.lock();
+	AudioFile* af = mAudioFileList[mCurrentAudioFileIndex];
+	mMutex.unlock();
+	
+	if (!af)
+		return;
+
+	af->seekToTime(inMilliseconds);
+}
+
 void PlayQueue::finished(AudioFile *inAudioFile) {
 	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex++;

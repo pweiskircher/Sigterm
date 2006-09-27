@@ -64,6 +64,7 @@ class AudioDecoder {
 		AudioManager *mAudioManager;
 		AudioConverter mConverter;
 		AudioFile *mAudioFile;
+		quint32 mStartTime;
 
 		QMutex mMutex;
 

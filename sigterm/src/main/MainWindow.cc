@@ -77,27 +77,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
 
-	/* restore state */
+	/* restore state (read everything in one rush so state doesnt get overwritten) */
 	int lastTrack = mSettings.value("State/Track", 0).toInt();
+	int lastPosition = mSettings.value("State/Position", 0).toInt();
+	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
+
 	mAudioManager.playQueue()->setNextTrack(lastTrack);
+	
+	if (lastPosition != 0) {
+		qDebug() << "restoring play position " << lastPosition;
+		mAudioManager.playQueue()->setStartTime(lastPosition*1000);
+	}
 	mAudioManager.skipTrack();
 
-	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
 	bool playAutomatically = mSettings.value("Main/StatePlayAutomatically", false).toBool();
 	if (playAutomatically && lastMode == PlayMode_Playing)
 		mAudioManager.setPause(false);
 
-#if 0
-	/* XXX race condition: this here works only if PlayQueue already received the audioFileStartedPlaying signal, which is of course: TEHSUX */	
-	int lastPosition = mSettings.value("State/Position", 0).toInt();
-	if (lastPosition != 0) {
-		qDebug() << "restoring play position " << lastPosition;
-		AudioFile *af = mAudioManager.playQueue()->playingTrack();
-		if (af)
-			af->seekToTime(lastPosition);
-	}
-#endif
-	
 	mSeekSliderUserUpdate = false;
 }
 

@@ -7,6 +7,7 @@ AudioDecoder::AudioDecoder(AudioFile *inAudioFile, AudioManager *inAudioManager)
 	mAudioManager = inAudioManager;
 	mAudioFile = inAudioFile;
 	mOpened = false;
+	mStartTime = 0;
 }
 
 AudioDecoder::~AudioDecoder() {
@@ -16,7 +17,12 @@ AudioDecoder::~AudioDecoder() {
 
 bool AudioDecoder::seekToTime(quint32 inMilliSeconds) {
 	QMutexLocker locker(&mMutex);
-	return seekToTimeInternal(inMilliSeconds);
+	if (opened())
+		return seekToTimeInternal(inMilliSeconds);
+	else {
+		mStartTime = inMilliSeconds;
+		return true;
+	}
 }
 
 bool AudioDecoder::open() {
@@ -28,6 +34,7 @@ bool AudioDecoder::open() {
 	bool r = openFile();
 	if (r)
 		setOpened(true);
+	
 	return r;
 }
 
@@ -40,6 +47,8 @@ bool AudioDecoder::close() {
 	bool r = closeFile();
 	if (r)
 		setOpened(false);
+
+	seekToTimeInternal(mStartTime);
 	return r;
 }
 
