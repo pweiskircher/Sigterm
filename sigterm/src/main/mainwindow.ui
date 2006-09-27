@@ -145,6 +145,16 @@
        </spacer>
       </item>
       <item>
+       <widget class="QLabel" name="label" >
+        <property name="text" >
+         <string/>
+        </property>
+        <property name="pixmap" >
+         <pixmap>res/volume.xpm</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QSlider" name="volumeSlider" >
         <property name="sizePolicy" >
          <sizepolicy>
@@ -235,7 +245,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="mainwindow.qrc" />
+  <include location="res/sigterm.qrc" />
  </resources>
  <connections/>
 </ui>

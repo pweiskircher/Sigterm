@@ -91,7 +91,7 @@ src/misc/LastFMClient.h
 )
 
 SET(SIGTERM_RC
-src/main/mainwindow.qrc
+src/main/res/sigterm.qrc
 )
 
 QT4_ADD_RESOURCES(SIGTERM_RCC_SRCS ${SIGTERM_RC})

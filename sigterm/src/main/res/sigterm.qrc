@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/common/logo" >
+        <file>logo.jpg</file>
+    </qresource>
+    <qresource prefix="/ui/volume" >
+        <file>volume.xpm</file>
+    </qresource>
+</RCC>
