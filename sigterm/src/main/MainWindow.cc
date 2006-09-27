@@ -86,16 +86,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	int lastTrack = mSettings.value("State/Track", 0).toInt();
 	int lastPosition = mSettings.value("State/Position", 0).toInt();
 	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
+	bool playAutomatically = mSettings.value("Main/StatePlayAutomatically", false).toBool();
 
 	mAudioManager.playQueue()->setNextTrack(lastTrack);
 	
-	if (lastPosition != 0) {
+	if (playAutomatically && lastPosition != 0) {
 		qDebug() << "restoring play position " << lastPosition;
 		mAudioManager.playQueue()->setStartTime(lastPosition*1000);
 	}
+
+	// for setNextTrack to work
 	mAudioManager.skipTrack();
 
-	bool playAutomatically = mSettings.value("Main/StatePlayAutomatically", false).toBool();
 	if (playAutomatically && lastMode == PlayMode_Playing)
 		mAudioManager.setPause(false);
 
