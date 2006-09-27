@@ -34,7 +34,10 @@ bool AudioDecoder::open() {
 	bool r = openFile();
 	if (r)
 		setOpened(true);
-	
+
+	if (mStartTime != 0)	
+		seekToTimeInternal(mStartTime);
+
 	return r;
 }
 
@@ -48,7 +51,6 @@ bool AudioDecoder::close() {
 	if (r)
 		setOpened(false);
 
-	seekToTimeInternal(mStartTime);
 	return r;
 }
 
