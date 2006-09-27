@@ -83,15 +83,8 @@ void PlayQueue::setNextTrack(AudioFile *inAudioFile) {
 }
 
 void PlayQueue::setStartTime(quint32 inMilliseconds) {
-	if (mAudioFileList.size() == 0)
-		return;
-	if (mCurrentAudioFileIndex == -1)
-		return;
-	
-	mMutex.lock();
-	AudioFile* af = mAudioFileList[mCurrentAudioFileIndex];
-	mMutex.unlock();
-	
+	AudioFile *af = currentFile();
+
 	if (!af)
 		return;
 
