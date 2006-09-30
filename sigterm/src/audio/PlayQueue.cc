@@ -15,6 +15,8 @@ PlayQueue::PlayQueue(AudioManager *inAudioManager) {
 	mCurrentAudioFileIndex = 0;
 	mPlayingTrack = NULL;
 	mAudioManager = inAudioManager;
+
+	connect(mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));
 }
 
 void PlayQueue::addAudioFile(AudioFile *inAudioFile) {
@@ -44,16 +46,13 @@ void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
 		mAudioManager->skipTrack();
 }
 
-AudioFile *PlayQueue::currentFile() {
+AudioFile *PlayQueue::currentFile() const {
 	QMutexLocker locker(&mMutex);
 	if (mAudioFileList.size() == 0)
 		return NULL;
 
-	if (mCurrentAudioFileIndex >= mAudioFileList.size())
-		mCurrentAudioFileIndex = 0;
-
-	if (mCurrentAudioFileIndex < 0)
-		mCurrentAudioFileIndex = mAudioFileList.size()-1;
+	Q_ASSERT(mCurrentAudioFileIndex >= 0);
+	Q_ASSERT(mCurrentAudioFileIndex < mAudioFileList.size());
 
 	return mAudioFileList[mCurrentAudioFileIndex];
 }
@@ -63,21 +62,17 @@ int PlayQueue::currentFileId() {
 }
 
 AudioFile *PlayQueue::playingTrack() {
-	QMutexLocker locker(&mMutex);
 	return mPlayingTrack;
 }
 
 void PlayQueue::setNextTrack(int inIndex) {
-	QMutexLocker locker(&mMutex);
-	if (mAudioFileList.size() < inIndex)
+	if (mAudioFileList.size() < inIndex || inIndex < 0)
 		return;
 	mCurrentAudioFileIndex = inIndex;
 }
 
 void PlayQueue::setNextTrack(AudioFile *inAudioFile) {
-	mMutex.lock();
 	int index = mAudioFileList.indexOf(inAudioFile);
-	mMutex.unlock();
 	if (index != -1)
 		setNextTrack(index);
 }
@@ -93,7 +88,7 @@ void PlayQueue::setStartTime(quint32 inMilliseconds) {
 
 void PlayQueue::finished(AudioFile *inAudioFile) {
 	QMutexLocker locker(&mMutex);
-	mCurrentAudioFileIndex++;
+	nextTrack();
 }
 
 QVariant PlayQueue::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -137,9 +132,13 @@ QVariant PlayQueue::data(const QModelIndex &index, int role) const {
 	switch ((Columns)index.column()) {
 		case eIsPlaying:
 			if (role == Qt::DecorationRole) {
-				if (mAudioFileList[index.row()]->isPlaying()) {
+				if (mAudioFileList[index.row()]->isPlaying() && mAudioManager->paused() == false) {
 					QPixmap p(8,8);
 					p.fill(Qt::blue);
+					return QIcon(p);
+				} else if (mAudioFileList[index.row()] == currentFile()) {
+					QPixmap p(8,8);
+					p.fill(Qt::gray);
 					return QIcon(p);
 				}
 			}
@@ -196,18 +195,20 @@ bool PlayQueue::hasChildren(const QModelIndex &parent) const {
 }
 
 void PlayQueue::nextTrack() {
-	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex++;
+
+	if (mCurrentAudioFileIndex >= mAudioFileList.size())
+		mCurrentAudioFileIndex = 0;
 }
 
 void PlayQueue::prevTrack() {
-	QMutexLocker locker(&mMutex);
 	mCurrentAudioFileIndex--;
+
+	if (mCurrentAudioFileIndex < 0)
+		mCurrentAudioFileIndex = mAudioFileList.size()-1;
 }
 
 void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
-	QMutexLocker locker(&mMutex);
-
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1)
 		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
@@ -217,8 +218,6 @@ void PlayQueue::audioFileStartedPlaying(AudioFile *inAudioFile) {
 }
 
 void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed) {
-	QMutexLocker locker(&mMutex);
-
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1)
 		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
@@ -227,6 +226,11 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePl
 		mPlayingTrack = NULL;
 
 	emit audioFileStopped(inAudioFile, inTimePlayed);
+}
+
+void PlayQueue::audioPaused(bool inPauseStatus) {
+	int index = mAudioFileList.indexOf(currentFile());
+	emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
 bool PlayQueue::removeTracks(QList<AudioFile*> &inList) {

@@ -23,7 +23,7 @@ class PlayQueue : public QAbstractTableModel {
 			eLastElement
 		} Columns;
 
-		AudioFile *currentFile();
+		AudioFile *currentFile() const;
 		int currentFileId();
 		AudioFile *playingTrack();
 
@@ -65,6 +65,7 @@ class PlayQueue : public QAbstractTableModel {
 	private slots:
 		void audioFileStartedPlaying(AudioFile *inAudioFile);
 		void audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed);
+		void audioPaused(bool inPauseStatus);
 
 	private:
 		friend class AudioFile;
@@ -75,7 +76,7 @@ class PlayQueue : public QAbstractTableModel {
 		int mCurrentAudioFileIndex;
 
 		AudioFile *mPlayingTrack;
-		QMutex mMutex;
+		mutable QMutex mMutex;
 		AudioManager *mAudioManager;
 };
 
