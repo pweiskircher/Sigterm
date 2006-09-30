@@ -68,8 +68,10 @@ src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/3rdParty/md5.c src/3rdParty/md5.h
 src/library/Library.cc src/library/Library.h
 src/misc/LastFMClient.cc src/misc/LastFMClient.h
+src/misc/LastFMDialog.cc src/misc/LastFMDialog.h
 src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/misc/PWMd5.cc src/misc/PWMd5.h
+src/misc/ErrorLogModel.cc src/misc/ErrorLogModel.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h
@@ -80,6 +82,7 @@ src/main/PlayQueueView.cc src/main/PlayQueueView.h
 SET(SIGTERM_UI
 src/main/mainwindow.ui
 src/main/preferences.ui
+src/misc/lastfm.ui
 )
 
 SET(SIGTERM_MOC

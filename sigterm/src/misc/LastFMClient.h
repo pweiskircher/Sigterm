@@ -5,6 +5,7 @@
 #include <QSettings>
 
 class AudioFile;
+class LastFMDialog;
 
 class LastFMEntry {
 	public:
@@ -31,6 +32,8 @@ class LastFMClient : public QObject {
 
 		void submitTrack(AudioFile *inAudioFile);
 
+		void showDialog();
+
 	public slots:
 		void usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash);
 
@@ -40,6 +43,9 @@ class LastFMClient : public QObject {
 
 	private:
 		void submitTracks();
+		void startHandshake();
+
+		void setInterval(const QString &inString);
 
 		QString mUsername;
 		QString mHashedPassword;
@@ -48,12 +54,26 @@ class LastFMClient : public QObject {
 		QString mMd5Challenge;
 		QString mSubmitUrl;
 
+		typedef enum {
+			eOk,			// everyhings ok
+			eError,			// server told us that the request failed. show error message to user
+			eBadUser,		// tell user that username is wrong and that he needs to change it
+			eNetworkError,	// no network or sever is down.. try it again in 5 minutes
+			eFatalError		// no point in continuning..
+		} ProtocolErrorType;
+		ProtocolErrorType mProtocolError;
+		QString mErrorMessage;
+
 		bool mHandshakeDone;
-		int mBadErrors;
+		int mHandshakeRequest;
+		int mHandshakeTries;
+
 		int mInterval;
 
 		QList<LastFMEntry *> mEntryList;
 		QSettings mSettings;
+
+		LastFMDialog *mDialog;
 };
 
 #endif

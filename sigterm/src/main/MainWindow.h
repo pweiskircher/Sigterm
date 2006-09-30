@@ -11,6 +11,7 @@ class Library;
 class Preferences;
 class LastFMClient;
 class AudioFile;
+class QShortCut;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
@@ -39,6 +40,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 
 		void on_actionPreferences_activated();
 		void on_actionQuit_activated();
+		void on_actionLast_FM_activated();
+		void on_actionPlayer_activated();
 		void on_playQueue_doubleClicked(const QModelIndex &index);
 
 		void audioFileStarted(AudioFile *inAudioFile);
@@ -54,6 +57,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		Preferences *mPreferences;
 		LastFMClient *mLastFMClient;
 		QString mDataDirectory;
+
+		// TODO: get rid of this. we need something better to handle more types of tasks using the keyboard..
+		QShortcut *mSpaceShortcut;
 
 		bool mSeekSliderUserUpdate;
 		quint32 mSeekSliderUserUpdateValue;

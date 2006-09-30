@@ -1,8 +1,11 @@
 #include "LastFMClient.h"
 #include "AudioFile.h"
 #include "AudioDecoder.h"
+#include "LastFMDialog.h"
 
 #include <QDateTime>
+#include <QTextStream>
+#include <QDebug>
 
 bool LastFMEntry::load(QSettings &inSettings, const QString &inSection) {
 	mArtist = inSettings.value(inSection + "/Artist").toString();
@@ -45,8 +48,10 @@ QString LastFMEntry::toGetRequest(int count) {
 
 LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile, QSettings::IniFormat, this) {
 	mHandshakeDone = false;
-	mBadErrors = 0;
 	mInterval = 0;
+	mHandshakeTries = 0;
+
+	connect(&mHttpClient, SIGNAL(requestFinished(int, bool)), SLOT(httpRequestFinished(int, bool)));
 
 	QStringList groups = mSettings.childGroups();
 	for (int i = 0; i < groups.size(); i++) {
@@ -58,6 +63,11 @@ LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile
 			delete e;
 		}
 	}
+
+	mHandshakeRequest = -1;
+	mProtocolError = eOk;
+
+	mDialog = new LastFMDialog(this);
 }
 
 void LastFMClient::setUsername(const QString &inUsername) {
@@ -92,12 +102,71 @@ void LastFMClient::submitTrack(AudioFile *inAudioFile) {
 	mSettings.sync();
 }
 
+void LastFMClient::showDialog() {
+	mDialog->show();
+}
+
 void LastFMClient::usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash) {
+	if (mUsername != inUsername) {
+		mHandshakeDone = false;
+		mHandshakeTries = 0;
+	}
+
 	setUsername(inUsername);
 	setHashedPassword(inHash);
 }
 
 void LastFMClient::httpRequestFinished(int id, bool error) {
+	if (id == mHandshakeRequest) {
+		if (error) {
+			mHandshakeRequest = false;
+			mHandshakeTries++;
+			mProtocolError = eNetworkError;
+			if (mHandshakeTries > 3) {
+				mInterval = 60*30;
+			} else {
+				mInterval = 60;
+			}
+			return;
+		}
+		mHandshakeTries = 0;
+
+		QString s = mHttpClient.readAll();
+		QStringList answer = s.split('\n');
+
+		if (answer[0].startsWith("FAILED")) {
+			// lets try again.. maybe notify the user that something failed
+			if (answer.size() > 1 && answer[1].startsWith("INTERVAL ")) {
+				setInterval(answer[1]);
+			}
+
+			mProtocolError = eError;
+			mErrorMessage = answer[0].section(" ", 1);
+		} else if (answer[0].startsWith("BADUSER")) {
+			if (answer.size() > 1 && answer[1].startsWith("INTERVAL ")) {
+				setInterval(answer[1]);
+			}
+
+			mProtocolError = eBadUser;
+			// no idea what we should do in this case.
+			// best thing would be to just wait until the user changes the username, but what if just the server has
+			// a problem and says bad user?
+			mInterval = qMax(mInterval, 60*5);
+		} else if (answer[0].startsWith("UPTODATE")) {
+			if (answer.size() < 4) {
+				mProtocolError = eNetworkError;
+				mErrorMessage = "Received broken answer from server.";
+				mInterval = 60*5;
+			} else {
+				mMd5Challenge = answer[1];
+				mSubmitUrl = answer[2];
+				setInterval(answer[3]);
+				mHandshakeDone = true;
+			}
+		}
+
+		mHandshakeRequest = -1;
+	}
 }
 
 void LastFMClient::trackStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePlayed) {
@@ -107,7 +176,6 @@ void LastFMClient::trackStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePla
 	if (inAudioFile->timeTotal() <= 30)
 		return;
 
-	qDebug("timePlayed: %d timeTotal: %d", inTimePlayed, inAudioFile->timeTotal());
 	if (inTimePlayed > 240 || inTimePlayed >= (inAudioFile->timeTotal()/2))
 		submitTrack(inAudioFile);
 }
@@ -115,4 +183,14 @@ void LastFMClient::trackStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePla
 void LastFMClient::submitTracks() {
 }
 
+void LastFMClient::startHandshake() {
+	mHttpClient.setHost("post.audioscrobbler.com");
+	QString s = QString("/?hs=true&p=1.1&c=stm&v=0.1&u=%1").arg(mUsername);
+	mHandshakeRequest = mHttpClient.get(s);
+}
 
+void LastFMClient::setInterval(const QString &inString) {
+	mInterval = inString.section(" ", 1, 1).toInt();
+	if (mInterval <= 0)
+		mInterval = 30;
+}

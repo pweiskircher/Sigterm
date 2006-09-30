@@ -8,6 +8,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QShortcut>
 
 enum PlayMode {
 	PlayMode_Stopped,
@@ -30,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mPreferences = new Preferences(&mSettings, this);
 	mLastFMClient = new LastFMClient(mDataDirectory + "/lastfm.ini");
+
+	mSpaceShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
+	connect(mSpaceShortcut, SIGNAL(activated()), SLOT(on_playButton_clicked()));
 
 
 	connect(mPreferences, SIGNAL(lastFMSettingsChanged(const QString &, const QString &)),
@@ -256,6 +260,14 @@ void MainWindow::on_actionQuit_activated() {
 	qApp->quit();
 }
 
+void MainWindow::on_actionLast_FM_activated() {
+	mLastFMClient->showDialog();
+}
+
+void MainWindow::on_actionPlayer_activated() {
+	activateWindow();
+	raise();
+}
 
 void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {
 	mAudioManager.playQueue()->setNextTrack(index.row());
