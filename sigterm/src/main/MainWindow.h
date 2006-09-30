@@ -11,7 +11,7 @@ class Library;
 class Preferences;
 class LastFMClient;
 class AudioFile;
-class QShortCut;
+class QShortcut;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
