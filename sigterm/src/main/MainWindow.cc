@@ -8,7 +8,6 @@
 
 #include <QDebug>
 #include <QFileDialog>
-#include <QHeaderView>
 
 enum PlayMode {
 	PlayMode_Stopped,
@@ -17,10 +16,6 @@ enum PlayMode {
 };
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettings::IniFormat, QSettings::UserScope, "SIGTERM", "sigterm") {
-
-	mSettings.setValue("Misc/Dummy", "IgnoreMe");
-	mSettings.sync();
-
 	QString defaultDataDirectory = QDir::homePath() + "/.sigterm";
 	mDataDirectory = mSettings.value("Main/DataDirectory", defaultDataDirectory).toString();
 	QDir dataDir(mDataDirectory);
@@ -34,51 +29,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	qRegisterMetaType<quint32>("quint32");
 
 	mPreferences = new Preferences(&mSettings, this);
-
+	mLastFMClient = new LastFMClient(mDataDirectory + "/lastfm.ini");
 	mLibrary = new Library(mDataDirectory + "/library.db");
 	mLibrary->open();
 
-	mLastFMClient = new LastFMClient(mDataDirectory + "/lastfm.ini");
-	
 	setupUi(this);
-	connect(&mAudioManager, SIGNAL(audioPaused(bool)), SLOT(audioPaused(bool)));
-	connect(qApp, SIGNAL(lastWindowClosed()), SLOT(on_actionQuit_activated()));
+	connect(&mAudioManager,	SIGNAL(audioPaused(bool)),	SLOT(audioPaused(bool)));
+	connect(qApp,			SIGNAL(lastWindowClosed()),	SLOT(on_actionQuit_activated()));
+
 	mAudioManager.init();
 
-	connect(&mTrackDisplayUpdater, SIGNAL(timeout()), SLOT(updateTrackDisplay()));
-	connect(timeSlider, SIGNAL(valueChanged(int)), SLOT(seekSliderChangedValue(int)));
-	connect(timeSlider, SIGNAL(sliderMoved(int)), SLOT(seekSliderMoved(int)));
-	connect(timeSlider, SIGNAL(sliderPressed()), SLOT(seekSliderPressed()));
-	connect(timeSlider, SIGNAL(sliderReleased()), SLOT(seekSliderReleased()));
+	connect(&mTrackDisplayUpdater,	SIGNAL(timeout()),			SLOT(updateTrackDisplay()));
+	connect(timeSlider,				SIGNAL(valueChanged(int)),	SLOT(seekSliderChangedValue(int)));
+	connect(timeSlider,				SIGNAL(sliderMoved(int)),	SLOT(seekSliderMoved(int)));
+	connect(timeSlider,				SIGNAL(sliderPressed()),	SLOT(seekSliderPressed()));
+	connect(timeSlider,				SIGNAL(sliderReleased()),	SLOT(seekSliderReleased()));
+	connect(volumeSlider,			SIGNAL(valueChanged(int)),	SLOT(volumeSliderChangedValue(int)));
 
-	connect(volumeSlider, SIGNAL(valueChanged(int)), SLOT(volumeSliderChangedValue(int)));
+	// TODO: make this work with a connect()
 	mAudioManager.setVolume(mSettings.value("Main/Volume", 80).toInt());
 	volumeSlider->setValue((int)((volumeSlider->maximum() * mAudioManager.volume())/100));
-	
-	playQueue->setModel(mAudioManager.playQueue());
 
-	playQueue->header()->resizeSection(PlayQueue::eIsPlaying, 20);
-	playQueue->header()->resizeSection(PlayQueue::eTrackNumber, 25);
-	playQueue->header()->resizeSection(PlayQueue::eArtist, 100);
-	playQueue->header()->resizeSection(PlayQueue::eAlbum, 100);
-	playQueue->header()->resizeSection(PlayQueue::eTitle, 150);
-	playQueue->header()->setResizeMode(PlayQueue::eTitle, QHeaderView::Stretch);
-	playQueue->header()->resizeSection(PlayQueue::eTotalTime, 20);
+	playQueue->setup(mAudioManager.playQueue());
 
-	playQueue->header()->setStretchLastSection(false);
-	playQueue->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	playQueue->setDragEnabled(true);
-	playQueue->setAcceptDrops(true);
-	playQueue->setDropIndicatorShown(true);
-
-	connect(mAudioManager.playQueue(), SIGNAL(audioFileStarted(AudioFile*)), SLOT(audioFileStarted(AudioFile*)));
-	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*, quint32)),
-			SLOT(audioFileStopped(AudioFile*, quint32)));
-	connect(mAudioManager.playQueue(), SIGNAL(audioFileStopped(AudioFile*, quint32)), mLastFMClient,
-			SLOT(trackStoppedPlaying(AudioFile*, quint32)));
-	
-	connect(deleteButton, SIGNAL(clicked()), SLOT(removeSelectedTracks()));
-	connect(playQueue, SIGNAL(removeSelectedTracksKeyPressed()), SLOT(removeSelectedTracks()));
+	connect(mAudioManager.playQueue(),	SIGNAL(audioFileStarted(AudioFile*)),			SLOT(audioFileStarted(AudioFile*)));
+	connect(mAudioManager.playQueue(),	SIGNAL(audioFileStopped(AudioFile*, quint32)),	SLOT(audioFileStopped(AudioFile*, quint32)));
+	connect(mAudioManager.playQueue(),	SIGNAL(audioFileStopped(AudioFile*, quint32)),	mLastFMClient, SLOT(trackStoppedPlaying(AudioFile*, quint32)));
+	connect(deleteButton,				SIGNAL(clicked()),								SLOT(removeSelectedTracks()));
+	connect(playQueue,					SIGNAL(removeSelectedTracksKeyPressed()),		SLOT(removeSelectedTracks()));
 
 	mAudioManager.playQueue()->loadFromFile(mDataDirectory + "/PlayQueue.m3u");
 
@@ -89,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	bool playAutomatically = mPreferences->autoPlayEnabled();
 
 	mAudioManager.playQueue()->setNextTrack(lastTrack);
-	
+
 	if (playAutomatically && lastPosition != 0) {
 		qDebug() << "restoring play position " << lastPosition;
 		mAudioManager.playQueue()->setStartTime(lastPosition*1000);
@@ -102,6 +80,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 		mAudioManager.setPause(false);
 
 	mSeekSliderUserUpdate = false;
+
+	if (mSettings.contains("MainWindow/Position")) {
+		QPoint pos = mSettings.value("MainWindow/Position").toPoint();
+		if (pos.isNull() == false)
+			move(pos);
+	}
+
+	if (mSettings.contains("MainWindow/Size")) {
+		QSize size = mSettings.value("MainWindow/Size").toSize();
+		if (size.isNull() == false)
+			resize(size);
+	}
 }
 
 MainWindow::~MainWindow() {
@@ -252,6 +242,9 @@ void MainWindow::on_actionPreferences_activated() {
 }
 
 void MainWindow::on_actionQuit_activated() {
+	mSettings.setValue("MainWindow/Position", pos());
+	mSettings.setValue("MainWindow/Size", size());
+
 	mAudioManager.quit();
 	qApp->quit();
 }

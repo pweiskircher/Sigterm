@@ -5,12 +5,16 @@
 #include <QTreeView>
 #include <QKeyEvent>
 
+class PlayQueue;
+
 class PlayQueueView : public QTreeView {
 	Q_OBJECT
 	
 	public:
 		PlayQueueView(QWidget* parent = 0);
 		~PlayQueueView();
+
+		void setup(PlayQueue *inQueue);
 
 	signals:
 		void removeSelectedTracksKeyPressed();
