@@ -23,6 +23,7 @@ QString Preferences::lastFMUsername() {
 }
 
 QString Preferences::lastFMHashedPassword() {
+	if (mLastFMPassword->text().isEmpty()) return "";
 	return PWMd5::md5sum(mLastFMPassword->text());
 }
 

@@ -10,9 +10,10 @@ QString PWMd5::md5sum(const QString &inString) {
 	unsigned char result[16];
 	MD5Final(result, &ctx);
 
-	QString m;
+	QString m, s;
 	for (int i = 0; i < 16; i++) {
-		m += QString::number(result[i], 16).toUpper();
+		s.sprintf("%02X", result[i]);
+		m += s;
 	}
 
 	return m;
