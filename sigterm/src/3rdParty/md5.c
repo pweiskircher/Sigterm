@@ -377,35 +377,3 @@ char *buf;
     return buf;
 }
 
-char *
-MD5Data (data, len, buf)
-unsigned char *data;
-unsigned int len;
-char *buf;
-{
-    MD5_CTX ctx;
-
-    MD5Init(&ctx);
-    MD5Update(&ctx,data,len);
-    return MD5End(&ctx, buf);
-}
-
-char *
-MD5File (const char *filename, char *buf)
-{
-    unsigned char buffer[BUFSIZ];
-    MD5_CTX ctx;
-    int f,i,j;
-
-    MD5Init(&ctx);
-    f = open(filename,O_RDONLY);
-    if (f < 0) return 0;
-    while ((i = read(f,buffer,sizeof buffer)) > 0) {
-	MD5Update(&ctx,buffer,i);
-    }
-    j = errno;
-    close(f);
-    errno = j;
-    if (i < 0) return 0;
-    return MD5End(&ctx, buf);
-}

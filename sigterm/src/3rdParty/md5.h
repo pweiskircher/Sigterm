@@ -73,8 +73,6 @@ extern "C" {
     void MD5Update PROTO_LIST ((MD5_CTX *, unsigned char *, unsigned int));
     void MD5Final  PROTO_LIST ((unsigned char [16], MD5_CTX *));
     char *MD5End   PROTO_LIST ((MD5_CTX *, char *));
-    char *MD5Data  PROTO_LIST ((unsigned char *, unsigned int, char *));
-    char *MD5File  PROTO_LIST ((const char *filename, char *buf));
 #ifdef __cplusplus
 }
 #endif
