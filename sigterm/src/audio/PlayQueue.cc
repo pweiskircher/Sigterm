@@ -229,8 +229,13 @@ void PlayQueue::audioFileStoppedPlaying(AudioFile *inAudioFile, quint32 inTimePl
 }
 
 void PlayQueue::audioPaused(bool inPauseStatus) {
+	AudioFile *af = currentFile();
+	if (!af)
+		return;
+
 	int index = mAudioFileList.indexOf(currentFile());
-	emit dataChanged(createIndex(index, 0), createIndex(index, 0));
+	if (index != -1)
+		emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
 bool PlayQueue::removeTracks(QList<AudioFile*> &inList) {
