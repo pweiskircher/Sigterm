@@ -35,6 +35,8 @@ void PlayQueue::removeAudioFile(AudioFile *inAudioFile) {
 
 	int index = mAudioFileList.indexOf(inAudioFile);
 	if (index != -1) {
+		if (index < mCurrentAudioFileIndex)
+			prevTrack();
 		beginRemoveRows(QModelIndex(), index, index);
 		mAudioFileList.removeAt(index);
 		endRemoveRows();
