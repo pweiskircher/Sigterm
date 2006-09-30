@@ -11,13 +11,22 @@ class Preferences : public QDialog, private Ui::Preferences {
 		Preferences(QSettings *inSettings, QWidget *parent = 0);
 		~Preferences();
 
+		void init();
+
 		bool autoPlayEnabled();
+		QString lastFMUsername();
+		QString lastFMHashedPassword();
+
+	signals:
+		void lastFMSettingsChanged(const QString &inUsername, const QString &inPassword);
 
 	private slots:
 		void autoPlayStateChanged(int state);
 
+		void lastFMUsernameEdited();
+		void lastFMPasswordEdited();
+
 	private:
-		void initUi();
 		QSettings *mSettings;
 
 };

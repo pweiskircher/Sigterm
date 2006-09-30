@@ -47,6 +47,7 @@ FIND_PATH(FAAD_INCLUDE_DIR neaacdec.h /usr/include /usr/local/include /opt/local
 INCLUDE_DIRECTORIES(src/audio/ src/audio/aac_stuff/ src/library/ src/misc/ src/main/)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${VORBISFILE_INCLUDE_DIR} ${MAD_INCLUDE_DIR} ${FLAC_INCLUDE_DIR} ${FAAD_INCLUDE_DIR} ${ID3TAG_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(src/3rdParty)
 
 SET(SIGTERM_SRCS
 src/audio/AudioDecoder.cc src/audio/AudioDecoder.h
@@ -64,9 +65,11 @@ src/audio/decoders/AudioDecoderFlac.cc src/audio/decoders/AudioDecoderFlac.h
 src/audio/decoders/AudioDecoderMp3.cc src/audio/decoders/AudioDecoderMp3.h
 src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
+src/3rdParty/md5.c src/3rdParty/md5.h
 src/library/Library.cc src/library/Library.h
 src/misc/LastFMClient.cc src/misc/LastFMClient.h
 src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
+src/misc/PWMd5.cc src/misc/PWMd5.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h

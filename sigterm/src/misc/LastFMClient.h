@@ -27,9 +27,12 @@ class LastFMClient : public QObject {
 		LastFMClient(const QString &inRecordFile);
 
 		void setUsername(const QString &inUsername);
-		void setMd5edPassword(const QString &inPassword);
+		void setHashedPassword(const QString &inPassword);
 
 		void submitTrack(AudioFile *inAudioFile);
+
+	public slots:
+		void usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash);
 
 	private slots:
 		void httpRequestFinished(int id, bool error);
@@ -39,7 +42,7 @@ class LastFMClient : public QObject {
 		void submitTracks();
 
 		QString mUsername;
-		QString mMd5edPassword;
+		QString mHashedPassword;
 		QHttp mHttpClient;
 
 		QString mMd5Challenge;

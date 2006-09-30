@@ -63,12 +63,12 @@ LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile
 void LastFMClient::setUsername(const QString &inUsername) {
 	mUsername = inUsername;
 }
-void LastFMClient::setMd5edPassword(const QString &inPassword) {
-	mMd5edPassword = inPassword;
+void LastFMClient::setHashedPassword(const QString &inPassword) {
+	mHashedPassword = inPassword;
 }
 
 void LastFMClient::submitTrack(AudioFile *inAudioFile) {
-	if (mUsername.isEmpty() || mMd5edPassword.isEmpty())
+	if (mUsername.isEmpty() || mHashedPassword.isEmpty())
 		return;
 
 	AudioMetaData *meta = inAudioFile->metaData();
@@ -90,6 +90,11 @@ void LastFMClient::submitTrack(AudioFile *inAudioFile) {
 	mSettings.setValue("nextSection", nextSection + 1);
 	e->save(mSettings, QString::number(nextSection));
 	mSettings.sync();
+}
+
+void LastFMClient::usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash) {
+	setUsername(inUsername);
+	setHashedPassword(inHash);
 }
 
 void LastFMClient::httpRequestFinished(int id, bool error) {

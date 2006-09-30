@@ -30,6 +30,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	mPreferences = new Preferences(&mSettings, this);
 	mLastFMClient = new LastFMClient(mDataDirectory + "/lastfm.ini");
+
+
+	connect(mPreferences, SIGNAL(lastFMSettingsChanged(const QString &, const QString &)),
+			mLastFMClient, SLOT(usernameAndPasswordHashUpdated(const QString &, const QString &)));
+
 	mLibrary = new Library(mDataDirectory + "/library.db");
 	mLibrary->open();
 
@@ -92,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 		if (size.isNull() == false)
 			resize(size);
 	}
+
+	mPreferences->init();
 }
 
 MainWindow::~MainWindow() {
