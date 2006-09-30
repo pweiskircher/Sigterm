@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 
 	qRegisterMetaType<quint32>("quint32");
 
-	mPreferences = new Preferences(this);
+	mPreferences = new Preferences(&mSettings, this);
 
 	mLibrary = new Library(mDataDirectory + "/library.db");
 	mLibrary->open();
@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	int lastTrack = mSettings.value("State/Track", 0).toInt();
 	int lastPosition = mSettings.value("State/Position", 0).toInt();
 	PlayMode lastMode = (PlayMode)mSettings.value("State/Mode", PlayMode_Stopped).toInt();
-	bool playAutomatically = mSettings.value("Main/StatePlayAutomatically", false).toBool();
+	bool playAutomatically = mPreferences->autoPlayEnabled();
 
 	mAudioManager.playQueue()->setNextTrack(lastTrack);
 	

@@ -24,6 +24,24 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget" >
+     <widget class="QWidget" name="tab_2" >
+      <attribute name="title" >
+       <string>General</string>
+      </attribute>
+      <widget class="QCheckBox" name="mAutoPlay" >
+       <property name="geometry" >
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>361</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Enable resume on startup</string>
+       </property>
+      </widget>
+     </widget>
      <widget class="QWidget" name="tab" >
       <attribute name="title" >
        <string>Last.FM</string>
