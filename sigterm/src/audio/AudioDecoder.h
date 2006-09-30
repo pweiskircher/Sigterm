@@ -50,8 +50,8 @@ class AudioDecoder {
 		bool wasSeeking();
 
 	protected:
-		qint64 AudioDecoder::fileId3V2TagSize(QFile& file);
-		
+		qint64 fileId3V2TagSize(QFile& file);
+
 	private:
 		virtual DecodingStatus getDecodedChunk(AudioBuffer *inOutAudioBuffer) = 0;
 		virtual bool openFile() = 0;
