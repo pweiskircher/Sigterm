@@ -6,7 +6,6 @@ AboutWindow::AboutWindow(QWidget *parent) : QDialog(parent) {
 
 	detailInfo->setText("Version 0.1 Revision " SIGTERM_VERSION_SVNREVISION "\n"
 			"\n"
-			"Copyright 2006 Patrik Weiskircher\n"
 			"Copyright 2006 Christian Hofstaedtler\n"
 			"\n"
 			"Released unter GNU General Public License v2.\n"

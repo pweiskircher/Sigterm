@@ -245,7 +245,7 @@ void MainWindow::on_addPlaylistButton_clicked() {
 		return;
 
 	mAudioManager.playQueue()->appendFromFile(file);
-	
+
 	// same ugly workaround as above
 	QFileInfo fi(file);
 	mSettings.setValue("OpenDialog/LastBrowsedDirectory", fi.absolutePath());
