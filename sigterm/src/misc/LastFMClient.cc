@@ -24,7 +24,6 @@ LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile
 	QStringList groups = mSettings.childGroups();
 	qSort(groups.begin(), groups.end(), sortEntries);
 	for (int i = 0; i < groups.size(); i++) {
-		qDebug() << groups[i];
 		LastFMEntry *e = new LastFMEntry;
 		if (e->load(mSettings, groups[i]))
 			mQueue.append(e);
