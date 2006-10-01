@@ -1,10 +1,11 @@
 #include "AboutWindow.h"
+#include "svnversion.h"
 
 AboutWindow::AboutWindow(QWidget *parent) : QDialog(parent) {
 	setWindowFlags(Qt::Dialog | Qt::WindowSystemMenuHint);
 	setupUi(this);
 
-	detailInfo->setText("Version 0.1+svn99+autoXXX\n"
+	detailInfo->setText("Version 0.1 Revision " SIGTERM_VERSION_SVNREVISION "\n"
 			"\n"
 			"Copyright 2006 Patrik Weiskircher\n"
 			"Copyright 2006 Christian Hofstaedtler\n"
