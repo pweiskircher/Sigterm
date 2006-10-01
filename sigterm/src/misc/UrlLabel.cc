@@ -2,12 +2,8 @@
 #include <QMessageBox>
 #include "UrlLabel.h"
 
-UrlLabel::UrlLabel(QWidget* parent) {
-	setTextFormat(Qt::RichText);
-	qDebug("UrlLabel installed");
-}
-
-UrlLabel::~UrlLabel() {
+UrlLabel::UrlLabel(QWidget* parent) : QLabel(parent) {
+	raise();
 }
 
 void UrlLabel::setUrl(const QString& inUrl) {
@@ -17,7 +13,6 @@ void UrlLabel::setUrl(const QString& inUrl) {
 
 void UrlLabel::mouseReleaseEvent (QMouseEvent * event) {
 	bool success = false;
-qDebug("gucguckk");	
 #ifdef Q_WS_WIN
 	
 	LPCTSTR action = (LPCTSTR) "open";

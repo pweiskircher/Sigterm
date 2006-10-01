@@ -8,6 +8,8 @@ LastFMDialog::LastFMDialog(LastFMClient *inLastFMClient, QWidget *parent) {
 
 	mLog->setModel(&mErrorLog);
 	mErrorLog.setupUi(mLog);
+
+	mStatusLabel->setText("<a href=\"http://amd.co.at\">homepage</a>");
 }
 
 void LastFMDialog::postError(const QString &inErrorMessage) {

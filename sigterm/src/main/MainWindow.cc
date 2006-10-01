@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mSettings(QSettin
 	mSpaceShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
 	connect(mSpaceShortcut, SIGNAL(activated()), SLOT(on_playButton_clicked()));
 
+	mAboutWindow = NULL;
+
 
 	connect(mPreferences, SIGNAL(lastFMSettingsChanged(const QString &, const QString &)),
 			mLastFMClient, SLOT(usernameAndPasswordHashUpdated(const QString &, const QString &)));
@@ -271,8 +273,14 @@ void MainWindow::on_actionPlayer_activated() {
 }
 
 void MainWindow::on_actionAbout_activated() {
-	AboutWindow aw;
-	aw.exec();
+	if (!mAboutWindow)
+		mAboutWindow = new AboutWindow(this);
+
+	if (mAboutWindow) {
+		mAboutWindow->show();
+		mAboutWindow->activateWindow();
+		mAboutWindow->raise();
+	}
 }
 
 void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {

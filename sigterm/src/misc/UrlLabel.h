@@ -4,11 +4,8 @@
 #include <QLabel>
 
 class UrlLabel : public QLabel {
-Q_OBJECT
-	
 	public:
 		UrlLabel(QWidget* parent = 0);
-		~UrlLabel();
 
 		void setUrl(const QString& inUrl);
 

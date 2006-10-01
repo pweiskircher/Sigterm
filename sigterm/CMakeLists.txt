@@ -98,7 +98,6 @@ src/audio/AudioManager.h
 src/audio/AudioFile.h
 src/audio/PlayQueue.h
 src/misc/LastFMClient.h
-src/misc/UrlLabel.h
 )
 
 SET(SIGTERM_RC

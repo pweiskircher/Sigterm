@@ -12,6 +12,7 @@ class Preferences;
 class LastFMClient;
 class AudioFile;
 class QShortcut;
+class AboutWindow;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
@@ -58,6 +59,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		Preferences *mPreferences;
 		LastFMClient *mLastFMClient;
 		QString mDataDirectory;
+
+		AboutWindow *mAboutWindow;
 
 		// TODO: get rid of this. we need something better to handle more types of tasks using the keyboard..
 		QShortcut *mSpaceShortcut;
