@@ -1,5 +1,9 @@
 #include "LastFMDialog.h"
+#include "LastFMClient.h"
 #include "ErrorLogModel.h"
+
+#include <QSortFilterProxyModel>
+#include <QHeaderView>
 
 LastFMDialog::LastFMDialog(LastFMClient *inLastFMClient, QWidget *parent) {
 	mClient = inLastFMClient;
@@ -9,7 +13,11 @@ LastFMDialog::LastFMDialog(LastFMClient *inLastFMClient, QWidget *parent) {
 	mLog->setModel(&mErrorLog);
 	mErrorLog.setupUi(mLog);
 
-	mStatusLabel->setText("<a href=\"http://amd.co.at\">homepage</a>");
+	QSortFilterProxyModel *sortProxy = new QSortFilterProxyModel(this);
+	sortProxy->setSourceModel(inLastFMClient->queue());
+	sortProxy->sort(LastFMQueue::eDatePlayed, Qt::DescendingOrder);
+	mSubmitQueue->setModel(sortProxy);
+	inLastFMClient->queue()->setupUi(mSubmitQueue);
 }
 
 void LastFMDialog::postError(const QString &inErrorMessage) {

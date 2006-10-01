@@ -2,49 +2,17 @@
 #include "AudioFile.h"
 #include "AudioDecoder.h"
 #include "LastFMDialog.h"
+#include "LastFMQueue.h"
 
 #include <QDateTime>
 #include <QTextStream>
 #include <QDebug>
 
-bool LastFMEntry::load(QSettings &inSettings, const QString &inSection) {
-	mArtist = inSettings.value(inSection + "/Artist").toString();
-	mTitle = inSettings.value(inSection + "/Title").toString();
-	mAlbum = inSettings.value(inSection + "/Album").toString();
-	mMusicBrainzId = inSettings.value(inSection + "/MusicBrainzId").toString();
-	mSeconds = inSettings.value(inSection + "/Seconds").toString();
-	mDatePlayed = inSettings.value(inSection + "/DatePlayed").toString();
-
-	if (mArtist.isEmpty() || mTitle.isEmpty() || mArtist.isEmpty() || mSeconds.isEmpty() || mDatePlayed.isEmpty())
-		return false;
-
-	return true;
+bool sortEntries(const QString &s1, const QString &s2) {
+	if (s1.toInt() < s2.toInt())
+		return true;
+	return false;
 }
-
-bool LastFMEntry::save(QSettings &inSettings, const QString &inSection) {
-	inSettings.setValue(inSection + "/Artist", mArtist);
-	inSettings.setValue(inSection + "/Title", mTitle);
-	inSettings.setValue(inSection + "/Album", mAlbum);
-	inSettings.setValue(inSection + "/MusicBrainzId", mMusicBrainzId);
-	inSettings.setValue(inSection + "/Seconds", mSeconds);
-	inSettings.setValue(inSection + "/DatePlayed", mDatePlayed);
-
-	return true;
-}
-
-QString LastFMEntry::toGetRequest(int count) {
-	QString s;
-
-	s += QString("&a[%1]=%2").arg(count).arg(mArtist);
-	s += QString("&t[%1]=%2").arg(count).arg(mTitle);
-	s += QString("&b[%1]=%2").arg(count).arg(mAlbum);
-	s += QString("&m[%1]=%2").arg(count).arg(mMusicBrainzId);
-	s += QString("&l[%1]=%2").arg(count).arg(mSeconds);
-	s += QString("&i[%1]=%2").arg(count).arg(mDatePlayed);
-
-	return s;
-}
-
 
 LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile, QSettings::IniFormat, this) {
 	mHandshakeDone = false;
@@ -54,10 +22,12 @@ LastFMClient::LastFMClient(const QString &inRecordFile) : mSettings(inRecordFile
 	connect(&mHttpClient, SIGNAL(requestFinished(int, bool)), SLOT(httpRequestFinished(int, bool)));
 
 	QStringList groups = mSettings.childGroups();
+	qSort(groups.begin(), groups.end(), sortEntries);
 	for (int i = 0; i < groups.size(); i++) {
+		qDebug() << groups[i];
 		LastFMEntry *e = new LastFMEntry;
 		if (e->load(mSettings, groups[i]))
-			mEntryList.append(e);
+			mQueue.append(e);
 		else {
 			mSettings.remove(groups[i]);
 			delete e;
@@ -92,7 +62,7 @@ void LastFMClient::submitTrack(AudioFile *inAudioFile) {
 	e->mMusicBrainzId = "";
 	e->mSeconds = QString::number(inAudioFile->timeTotal());
 	e->mDatePlayed = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-	mEntryList.append(e);
+	mQueue.append(e);
 
 	int nextSection = mSettings.value("nextSection", 1).toInt();
 	while (mSettings.childGroups().contains(QString::number(nextSection)))
@@ -104,6 +74,10 @@ void LastFMClient::submitTrack(AudioFile *inAudioFile) {
 
 void LastFMClient::showDialog() {
 	mDialog->show();
+}
+
+LastFMQueue *LastFMClient::queue() {
+	return &mQueue;
 }
 
 void LastFMClient::usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash) {

@@ -6,20 +6,9 @@
 
 class AudioFile;
 class LastFMDialog;
+class LastFMEntry;
 
-class LastFMEntry {
-	public:
-	bool load(QSettings &inSettings, const QString &inSection);
-	bool save(QSettings &inSettings, const QString &inSection);
-	QString toGetRequest(int count);
-
-	QString mArtist;
-	QString mTitle;
-	QString mAlbum;
-	QString mMusicBrainzId;
-	QString mSeconds;
-	QString mDatePlayed;
-};
+#include "LastFMQueue.h"
 
 class LastFMClient : public QObject {
 	Q_OBJECT
@@ -29,10 +18,10 @@ class LastFMClient : public QObject {
 
 		void setUsername(const QString &inUsername);
 		void setHashedPassword(const QString &inPassword);
-
 		void submitTrack(AudioFile *inAudioFile);
-
 		void showDialog();
+
+		LastFMQueue *queue();
 
 	public slots:
 		void usernameAndPasswordHashUpdated(const QString &inUsername, const QString &inHash);
@@ -70,7 +59,7 @@ class LastFMClient : public QObject {
 
 		int mInterval;
 
-		QList<LastFMEntry *> mEntryList;
+		LastFMQueue mQueue;
 		QSettings mSettings;
 
 		LastFMDialog *mDialog;

@@ -69,6 +69,7 @@ src/3rdParty/md5.c src/3rdParty/md5.h
 src/library/Library.cc src/library/Library.h
 src/misc/LastFMClient.cc src/misc/LastFMClient.h
 src/misc/LastFMDialog.cc src/misc/LastFMDialog.h
+src/misc/LastFMQueue.cc src/misc/LastFMQueue.h
 src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/misc/PWMd5.cc src/misc/PWMd5.h
 src/misc/ErrorLogModel.cc src/misc/ErrorLogModel.h
