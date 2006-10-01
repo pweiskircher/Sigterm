@@ -19,8 +19,8 @@ void UrlLabel::mouseReleaseEvent (QMouseEvent * event) {
 	bool success = false;
 #ifdef Q_WS_WIN
 
-	LPCTSTR action = (LPCTSTR) "open";
-	HINSTANCE status = ::ShellExecute(NULL, "open", (TCHAR *) mUrl.utf16(), NULL, NULL, SW_SHOW);
+	QString action("open");
+	HINSTANCE status = ::ShellExecuteW(NULL, (LPCWSTR)action.utf16(), (LPCWSTR) mUrl.utf16(), NULL, NULL, SW_SHOW);
 	
 	// if (status>32)
 	success = true;
