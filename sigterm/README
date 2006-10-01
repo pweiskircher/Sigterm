@@ -1,5 +1,16 @@
-sigterm audio player
+sigterm music player
 ====================
 
-* This is the README, read it carefully.
+  * This is the README, read it carefully.
+
+  * QuickStart:
+
+    cmake .
+    make
+    ./sigterm
+
+  * Please also take a look at the online docs, available here:
+    http://music.sigterm.eu/
+
+  * This code is licensed under GPL v2.
 
