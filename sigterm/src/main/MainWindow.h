@@ -42,6 +42,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 		void on_actionQuit_activated();
 		void on_actionLast_FM_activated();
 		void on_actionPlayer_activated();
+		void on_actionAbout_activated();
 		void on_playQueue_doubleClicked(const QModelIndex &index);
 
 		void audioFileStarted(AudioFile *inAudioFile);

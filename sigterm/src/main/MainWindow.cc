@@ -5,6 +5,7 @@
 #include "AudioDecoder.h"
 #include "Preferences.h"
 #include "LastFMClient.h"
+#include "AboutWindow.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -267,6 +268,11 @@ void MainWindow::on_actionLast_FM_activated() {
 void MainWindow::on_actionPlayer_activated() {
 	activateWindow();
 	raise();
+}
+
+void MainWindow::on_actionAbout_activated() {
+	AboutWindow aw;
+	aw.exec();
 }
 
 void MainWindow::on_playQueue_doubleClicked(const QModelIndex &index) {

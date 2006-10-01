@@ -72,16 +72,19 @@ src/misc/LastFMDialog.cc src/misc/LastFMDialog.h
 src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/misc/PWMd5.cc src/misc/PWMd5.h
 src/misc/ErrorLogModel.cc src/misc/ErrorLogModel.h
+src/misc/UrlLabel.cc src/misc/UrlLabel.h
 src/main/main.cc
 src/main/MainWindow.cc src/main/MainWindow.h
 src/main/Preferences.cc src/main/Preferences.h
 src/main/PlayQueueView.cc src/main/PlayQueueView.h
+src/main/AboutWindow.cc src/main/AboutWindow.h
 )
 
 
 SET(SIGTERM_UI
 src/main/mainwindow.ui
 src/main/preferences.ui
+src/main/aboutwindow.ui
 src/misc/lastfm.ui
 )
 
@@ -89,11 +92,13 @@ SET(SIGTERM_MOC
 src/main/MainWindow.h
 src/main/Preferences.h
 src/main/PlayQueueView.h
+src/main/AboutWindow.h
 src/audio/AudioProcessor.h
 src/audio/AudioManager.h
 src/audio/AudioFile.h
 src/audio/PlayQueue.h
 src/misc/LastFMClient.h
+src/misc/UrlLabel.h
 )
 
 SET(SIGTERM_RC

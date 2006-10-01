@@ -186,7 +186,7 @@
      <x>0</x>
      <y>0</y>
      <width>648</width>
-     <height>30</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHuhu" >
@@ -205,13 +205,20 @@
    </widget>
    <widget class="QMenu" name="menuWindow" >
     <property name="title" >
-     <string>Window</string>
+     <string>&amp;Window</string>
     </property>
     <addaction name="actionPlayer" />
     <addaction name="actionLast_FM" />
    </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout" />
+   </widget>
    <addaction name="menuFile" />
    <addaction name="menuWindow" />
+   <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusbar" >
    <property name="geometry" >
@@ -252,6 +259,11 @@
   <action name="actionLast_FM" >
    <property name="text" >
     <string>Last.FM</string>
+   </property>
+  </action>
+  <action name="actionAbout" >
+   <property name="text" >
+    <string>About sigterm</string>
    </property>
   </action>
  </widget>
