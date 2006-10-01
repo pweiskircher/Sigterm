@@ -14,13 +14,13 @@ void UrlLabel::setUrl(const QString& inUrl) {
 void UrlLabel::mouseReleaseEvent (QMouseEvent * event) {
 	bool success = false;
 #ifdef Q_WS_WIN
-	
+/*	
 	LPCTSTR action = (LPCTSTR) "open";
 	HINSTANCE status = ::ShellExecute(NULL, "open", (TCHAR *) qt_winTchar(mUrl, true), NULL, NULL, SW_SHOW);
 	
-	/* if (status>32) */
+	// if (status>32)
 	success = true;
-		
+	*/	
 #else
 
 	QString program;
