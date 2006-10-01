@@ -4,7 +4,7 @@
 #include "Library.h"
 #include "AudioDecoder.h"
 #include "Preferences.h"
-#include "LastFMClient.h"
+#include "LastFM/LastFMClient.h"
 #include "AboutWindow.h"
 
 #include <QDebug>

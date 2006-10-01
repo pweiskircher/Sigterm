@@ -67,9 +67,9 @@ src/audio/decoders/AudioDecoderMp4.cc src/audio/decoders/AudioDecoderMp4.h
 src/audio/decoders/AudioDecoderOgg.cc src/audio/decoders/AudioDecoderOgg.h
 src/3rdParty/md5.c src/3rdParty/md5.h
 src/library/Library.cc src/library/Library.h
-src/misc/LastFMClient.cc src/misc/LastFMClient.h
-src/misc/LastFMDialog.cc src/misc/LastFMDialog.h
-src/misc/LastFMQueue.cc src/misc/LastFMQueue.h
+src/misc/LastFM/LastFMClient.cc src/misc/LastFM/LastFMClient.h
+src/misc/LastFM/LastFMDialog.cc src/misc/LastFM/LastFMDialog.h
+src/misc/LastFM/LastFMQueue.cc src/misc/LastFM/LastFMQueue.h
 src/misc/PlaylistM3u.cc src/misc/PlaylistM3u.h
 src/misc/PWMd5.cc src/misc/PWMd5.h
 src/misc/ErrorLogModel.cc src/misc/ErrorLogModel.h
@@ -98,7 +98,7 @@ src/audio/AudioProcessor.h
 src/audio/AudioManager.h
 src/audio/AudioFile.h
 src/audio/PlayQueue.h
-src/misc/LastFMClient.h
+src/misc/LastFM/LastFMClient.h
 )
 
 SET(SIGTERM_RC
