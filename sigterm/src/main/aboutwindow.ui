@@ -115,13 +115,10 @@
         <number>0</number>
        </property>
        <property name="spacing" >
-        <number>6</number>
+        <number>0</number>
        </property>
        <item>
         <widget class="UrlLabel" name="homepage" >
-         <property name="cursor" >
-          <cursor>13</cursor>
-         </property>
          <property name="text" >
           <string>&lt;a href="http://">http://&lt;/a></string>
          </property>

@@ -8,6 +8,8 @@
 
 UrlLabel::UrlLabel(QWidget* parent) : QLabel(parent) {
 	raise();
+	setTextFormat(Qt::RichText);
+	setCursor(Qt::PointingHandCursor);
 }
 
 void UrlLabel::setUrl(const QString& inUrl) {
